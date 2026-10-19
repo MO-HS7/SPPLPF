@@ -1,0 +1,31 @@
+{
+  "name": "spplpf-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Institutional Website and Administrative Dashboard for Peace, Protection and Law Foundation (SPPLPF)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test:unit": "echo 'Unit tests will be added in Phase 05 TASK-001a' && exit 0",
+    "test:integration:smoke": "echo 'Integration smoke tests run in Phase 06 TASK-005a' && exit 0"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.1.0",
+    "@prisma/client": "7.1.0",
+    "ioredis": "5.5.0",
+    "next": "16.4.2",
+    "pg": "8.13.3",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.9",
+    "@types/pg": "8.11.11",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.7",
+    "prisma": "7.1.0",
+    "typescript": "5.8.2"
+  }
+}

@@ -1,0 +1,558 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma-client"
+}
+
+// -------------------------------------------------------------
+// USER & ACCESS CONTROL ENTITIES
+// -------------------------------------------------------------
+
+model User {
+  id              String      @id @default(cuid())
+  email           String      @unique
+  passwordHash    String
+  fullName        String
+  isActive        Boolean     @default(true)
+  lastLoginAt     DateTime?
+  failedAttempts  Int         @default(0)
+  lockedUntil     DateTime?
+  mfaEnabled      Boolean     @default(false)
+  mfaSecret       String?     // Encrypted TOTP secret for 2FA
+  mfaVerifiedAt   DateTime?   // Timestamp of last successful MFA verification
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  userRoles       UserRole[]
+  createdContent  ContentItem[]      @relation("AuthorRelation")
+  workflowActions WorkflowLog[]
+  auditLogs       AuditLog[]
+  uploadedMedia   MediaAsset[]       @relation("UploaderRelation")
+  inquiryResponses InquiryResponse[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  createdAt   DateTime         @default(now())
+
+  userRoles   UserRole[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  token       String           @unique // e.g. "content.publish"
+  description String?
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// -------------------------------------------------------------
+// CONTENT & TRANSLATION ENTITIES
+// -------------------------------------------------------------
+
+enum ContentType {
+  NEWS
+  ACTIVITY
+  STORY
+  STATEMENT
+}
+
+enum WorkflowStatus {
+  DRAFT
+  IN_REVIEW
+  REJECTED
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+model ContentItem {
+  id               String         @id @default(cuid())
+  type             ContentType
+  status           WorkflowStatus @default(DRAFT)
+  authorId         String
+  categoryId       String?
+  programId        String?
+  featuredImageId  String?
+  publishedAt      DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  author           User                @relation("AuthorRelation", fields: [authorId], references: [id])
+  category         ContentCategory?    @relation(fields: [categoryId], references: [id])
+  program          Program?            @relation(fields: [programId], references: [id])
+  featuredImage    MediaAsset?         @relation("FeaturedMedia", fields: [featuredImageId], references: [id])
+  translations      ContentTranslation[]
+  mediaAttachments  ContentMedia[]
+  workflowLogs      WorkflowLog[]
+  contentTags       ContentTag[]
+  invalidationTasks CacheInvalidationOutbox[]
+
+  @@index([status, type, publishedAt])
+  @@map("content_items")
+}
+
+model ContentTranslation {
+  id              String      @id @default(cuid())
+  contentId       String
+  languageCode    String      // "ar" or "en"
+  title           String
+  slug            String
+  excerpt         String?     @db.Text
+  bodyHtml        String      @db.Text
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  contentItem     ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([languageCode, slug])
+  @@unique([contentId, languageCode])
+  @@map("content_translations")
+}
+
+model ContentCategory {
+  id           String               @id @default(cuid())
+  slug         String               @unique
+  translations CategoryTranslation[]
+  items        ContentItem[]
+
+  @@map("content_categories")
+}
+
+model CategoryTranslation {
+  id           String          @id @default(cuid())
+  categoryId   String
+  languageCode String
+  name         String
+
+  category     ContentCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, languageCode])
+  @@map("category_translations")
+}
+
+// -------------------------------------------------------------
+// PROGRAMS & INTERVENTIONS ENTITIES
+// -------------------------------------------------------------
+
+model Program {
+  id               String               @id @default(cuid())
+  pillarTag        String               // "mediation", "governance", "youth", "women"
+  startDate        DateTime
+  endDate          DateTime?
+  isFeatured       Boolean              @default(false)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  translations     ProgramTranslation[]
+  linkedStories    ContentItem[]
+
+  @@map("programs_projects")
+}
+
+model ProgramTranslation {
+  id              String   @id @default(cuid())
+  programId       String
+  languageCode    String
+  title           String
+  slug            String
+  objectives      String   @db.Text
+  achievements    String?  @db.Text
+  donorPartner    String?
+
+  program         Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@unique([languageCode, slug])
+  @@unique([programId, languageCode])
+  @@map("program_translations")
+}
+
+// -------------------------------------------------------------
+// PUBLICATIONS ENTITIES
+// -------------------------------------------------------------
+
+model Publication {
+  id           String                   @id @default(cuid())
+  publishedDate DateTime
+  fileAssetId  String
+  downloadCount Int                     @default(0)
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  fileAsset    MediaAsset               @relation(fields: [fileAssetId], references: [id])
+  translations PublicationTranslation[]
+
+  @@map("publications")
+}
+
+model PublicationTranslation {
+  id            String      @id @default(cuid())
+  publicationId String
+  languageCode  String
+  title         String
+  slug          String
+  abstract      String      @db.Text
+  authorCredit  String?
+
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+
+  @@unique([languageCode, slug])
+  @@unique([publicationId, languageCode])
+  @@map("publication_translations")
+}
+
+// -------------------------------------------------------------
+// MEDIA ASSET MANAGEMENT
+// -------------------------------------------------------------
+
+model MediaAsset {
+  id           String         @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType     String
+  fileSizeByte Int
+  storagePath  String
+  sha256Hash   String
+  width        Int?
+  height       Int?
+  altTextAr    String?
+  altTextEn    String?
+  uploadedById String
+  createdAt    DateTime       @default(now())
+
+  uploadedBy      User           @relation("UploaderRelation", fields: [uploadedById], references: [id])
+  contentFeatured ContentItem[]  @relation("FeaturedMedia")
+  contentUsages   ContentMedia[]
+  publications    Publication[]
+
+  @@index([sha256Hash])
+  @@index([uploadedById])
+  @@map("media_assets")
+}
+
+model ContentMedia {
+  contentId String
+  mediaId   String
+  position  Int          @default(0)
+
+  content   ContentItem  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  media     MediaAsset   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, mediaId])
+  @@map("content_media")
+}
+
+// -------------------------------------------------------------
+// WORKFLOW & AUDIT TRAIL
+// -------------------------------------------------------------
+
+model WorkflowLog {
+  id          String         @id @default(cuid())
+  contentId   String
+  userId      String
+  fromStatus  WorkflowStatus
+  toStatus    WorkflowStatus
+  comment     String?        @db.Text
+  timestamp   DateTime       @default(now())
+
+  content     ContentItem    @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  user        User           @relation(fields: [userId], references: [id])
+
+  @@index([contentId, timestamp])
+  @@map("workflow_logs")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String   // e.g. "AUTH_LOGIN_SUCCESS", "CONTENT_DELETE"
+  entityType String   // e.g. "ContentItem"
+  entityId   String?
+  ipAddress  String
+  userAgent  String?
+  details    Json?
+  timestamp  DateTime @default(now())
+
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([action, timestamp])
+  @@index([userId, timestamp])
+  @@map("audit_logs")
+}
+
+// -------------------------------------------------------------
+// INQUIRIES & SETTINGS
+// -------------------------------------------------------------
+
+model ContactSubmission {
+  id           String             @id @default(cuid())
+  fullName     String
+  email        String
+  phone        String?
+  organization String?            // Per FR-009: submitter's affiliated organization
+  subject      String
+  message      String             @db.Text
+  ipAddress    String
+  isRead       Boolean            @default(false)
+  isSpam       Boolean            @default(false)
+  createdAt    DateTime           @default(now())
+
+  responses    InquiryResponse[]
+
+  @@map("contact_submissions")
+}
+
+model InquiryResponse {
+  id             String            @id @default(cuid())
+  submissionId   String
+  responderId    String
+  responseText   String            @db.Text
+  createdAt      DateTime          @default(now())
+
+  submission     ContactSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  responder      User              @relation(fields: [responderId], references: [id])
+
+  @@index([submissionId])
+  @@map("inquiry_responses")
+}
+
+model SiteSetting {
+  key         String    @id // e.g. "contact_email", "emergency_banner"
+  valueJson   Json
+  updatedAt   DateTime  @updatedAt
+
+  @@map("site_settings")
+}
+
+// -------------------------------------------------------------
+// INSTITUTIONAL ENTITIES (Referenced by Page Specifications)
+// Pages: PG-02, PG-03, PG-04, PG-05, PG-07, PG-13
+// -------------------------------------------------------------
+
+model TeamMember {
+  id           String    @id @default(cuid())
+  nameAr       String
+  nameEn       String
+  titleAr      String    // e.g. "المدير التنفيذي"
+  titleEn      String    // e.g. "Executive Director"
+  bioAr        String?   @db.Text
+  bioEn        String?   @db.Text
+  portraitId   String?
+  displayOrder Int       @default(0)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("team_members")
+}
+
+model Page {
+  id           String              @id @default(cuid())
+  slug         String              @unique // e.g. "about", "values", "governance"
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  translations PageTranslation[]
+
+  @@map("pages")
+}
+
+model PageTranslation {
+  id           String    @id @default(cuid())
+  pageId       String
+  languageCode String
+  title        String
+  bodyHtml     String    @db.Text
+  metaTitle    String?
+  metaDescription String?
+
+  page         Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, languageCode])
+  @@map("page_translations")
+}
+
+model Goal {
+  id           String              @id @default(cuid())
+  iconName     String?             // e.g. "shield", "users", "scale"
+  displayOrder Int                 @default(0)
+  createdAt    DateTime            @default(now())
+
+  translations GoalTranslation[]
+
+  @@map("goals")
+}
+
+model GoalTranslation {
+  id           String    @id @default(cuid())
+  goalId       String
+  languageCode String
+  title        String
+  description  String    @db.Text
+  indicators   String?   @db.Text
+
+  goal         Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@unique([goalId, languageCode])
+  @@map("goal_translations")
+}
+
+model Milestone {
+  id           String    @id @default(cuid())
+  eventDate    DateTime  // Month/Year of achievement
+  titleAr      String
+  titleEn      String
+  descriptionAr String?  @db.Text
+  descriptionEn String?  @db.Text
+  badgeType    String?   // e.g. "founding", "project", "partnership"
+  mediaId      String?   // Reference to illustrative photo
+  displayOrder Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  @@map("milestones")
+}
+
+model Office {
+  id           String              @id @default(cuid())
+  slug         String              @unique // e.g. "taiz-hq", "marib-branch", "sanaa-liaison"
+  latitude     Float?
+  longitude    Float?
+  phoneNumber  String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  translations OfficeTranslation[]
+
+  @@map("offices")
+}
+
+model OfficeTranslation {
+  id           String    @id @default(cuid())
+  officeId     String
+  languageCode String
+  name         String    // e.g. "Taiz Central Command Hub" / "مكتب تعز الرئيسي"
+  address      String?
+  description  String?   @db.Text
+
+  office       Office    @relation(fields: [officeId], references: [id], onDelete: Cascade)
+
+  @@unique([officeId, languageCode])
+  @@map("office_translations")
+}
+
+model Partner {
+  id           String               @id @default(cuid())
+  logoAssetId  String?              // Reference to partner logo
+  websiteUrl   String?
+  displayOrder Int                  @default(0)
+  isActive     Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+
+  translations PartnerTranslation[]
+
+  @@map("partners")
+}
+
+model PartnerTranslation {
+  id           String    @id @default(cuid())
+  partnerId    String
+  languageCode String
+  name         String    // e.g. "European Union" / "الاتحاد الأوروبي"
+  description  String?   @db.Text
+
+  partner      Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@unique([partnerId, languageCode])
+  @@map("partner_translations")
+}
+
+model Tag {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  nameAr       String
+  nameEn       String
+  createdAt    DateTime      @default(now())
+
+  contentTags  ContentTag[]
+
+  @@map("tags")
+}
+
+model ContentTag {
+  contentId String
+  tagId     String
+
+  content   ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag       Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, tagId])
+  @@map("content_tags")
+}
+
+// -------------------------------------------------------------
+// CACHE & INFRASTRUCTURE OUTBOX ENTITIES
+// -------------------------------------------------------------
+
+model CacheInvalidationOutbox {
+  id             String         @id @default(cuid())
+  entityType     String         // 'CONTENT_ITEM' | 'PAGE' | 'SETTING' | 'TAXONOMY'
+  entityId       String         // Preserved business identifier for logging & traceability
+  contentId      String?        // Nullable foreign key; SetNull on delete to preserve outbox task
+  eventType      String         // 'PUBLISH' | 'UNPUBLISH' | 'ARCHIVE' | 'UPDATE' | 'DELETE' | 'EMERGENCY_PURGE'
+  paths          String[]       // URL routes queued for ISR revalidation
+  tags           String[]       // Cache tags queued for invalidation
+  status         String         @default("PENDING") // 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
+  attempts       Int            @default(0)
+  maxAttempts    Int            @default(5)
+  nextRetryAt    DateTime       @default(now())
+  lastError      String?        @db.Text
+  idempotencyKey String         @unique // sha256(entityType + entityId + eventType + version)
+  lockedAt       DateTime?      // Optimistic concurrency lease timestamp
+  lockedBy       String?        // Worker/replica identifier holding lease
+  completedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  contentItem    ContentItem?   @relation(fields: [contentId], references: [id], onDelete: SetNull)
+
+  @@index([status, attempts, nextRetryAt])
+  @@index([lockedAt])
+  @@index([createdAt])
+  @@map("cache_invalidation_outbox")
+}
