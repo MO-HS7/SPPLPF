@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:unit": "echo 'Unit tests will be added in Phase 05 TASK-001a' && exit 0",
+    "test:unit": "vitest run",
     "test:integration:smoke": "echo 'Integration smoke tests run in Phase 06 TASK-005a' && exit 0"
   },
   "dependencies": {
@@ -26,6 +26,7 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.7",
     "prisma": "7.1.0",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "vitest": "4.1.12"
   }
 }
