@@ -1,0 +1,156 @@
+name: SPPLPF CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  toolchain-and-unit:
+    name: Toolchain & Unit Validation (Phase 05 Gates)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Verify Reproducible Dependency Installation
+        run: npm ci
+
+      - name: Generate Prisma Client (GATE-01)
+        run: npx prisma generate
+
+      - name: Strict TypeScript Compilation (GATE-02)
+        run: npx tsc --noEmit
+
+      - name: Validate Prisma Relational Schema
+        run: npx prisma validate
+
+      - name: Verify Dry-Run Migration DDL Emitted
+        run: npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script
+
+      - name: Production Application Build (Turbopack)
+        run: npm run build
+
+      - name: Execute Unit Smoke Tests
+        run: npm run test:unit
+
+  datastore-runtime-integration:
+    name: Datastore Runtime & Integration Gate (Phase 06 Gates)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+        env:
+          POSTGRES_DB: spplpf_prod
+          POSTGRES_USER: spplpf_user
+          POSTGRES_PASSWORD: spplpf_ci_db_pass_2026
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U spplpf_user -d spplpf_prod"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: valkey/valkey:8.0.11-alpine@sha256:fd348c9b6999ef15719a1d6b43b810ee1bf2068ded2d7ab6f6dd15943841f28b
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "valkey-cli -a spplpf_ci_redis_pass_2026 ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        entrypoint: >-
+          sh -c '
+            printf "appendonly yes\nrequirepass spplpf_ci_redis_pass_2026\n" > /tmp/valkey.conf &&
+            chmod 0600 /tmp/valkey.conf &&
+            exec valkey-server /tmp/valkey.conf
+          '
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Create CI File-Backed Secrets
+        run: |
+          mkdir -p secrets
+          printf "spplpf_ci_db_pass_2026" > secrets/db_password.txt
+          printf "spplpf_ci_redis_pass_2026" > secrets/redis_password.txt
+          printf "spplpf_ci_session_secret_32bytes_long!" > secrets/session_secret.txt
+          chmod 0600 secrets/*.txt
+
+      - name: Initialize PostgreSQL Required Extensions
+        run: |
+          PGPASSWORD=spplpf_ci_db_pass_2026 psql -h 127.0.0.1 -p 5432 -U spplpf_user -d spplpf_prod -f docker/postgres/init-extensions.sql
+
+      - name: Live PostgreSQL TCP Connectivity & Adapter Verification (GATE-05)
+        run: npx tsx scripts/db-ping.ts
+        env:
+          POSTGRES_HOST: '127.0.0.1'
+          POSTGRES_PORT: '5432'
+          POSTGRES_USER: 'spplpf_user'
+          POSTGRES_DB: 'spplpf_prod'
+
+      - name: Execute Datastore Integration Smoke Tests (GATE-04 & GATE-05)
+        run: npm run test:integration:smoke
+        env:
+          POSTGRES_HOST: '127.0.0.1'
+          POSTGRES_PORT: '5432'
+          POSTGRES_USER: 'spplpf_user'
+          POSTGRES_DB: 'spplpf_prod'
+          REDIS_HOST: '127.0.0.1'
+          REDIS_PORT: '6379'
+
+  security-scan:
+    name: Container Security & Vulnerability Scan (GATE-06)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scan on Valkey
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'valkey/valkey:8.0.11-alpine@sha256:fd348c9b6999ef15719a1d6b43b810ee1bf2068ded2d7ab6f6dd15943841f28b'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Run Trivy vulnerability scan on NGINX
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'nginx:1.30.6-alpine@sha256:970364228b1e4f932abc22d321932816782cca8a20b85a77552a7cfe9acfb3b5'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Run Trivy vulnerability scan on PostgreSQL
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
