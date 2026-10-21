@@ -2412,7 +2412,7 @@ Each phase defines:
 - **Deliverables:** Initialized repository scaffold, `package.json`, `package-lock.json`, `tsconfig.json`, `prisma.config.ts`, `.eslintrc.json`, `docs/stack-versions.lock.md`.
 - **TASK-001a Execution Gate (Toolchain & Static Compatibility Sequence):**
   *Note:* Phase 05 executes the static toolchain validation without depending on Docker Compose files or running containers, which are established in Phase 06.
-  1. **Scaffold Initialization (PowerShell / Bash):** Author initial `package.json` with concrete pinned package versions (`next@16.4.2`, `react@19.2.9`, `react-dom@19.2.9`, `typescript@5.8.2`, `prisma@7.1.0`), `.npmrc`, strict `tsconfig.json`, and `prisma.config.ts`.
+  1. **Scaffold Initialization (PowerShell / Bash):** Author initial `package.json` with concrete pinned package versions (`next@16.4.2`, `react@19.2.7`, `react-dom@19.2.7`, `typescript@5.8.2`, `prisma@7.1.0`), `.npmrc`, strict `tsconfig.json`, and `prisma.config.ts`.
   2. **Reviewed Dependency Installation (PowerShell / Bash):**
      `npm install`
      *Policy:* Generates and commits verified `package-lock.json`. In all subsequent clean-environment validations and CI pipelines, `npm ci` is strictly executed.
@@ -2423,7 +2423,7 @@ Each phase defines:
      `npx tsc --noEmit`
      *Policy:* Compiles in strict mode (`"strict": true`). Standardizes on primary pinned version **TypeScript 5.8.2**; if driver adapter integration issues arise, fallback to pinned **TypeScript 5.7.3**.
   5. **Prisma Schema Validation & Dry-Run Migration (PowerShell / Bash):**
-     `npx prisma validate && npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script`
+     `npx prisma validate && npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script`
      *Validation:* Validates all 33 relational models without executing database writes.
   6. **Production Application Build (PowerShell / Bash):**
      `npm run build`
@@ -2748,7 +2748,7 @@ Upon formal approval of this **V1.5 Final Plan Closure Patch**, the project tran
    │
    ├── Step 2: Establish Repository Scaffold & Dependency Lockfile (TASK-001):
    │           - Create repository directory structure.
-   │           - Author initial package.json with concrete pinned dependencies (next@16.4.2, react@19.2.9, react-dom@19.2.9, typescript@5.8.2, prisma@7.1.0); commit lockfile and use npm ci for subsequent validation.
+   │           - Author initial package.json with concrete pinned dependencies (next@16.4.2, react@19.2.7, react-dom@19.2.7, typescript@5.8.2, prisma@7.1.0); commit lockfile and use npm ci for subsequent validation.
    │           - Author .npmrc, tsconfig.json (strict mode), and prisma.config.ts.
    │           - Execute reviewed 'npm install' to generate verified package-lock.json.
    │           - Configure ESLint 9, Prettier, and Husky pre-commit hooks.
@@ -2758,7 +2758,7 @@ Upon formal approval of this **V1.5 Final Plan Closure Patch**, the project tran
    │           2. Generate Prisma Client FIRST: npx prisma generate (creates ../src/generated/prisma-client).
    │           3. Strict compilation: npx tsc --noEmit (TS 5.8.2; fallback TS 5.7.3).
    │           4. Schema validation: npx prisma validate.
-   │           5. Dry-run migration: npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script.
+   │           5. Dry-run migration: npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script.
    │           6. Production Next.js build validation: npm run build.
    │           7. Unit smoke test execution: npm run test:unit.
    │           Lock verified versions in docs/stack-versions.lock.md.

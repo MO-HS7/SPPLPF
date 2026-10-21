@@ -1,8 +1,8 @@
 # SPPLPF Verified Toolchain Stack Versions Lock
 
-**Substantiated:** 20 October 2026  
+**Substantiated:** 21 October 2026  
 **Environment:** Windows Node.js v22.13+ / PowerShell  
-**Phase 05 Compatibility Gate (TASK-001a):** PASSED (7/7 gates verified with Exit Code 0)
+**Phase 05 Compatibility Gate (TASK-001a):** PASSED (Clean `npm ci` + 7/7 static gates verified with Exit Code 0)
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Package | Pinned Version | Lockfile Version | Verification Status |
 |:---|:---|:---|:---|
-| `next` | `16.4.2` | `16.4.2` | Production build verified (`Turbopack`) |
+| `next` | `16.4.2` | `16.4.2` | Production build verified (`Turbopack` static prerender) |
 | `react` | `19.2.7` | `19.2.7` | Peer dependency validated |
 | `react-dom` | `19.2.7` | `19.2.7` | Peer dependency validated |
 | `typescript` | `5.8.2` | `5.8.2` | Strict mode check passed (`tsc --noEmit`) |
@@ -27,21 +27,29 @@
 
 ---
 
-## 2. Phase 05 Compatibility Gate Execution Log
+## 2. Phase 05 Clean Installation & Compatibility Gate Execution Log
 
-1. **Scaffold & Lockfile:** `package-lock.json` generated and verified via `npm install` (192 packages audited).
-2. **Prisma Client Generation:** `npx prisma generate` generated client into `./src/generated/prisma-client` in 178ms.
-3. **Strict TypeScript Compilation:** `npx tsc --noEmit` executed with zero errors.
-4. **Schema Validation:** `npx prisma validate` validated all 33 relational models.
-5. **Dry-Run Migration DDL:** `npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script` successfully emitted all tables, indexes, and constraints.
-6. **Production Application Build:** `npm run build` compiled static Next.js App Router bundle in 495ms.
-7. **Unit Smoke Tests:** `npm run test:unit` (Vitest) executed 3 tests with 100% pass in 328ms.
+1. **Reproducible Installation (`npm ci`):** Executed clean installation against committed `package-lock.json`. Added 254 packages, audited 255 packages with Exit Code 0.
+2. **Prisma Client Generation (`npx prisma generate`):** Generated Prisma Client (7.1.0) into `./src/generated/prisma-client` in 237ms (Exit Code 0).
+3. **Strict TypeScript Compilation (`npx tsc --noEmit`):** Executed full project typecheck in strict mode (`"strict": true`) with zero errors (Exit Code 0).
+4. **Schema Validation (`npx prisma validate`):** Successfully validated all 33 relational models against Prisma 7 syntax rules (Exit Code 0).
+5. **Dry-Run Migration DDL (`npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script`):** Generated full PostgreSQL SQL DDL schema without connecting to or mutating a live database (Exit Code 0).
+6. **Production Application Build (`npm run build`):** Compiled Next.js 16.4.2 App Router bundle via Turbopack in 2.3s; static routes `/` and `/_not-found` prerendered with zero errors (Exit Code 0). Note: Current scaffold contains no application or website feature code.
+7. **Unit Smoke Tests (`npm run test:unit`):** Vitest 4.1.12 executed 3 unit tests in `tests/unit/smoke.test.ts` (Prisma Client instantiation, SHA256 outbox idempotency hashing, Arabic RTL default locale) with 100% pass in 6ms (Exit Code 0).
 
 ---
 
-## 3. Pending Implementation Gates (Phase 06)
+## 3. Test-Script Integrity Verification
+
+* **Unit Tests (`test:unit`):** Real Vitest suite verifying unit-level logic.
+* **Integration Smoke Tests (`test:integration:smoke`):** Explicit placeholder (`echo ... && exit 0`). This script does NOT execute integration tests or verify live datastore connectivity. Full containerized integration testing is strictly scheduled for Phase 06 (**TASK-005a**).
+
+---
+
+## 4. Pending Implementation Gates (Phase 06)
 
 * **GATE-03 (Docker Compose Orchestration):** Scheduled for Phase 06 (**TASK-005**).
 * **GATE-04 (Valkey Non-Root Healthcheck):** Scheduled for Phase 06 (**TASK-005a**).
 * **GATE-05 (Live PostgreSQL Socket Connectivity via `db-ping.ts`):** Scheduled for Phase 06 (**TASK-005a**).
 * **GATE-06 (Trivy Container Vulnerability Scan):** Scheduled for Phase 06 (**TASK-005**).
+

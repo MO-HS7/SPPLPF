@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test:unit": "vitest run",
-    "test:integration:smoke": "echo 'Integration smoke tests run in Phase 06 TASK-005a' && exit 0"
+    "test:integration:smoke": "echo 'Phase 06 TASK-005a placeholder: Integration smoke tests require containerized PostgreSQL and Valkey datastores' && exit 0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.1.0",

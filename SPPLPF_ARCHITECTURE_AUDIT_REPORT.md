@@ -184,7 +184,7 @@ Upon formal executive sign-off on **SPPLPF-ENG-PLAN-V1.5**, the engineering team
 ```powershell
 # 1. Establish Repository Scaffold & Concrete Pinned Dependencies (Phase 05, TASK-001)
 # Create directory structure and author package.json with concrete pinned versions:
-# next@16.4.2, react@19.2.9, react-dom@19.2.9, typescript@5.8.2, prisma@7.1.0
+# next@16.4.2, react@19.2.7, react-dom@19.2.7, typescript@5.8.2, prisma@7.1.0
 npm install
 # Commit generated package-lock.json; enforce 'npm ci' for all clean-environment validations
 
@@ -192,7 +192,7 @@ npm install
 npx prisma generate
 npx tsc --noEmit
 npx prisma validate
-npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script
+npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script
 npm run build
 npm run test:unit
 
