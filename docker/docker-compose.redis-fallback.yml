@@ -1,0 +1,28 @@
+# docker/docker-compose.redis-fallback.yml
+# Compose override file applied if Legal/Donor Compliance mandates official Redis under OQ-007.
+
+services:
+  redis:
+    image: redis:7.4.11-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
+    container_name: spplpf_redis
+    user: "999:999"
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    command: >
+      sh -c '
+        umask 0077 &&
+        printf "appendonly yes\ndir /data\nrequirepass %s\n" "$$(cat /run/secrets/redis_password)" > /tmp/redis.conf &&
+        chmod 0600 /tmp/redis.conf &&
+        exec redis-server /tmp/redis.conf
+      '
+    secrets:
+      - source: redis_password
+        target: redis_password
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$$(cat /run/secrets/redis_password) redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

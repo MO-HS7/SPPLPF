@@ -1,0 +1,133 @@
+# docker/docker-compose.yml
+# Alternative location for Docker Compose orchestration
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: runner
+    container_name: spplpf_app
+    user: "1001:1001"
+    group_add:
+      - "1051" # spplpf-db-secrets
+      - "1052" # spplpf-redis-secrets
+      - "1053" # spplpf-session-secrets
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    secrets:
+      - source: db_password
+        target: db_password
+      - source: redis_password
+        target: redis_password
+      - source: session_secret
+        target: session_secret
+    environment:
+      - NODE_ENV=production
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=spplpf_prod
+      - POSTGRES_USER=spplpf_user
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - STORAGE_LOCAL_PATH=/var/data/spplpf/media
+    volumes:
+      - media_storage:/var/data/spplpf/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal_net
+
+  postgres:
+    image: postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    container_name: spplpf_postgres
+    user: "70:70"
+    group_add:
+      - "1051" # spplpf-db-secrets
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    secrets:
+      - source: db_password
+        target: db_password
+    environment:
+      - POSTGRES_DB=spplpf_prod
+      - POSTGRES_USER=spplpf_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init-extensions.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spplpf_user -d spplpf_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal_net
+
+  redis:
+    image: valkey/valkey:8.0.11-alpine@sha256:fd348c9b6999ef15719a1d6b43b810ee1bf2068ded2d7ab6f6dd15943841f28b
+    container_name: spplpf_redis
+    user: "999:999"
+    group_add:
+      - "1052" # spplpf-redis-secrets
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    command: >
+      sh -c '
+        umask 0077 &&
+        printf "appendonly yes\ndir /data\nrequirepass %s\n" "$$(cat /run/secrets/redis_password)" > /tmp/valkey.conf &&
+        chmod 0600 /tmp/valkey.conf &&
+        exec valkey-server /tmp/valkey.conf
+      '
+    secrets:
+      - source: redis_password
+        target: redis_password
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$$(cat /run/secrets/redis_password) valkey-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal_net
+
+  nginx:
+    image: nginx:1.30.6-alpine@sha256:970364228b1e4f932abc22d321932816782cca8a20b85a77552a7cfe9acfb3b5
+    container_name: spplpf_nginx
+    user: "101:101"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - media_storage:/var/data/spplpf/media:ro
+    depends_on:
+      - app
+    networks:
+      - internal_net
+
+secrets:
+  db_password:
+    file: ../secrets/db_password.txt
+  redis_password:
+    file: ../secrets/redis_password.txt
+  session_secret:
+    file: ../secrets/session_secret.txt
+
+volumes:
+  postgres_data:
+  redis_data:
+  media_storage:
+
+networks:
+  internal_net:
+    driver: bridge
