@@ -4,9 +4,17 @@ on:
   push:
     branches:
       - main
+      - 'ci/**'
+      - 'security/**'
+      - 'feat/**'
+      - 'test/**'
+      - 'fix/**'
   pull_request:
     branches:
       - main
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,7 +34,7 @@ jobs:
           node-version: 22
           cache: 'npm'
 
-      - name: Verify Reproducible Dependency Installation
+      - name: Verify Reproducible Dependency Installation (npm ci)
         run: npm ci
 
       - name: Generate Prisma Client (GATE-01)
@@ -50,37 +58,6 @@ jobs:
   datastore-runtime-integration:
     name: Datastore Runtime & Integration Gate (Phase 06 Gates)
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
-        env:
-          POSTGRES_DB: spplpf_prod
-          POSTGRES_USER: spplpf_user
-          POSTGRES_PASSWORD: spplpf_ci_db_pass_2026
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U spplpf_user -d spplpf_prod"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: valkey/valkey:8.0.11-alpine@sha256:fd348c9b6999ef15719a1d6b43b810ee1bf2068ded2d7ab6f6dd15943841f28b
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "valkey-cli -a spplpf_ci_redis_pass_2026 ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        entrypoint: >-
-          sh -c '
-            printf "appendonly yes\nrequirepass spplpf_ci_redis_pass_2026\n" > /tmp/valkey.conf &&
-            chmod 0600 /tmp/valkey.conf &&
-            exec valkey-server /tmp/valkey.conf
-          '
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -91,13 +68,13 @@ jobs:
           node-version: 22
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install dependencies (npm ci)
         run: npm ci
 
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Create CI File-Backed Secrets
+      - name: Establish Ephemeral File-Backed Secrets
         run: |
           mkdir -p secrets
           printf "spplpf_ci_db_pass_2026" > secrets/db_password.txt
@@ -105,11 +82,18 @@ jobs:
           printf "spplpf_ci_session_secret_32bytes_long!" > secrets/session_secret.txt
           chmod 0600 secrets/*.txt
 
-      - name: Initialize PostgreSQL Required Extensions
+      - name: Start Datastores via Docker Compose (PostgreSQL 17 & Valkey 8)
         run: |
-          PGPASSWORD=spplpf_ci_db_pass_2026 psql -h 127.0.0.1 -p 5432 -U spplpf_user -d spplpf_prod -f docker/postgres/init-extensions.sql
+          docker compose up -d postgres redis
+          # Await healthy state
+          timeout 60s sh -c 'until [ "$$(docker compose ps -q postgres | xargs docker inspect -f \"{{.State.Health.Status}}\" 2>/dev/null)" = "healthy" ] && [ "$$(docker compose ps -q redis | xargs docker inspect -f \"{{.State.Health.Status}}\" 2>/dev/null)" = "healthy" ]; do echo "Waiting for datastores to report healthy..."; sleep 2; done'
+          docker compose ps
 
-      - name: Live PostgreSQL TCP Connectivity & Adapter Verification (GATE-05)
+      - name: Verify Valkey Non-Root User & Authenticated Ping (GATE-04)
+        run: |
+          docker compose exec -T redis sh -c 'id; REDISCLI_AUTH=$$(cat /run/secrets/redis_password) valkey-cli ping; ls -la /tmp/valkey.conf'
+
+      - name: Live PostgreSQL Socket Query & Driver Adapter (GATE-05)
         run: npx tsx scripts/db-ping.ts
         env:
           POSTGRES_HOST: '127.0.0.1'
@@ -117,7 +101,7 @@ jobs:
           POSTGRES_USER: 'spplpf_user'
           POSTGRES_DB: 'spplpf_prod'
 
-      - name: Execute Datastore Integration Smoke Tests (GATE-04 & GATE-05)
+      - name: Execute Datastore Integration Smoke Tests (Valkey & PostgreSQL)
         run: npm run test:integration:smoke
         env:
           POSTGRES_HOST: '127.0.0.1'
@@ -127,6 +111,18 @@ jobs:
           REDIS_HOST: '127.0.0.1'
           REDIS_PORT: '6379'
 
+      - name: Verify Redis Fallback Override Runtime (OQ-007)
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.redis-fallback.yml up -d redis
+          timeout 60s sh -c 'until [ "$$(docker compose ps -q redis | xargs docker inspect -f \"{{.State.Health.Status}}\" 2>/dev/null)" = "healthy" ]; do echo "Waiting for Redis fallback healthy..."; sleep 2; done'
+          docker compose exec -T redis sh -c 'id; REDISCLI_AUTH=$$(cat /run/secrets/redis_password) redis-cli ping; ls -la /tmp/redis.conf'
+          npm run test:integration:smoke
+          docker compose up -d redis
+
+      - name: Datastore Stack Teardown
+        if: always()
+        run: docker compose down -v
+
   security-scan:
     name: Container Security & Vulnerability Scan (GATE-06)
     runs-on: ubuntu-latest
@@ -134,23 +130,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run Trivy vulnerability scan on Valkey
-        uses: aquasecurity/trivy-action@master
+      - name: Run Trivy vulnerability scan on Valkey (Default Cache)
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           image-ref: 'valkey/valkey:8.0.11-alpine@sha256:fd348c9b6999ef15719a1d6b43b810ee1bf2068ded2d7ab6f6dd15943841f28b'
           format: 'table'
           severity: 'CRITICAL,HIGH'
+          exit-code: '1'
 
-      - name: Run Trivy vulnerability scan on NGINX
-        uses: aquasecurity/trivy-action@master
+      - name: Run Trivy vulnerability scan on Redis (Fallback Cache)
+        if: always()
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          image-ref: 'redis:7.4.11-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - name: Run Trivy vulnerability scan on NGINX (Reverse Proxy)
+        if: always()
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           image-ref: 'nginx:1.30.6-alpine@sha256:970364228b1e4f932abc22d321932816782cca8a20b85a77552a7cfe9acfb3b5'
           format: 'table'
           severity: 'CRITICAL,HIGH'
+          exit-code: '1'
 
-      - name: Run Trivy vulnerability scan on PostgreSQL
-        uses: aquasecurity/trivy-action@master
+      - name: Run Trivy vulnerability scan on PostgreSQL (Relational Database)
+        if: always()
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           image-ref: 'postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24'
           format: 'table'
           severity: 'CRITICAL,HIGH'
+          exit-code: '1'
