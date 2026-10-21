@@ -34,7 +34,7 @@ RUN addgroup --system --gid 1001 nodejs && \
     addgroup nextjs spplpf-redis-secrets && \
     addgroup nextjs spplpf-session-secrets
 
-COPY --from=builder /app/public ./public 2>/dev/null || true
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
