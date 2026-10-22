@@ -137,6 +137,7 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
+          trivyignores: '.trivyignore'
 
       - name: Run Trivy vulnerability scan on Redis (Fallback Cache)
         if: always()
@@ -146,6 +147,7 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
+          trivyignores: '.trivyignore'
 
       - name: Run Trivy vulnerability scan on NGINX (Reverse Proxy)
         if: always()
@@ -155,6 +157,7 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
+          trivyignores: '.trivyignore'
 
       - name: Run Trivy vulnerability scan on PostgreSQL (Relational Database)
         if: always()
@@ -164,3 +167,4 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
+          trivyignores: '.trivyignore'

@@ -1,0 +1,48 @@
+# SPPLPF Trivy Vulnerability Exception Configuration
+# Reference: docs/security/vulnerability-triage-register.md
+# Policy: Blanket ignore rules are strictly forbidden. Every entry must declare
+# CVE ID, affected component, applicability rationale, owner, and review expiry date.
+
+# -----------------------------------------------------------------------------
+# CVE-2026-56857
+# Component: Go standard library os/internal/syscall/windows in /usr/local/bin/gosu (postgres:17.11-alpine)
+# Severity: CRITICAL
+# Finding Type: Non-applicable OS component
+# Applicability Evidence: Windows directory junction flaw; internal/syscall/windows is not compiled into or reachable in Linux ELF binary.
+# Owner: security-team@spplpf
+# Expiry: 2026-12-31
+# -----------------------------------------------------------------------------
+CVE-2026-56857
+
+# -----------------------------------------------------------------------------
+# CVE-2026-39821
+# Component: golang.org/x/net/idna flagged against /usr/local/bin/gosu (postgres:17.11-alpine)
+# Severity: CRITICAL
+# Finding Type: Unimported sub-repository package
+# Applicability Evidence: Punycode normalization flaw in x/net/idna. gosu source code only invokes syscall setuid/setgid/execvp and does not import x/net/idna.
+# Owner: security-team@spplpf
+# Expiry: 2026-12-31
+# -----------------------------------------------------------------------------
+CVE-2026-39821
+
+# -----------------------------------------------------------------------------
+# CVE-2025-68121
+# Component: Go crypto/tls in /usr/local/bin/gosu (postgres:17.11-alpine)
+# Severity: CRITICAL
+# Finding Type: Dead code path
+# Applicability Evidence: TLS certificate authority session resumption flaw. gosu does not establish network connections or perform TLS handshakes.
+# Owner: security-team@spplpf
+# Expiry: 2026-12-31
+# -----------------------------------------------------------------------------
+CVE-2025-68121
+
+# -----------------------------------------------------------------------------
+# CVE-2026-78663
+# Component: Go net/http HTTP/2 server in /usr/local/bin/gosu (postgres:17.11-alpine)
+# Severity: CRITICAL
+# Finding Type: Dead code path
+# Applicability Evidence: HTTP/2 server flow control double refund. gosu does not listen on sockets or serve HTTP requests.
+# Owner: security-team@spplpf
+# Expiry: 2026-12-31
+# -----------------------------------------------------------------------------
+CVE-2026-78663
