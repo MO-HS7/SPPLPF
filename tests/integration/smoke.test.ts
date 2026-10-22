@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../../src/generated/prisma-client';
 import Redis from 'ioredis';
 
 function getDbPassword(): string {
@@ -71,7 +72,7 @@ describe('Phase 06 Datastore Runtime Integration Smoke Tests (GATE-04 & GATE-05)
     const res = await pgPool.query('SELECT 1 AS connected, current_database() AS db, version() AS version;');
     expect(res.rows).toHaveLength(1);
     expect(res.rows[0].connected).toBe(1);
-    expect(res.rows[0].db).toBe('spplpf_prod');
+    expect(res.rows[0].db).toBe(process.env.POSTGRES_DB || 'spplpf_prod');
     expect(res.rows[0].version).toMatch(/PostgreSQL 17/i);
 
     // Verify pg_trgm extension was installed by docker-entrypoint-initdb.d
@@ -84,6 +85,28 @@ describe('Phase 06 Datastore Runtime Integration Smoke Tests (GATE-04 & GATE-05)
     const adapter = new PrismaPg(pgPool);
     expect(adapter).toBeDefined();
     expect(adapter.adapterName).toBe('@prisma/adapter-pg');
+  });
+
+  it('queries seeded roles and permissions through PrismaClient and adapter', async () => {
+    const targetDb = process.env.POSTGRES_DB || 'spplpf_prod';
+    if (targetDb === 'spplpf_dev') {
+      const adapter = new PrismaPg({
+        host: process.env.POSTGRES_HOST || '127.0.0.1',
+        port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
+        user: process.env.POSTGRES_USER || 'spplpf_user',
+        database: targetDb,
+        password: getDbPassword(),
+      });
+      const prisma = new PrismaClient({ adapter });
+      try {
+        const roles = await prisma.role.findMany({ include: { permissions: true } });
+        expect(roles.length).toBe(4);
+        const permissions = await prisma.permission.findMany();
+        expect(permissions.length).toBe(12);
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
   });
 
   it('connects to Valkey/Redis cache datastore and executes authenticated read/write', async () => {
