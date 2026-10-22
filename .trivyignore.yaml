@@ -1,0 +1,62 @@
+# SPPLPF Trivy Scoped Vulnerability Exceptions
+# Authorized Security Owner: Mohannad Hassan (@MO-HS7 <mohannad.hassan@spplpf.internal>)
+# Reference Policy: docs/security/vulnerability-triage-register.md
+#
+# POLICY MANDATE:
+# 1. Blanket or global ignore rules are strictly prohibited.
+# 2. Every entry must be explicitly scoped via 'paths' to an exact inspected component.
+# 3. No shared OS libraries or Alpine system packages may be ignored here.
+# 4. Each exception must define an expiry date and authoritative justification statement.
+
+vulnerabilities:
+  # ---------------------------------------------------------------------------
+  # CVE-2026-56857
+  # Component: Go standard library os/internal/syscall/windows in /usr/local/bin/gosu
+  # Severity: CRITICAL
+  # Scope: Path-scoped exclusively to /usr/local/bin/gosu
+  # ---------------------------------------------------------------------------
+  - id: "CVE-2026-56857"
+    paths:
+      - "usr/local/bin/gosu"
+      - "/usr/local/bin/gosu"
+    statement: "Windows directory junction flaw in os/internal/syscall/windows; completely absent and unreachable in Linux ELF binary /usr/local/bin/gosu."
+    expired_at: "2026-12-31"
+
+  # ---------------------------------------------------------------------------
+  # CVE-2026-39821
+  # Component: golang.org/x/net/idna flagged against /usr/local/bin/gosu
+  # Severity: CRITICAL
+  # Scope: Path-scoped exclusively to /usr/local/bin/gosu
+  # ---------------------------------------------------------------------------
+  - id: "CVE-2026-39821"
+    paths:
+      - "usr/local/bin/gosu"
+      - "/usr/local/bin/gosu"
+    statement: "Punycode normalization flaw in unimported sub-repository golang.org/x/net/idna; gosu source code only calls syscall setuid/setgid/execvp."
+    expired_at: "2026-12-31"
+
+  # ---------------------------------------------------------------------------
+  # CVE-2025-68121
+  # Component: Go crypto/tls in /usr/local/bin/gosu
+  # Severity: CRITICAL
+  # Scope: Path-scoped exclusively to /usr/local/bin/gosu
+  # ---------------------------------------------------------------------------
+  - id: "CVE-2025-68121"
+    paths:
+      - "usr/local/bin/gosu"
+      - "/usr/local/bin/gosu"
+    statement: "Dead code in /usr/local/bin/gosu; gosu contains zero network sockets or TLS routines."
+    expired_at: "2026-12-31"
+
+  # ---------------------------------------------------------------------------
+  # CVE-2026-78663
+  # Component: Go net/http HTTP/2 server in /usr/local/bin/gosu
+  # Severity: CRITICAL
+  # Scope: Path-scoped exclusively to /usr/local/bin/gosu
+  # ---------------------------------------------------------------------------
+  - id: "CVE-2026-78663"
+    paths:
+      - "usr/local/bin/gosu"
+      - "/usr/local/bin/gosu"
+    statement: "Dead code in /usr/local/bin/gosu; gosu does not listen on sockets or run an HTTP/2 server."
+    expired_at: "2026-12-31"

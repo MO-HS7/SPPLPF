@@ -130,6 +130,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies (npm ci)
+        run: npm ci
+
+      - name: Validate Scoped Exception Policy (.trivyignore.yaml)
+        run: npx tsx scripts/validate-security-exceptions.ts
+
       - name: Run Trivy vulnerability scan on Valkey (Default Cache)
         uses: aquasecurity/trivy-action@0.29.0
         with:
@@ -137,7 +149,7 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
-          trivyignores: '.trivyignore'
+          trivyignores: '.trivyignore.yaml'
 
       - name: Run Trivy vulnerability scan on Redis (Fallback Cache)
         if: always()
@@ -147,7 +159,7 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
-          trivyignores: '.trivyignore'
+          trivyignores: '.trivyignore.yaml'
 
       - name: Run Trivy vulnerability scan on NGINX (Reverse Proxy)
         if: always()
@@ -157,7 +169,7 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
-          trivyignores: '.trivyignore'
+          trivyignores: '.trivyignore.yaml'
 
       - name: Run Trivy vulnerability scan on PostgreSQL (Relational Database)
         if: always()
@@ -167,4 +179,4 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
-          trivyignores: '.trivyignore'
+          trivyignores: '.trivyignore.yaml'
