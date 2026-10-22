@@ -143,8 +143,9 @@ jobs:
         run: npx tsx scripts/validate-security-exceptions.ts
 
       - name: Run Trivy vulnerability scan on Valkey (Default Cache)
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
         with:
+          version: 'v0.70.0'
           image-ref: 'valkey/valkey:8.0.11-alpine@sha256:fd348c9b6999ef15719a1d6b43b810ee1bf2068ded2d7ab6f6dd15943841f28b'
           format: 'table'
           severity: 'CRITICAL,HIGH'
@@ -153,8 +154,9 @@ jobs:
 
       - name: Run Trivy vulnerability scan on Redis (Fallback Cache)
         if: always()
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
         with:
+          version: 'v0.70.0'
           image-ref: 'redis:7.4.11-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499'
           format: 'table'
           severity: 'CRITICAL,HIGH'
@@ -163,8 +165,9 @@ jobs:
 
       - name: Run Trivy vulnerability scan on NGINX (Reverse Proxy)
         if: always()
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
         with:
+          version: 'v0.70.0'
           image-ref: 'nginx:1.30.6-alpine@sha256:970364228b1e4f932abc22d321932816782cca8a20b85a77552a7cfe9acfb3b5'
           format: 'table'
           severity: 'CRITICAL,HIGH'
@@ -173,8 +176,9 @@ jobs:
 
       - name: Run Trivy vulnerability scan on PostgreSQL (Relational Database)
         if: always()
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
         with:
+          version: 'v0.70.0'
           image-ref: 'postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24'
           format: 'table'
           severity: 'CRITICAL,HIGH'

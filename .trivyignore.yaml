@@ -1,5 +1,6 @@
 # SPPLPF Trivy Scoped Vulnerability Exceptions
-# Authorized Security Owner: Mohannad Hassan (@MO-HS7 <mohannad.hassan@spplpf.internal>)
+# Accountable Security Owner: Mohannad Hassan (GitHub: @MO-HS7)
+# Authorization Status: Scoped non-applicability exceptions pending project-owner review and PR approval
 # Reference Policy: docs/security/vulnerability-triage-register.md
 #
 # POLICY MANDATE:
@@ -14,6 +15,7 @@ vulnerabilities:
   # Component: Go standard library os/internal/syscall/windows in /usr/local/bin/gosu
   # Severity: CRITICAL
   # Scope: Path-scoped exclusively to /usr/local/bin/gosu
+  # Disposition: Accepted non-applicable finding (Windows-specific junction flaw)
   # ---------------------------------------------------------------------------
   - id: "CVE-2026-56857"
     paths:
@@ -27,6 +29,7 @@ vulnerabilities:
   # Component: golang.org/x/net/idna flagged against /usr/local/bin/gosu
   # Severity: CRITICAL
   # Scope: Path-scoped exclusively to /usr/local/bin/gosu
+  # Disposition: Accepted non-applicable finding (Unimported sub-repository package)
   # ---------------------------------------------------------------------------
   - id: "CVE-2026-39821"
     paths:
@@ -40,6 +43,7 @@ vulnerabilities:
   # Component: Go crypto/tls in /usr/local/bin/gosu
   # Severity: CRITICAL
   # Scope: Path-scoped exclusively to /usr/local/bin/gosu
+  # Disposition: Accepted non-applicable finding (Dead code path)
   # ---------------------------------------------------------------------------
   - id: "CVE-2025-68121"
     paths:
@@ -53,6 +57,7 @@ vulnerabilities:
   # Component: Go net/http HTTP/2 server in /usr/local/bin/gosu
   # Severity: CRITICAL
   # Scope: Path-scoped exclusively to /usr/local/bin/gosu
+  # Disposition: Accepted non-applicable finding (Dead code path)
   # ---------------------------------------------------------------------------
   - id: "CVE-2026-78663"
     paths:
