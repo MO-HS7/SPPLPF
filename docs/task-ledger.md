@@ -22,7 +22,19 @@
 | **Phase 08 (Part 2)** | Session Management (TASK-011) | HttpOnly signed cookie lifecycle, 8h absolute expiry, Redis session invalidation, one-way token hashing | **DONE** | [`src/lib/auth/session.ts`](file:///e:/SPPLPF/src/lib/auth/session.ts), [`src/lib/redis.ts`](file:///e:/SPPLPF/src/lib/redis.ts), 27 unit tests, 9 integration tests |
 | **Phase 08 (Part 3)** | Rate Limiting (TASK-012) | Redis sliding-window limiter on login endpoints (5 attempts/15m), 30m account lockout | **DONE** | [`src/lib/auth/rate-limiter.ts`](file:///e:/SPPLPF/src/lib/auth/rate-limiter.ts), [`src/lib/auth/service.ts`](file:///e:/SPPLPF/src/lib/auth/service.ts), 18 unit tests, 7 integration tests |
 | **Phase 08 (Part 4)** | Granular RBAC Engine (TASK-013/014) | Dynamic permission resolution, server-side guards, deny-by-default | **DONE** | [`src/lib/auth/rbac.ts`](file:///e:/SPPLPF/src/lib/auth/rbac.ts), 14 unit tests, 9 integration tests |
-| **Phase 09** | Content Management & Workflows | Editorial pipeline (DRAFT -> IN_REVIEW -> PUBLISHED) | *PENDING* | Scheduled next |
+| **Frontend Prototype Sprint** | Complete Bilingual UI Prototype (Phases 09–11, 13 UI) | Institutional Design System (`tokens.css`, `globals.css`), i18n engine (`ar`/`en`), 16 public routes, 14 admin dashboard routes, reactive demo store | **PROTOTYPED (UI-FIRST)** | Turbopack build passes (33 routes), 86 unit tests pass. Backend APIs, production auth bridge, and DB mutations remain pending in canonical phases. |
+| **Phase 09** | Shared Design System & I18N Engine | CSS token architecture, RTL/LTR engine, web fonts, base UI primitives | *PROTOTYPED* | Prototyped in UI sprint; final production font & asset bundle pending |
+| **Phase 10** | Public Website Foundation & Home Portal | Public bilingual layout, header, footer, dynamic home portal | *PROTOTYPED* | Fully interactive in prototype; live API integration pending Phase 12 |
+| **Phase 11** | Public Thematic Pages & Catalogues | About, Values, Goals, Milestones, Programs, News, Publications, Presence, Contact | *PROTOTYPED* | Interactive demo catalog; live data persistence pending Phase 12 |
+| **Phase 12** | Backend API Handlers & Domain Services | RESTful `/api/v1/...` route handlers, Zod parsing, audit logging | *PENDING* | Scheduled next for backend integration |
+| **Phase 13** | Admin Dashboard Shell & Auth Bridge | Authenticated admin shell, route guards, session bridge | *PROTOTYPED (UI)* | Protected UI shell built; backend cookie session bridge pending Phase 12 |
+| **Phase 14** | Editorial Workflow & Content Editor | Multi-stage editorial state machine, Tiptap editor, review queue | *PENDING (PROTOTYPED)* | UI state transitions simulated in demo store; DB persistence pending Phase 12 |
+| **Phase 15** | Media Pipeline, Search & Outbox Worker | Sharp pipeline, trigram search, cache invalidation outbox | *PENDING* | Scheduled |
+| **Phase 16** | Contact Dispatcher & Inquiry Gateway | Honeypot verification, email dispatcher, DB persistence | *PENDING (PROTOTYPED)* | Form & validation prototyped; SMTP dispatch pending Phase 12 |
+| **Phase 17** | Comprehensive QA, E2E & A11y Audits | Playwright suites, WCAG 2.2 AA audits | *PENDING* | Scheduled |
+| **Phase 18** | Security Hardening & Penetration Testing | ASVS Level 2 audit, ZAP dynamic scans, hardened headers | *PENDING* | Scheduled |
+| **Phase 19** | Staging Deployment & Stakeholder UAT | Staging VPS, live 60s emergency takedown drill, sign-off | *PENDING* | Gated |
+| **Phase 20** | Production Launch & Handover Runbooks | Production deployment runbook, legal/donor sign-off on Valkey | *PENDING* | Strictly gated |
 
 ---
 
@@ -127,6 +139,41 @@
 - **Tests:**
   - 14 unit tests in [`tests/unit/auth/rbac.test.ts`](file:///e:/SPPLPF/tests/unit/auth/rbac.test.ts) (deny-by-default, deduplication, fail-closed, conjunction, disjunction, session guards, cookie extraction).
   - 9 integration tests in [`tests/integration/rbac.test.ts`](file:///e:/SPPLPF/tests/integration/rbac.test.ts) (all 4 seeded roles, unassigned users, real-time dynamic role changes, live session cookies, inactive/locked users, revoked sessions).
+
+### 2.7. Complete Institutional Frontend Prototype Sprint (Phases 09–11, 13 UI)
+- **Status:** Complete & validated via Next.js Turbopack production build & Vitest test suite.
+- **Scope:** Full-featured, bilingual (Arabic-first & English), user-visible prototype of the public portal (16 routes) and administrative dashboard (14 routes) to allow stakeholder demonstration and information architecture review ahead of backend integration.
+- **Deliverables:**
+  - **Design System & Styling:** [`src/styles/tokens.css`](file:///e:/SPPLPF/src/styles/tokens.css), [`src/styles/globals.css`](file:///e:/SPPLPF/src/styles/globals.css). Institutional navy (`#0f4c81`), azure (`#009fe3`), warm gold (`#d97706`), slate neutrals, CSS logical properties for seamless bi-directional layout.
+  - **Localization Engine:** [`src/lib/i18n/`](file:///e:/SPPLPF/src/lib/i18n/). Bilingual dictionaries, path switching helper, and auto-synchronizing `DirectionSync` component dynamically updating `html.dir` and `html.lang`.
+  - **Accessible UI Library:** [`src/components/ui/`](file:///e:/SPPLPF/src/components/ui/). 14 accessible components (`Button`, `Card`, `Badge`, `Input`, `Textarea`, `Select`, `FormField`, `Alert`, `Modal`, `Tabs`, `Accordion`, `Pagination`, `Table`, `EmptyState`) plus dedicated SVG icon set in [`src/components/icons/index.tsx`](file:///e:/SPPLPF/src/components/icons/index.tsx).
+  - **Shared Layouts:** Public header, footer, breadcrumbs, page headers, admin shell, admin sidebar, admin header, and sticky demo banner with instant reset modal.
+  - **Public Routes (16 routes):**
+    - `/[locale]` (Home Portal)
+    - `/[locale]/about`, `/[locale]/about/values`, `/[locale]/about/goals`, `/[locale]/about/milestones`
+    - `/[locale]/programs`, `/[locale]/programs/[slug]` (Factsheets & interactive pillar filter)
+    - `/[locale]/news`, `/[locale]/news/[slug]` (Keyword search, topic tags, pagination)
+    - `/[locale]/activities`, `/[locale]/stories`, `/[locale]/publications`, `/[locale]/presence` (Field hubs in Taiz, Marib, Sana'a)
+    - `/[locale]/contact` (Interactive form with anti-spam honeypot, validation, and demo store submission)
+    - `/[locale]/legal/privacy`, `/[locale]/legal/terms`, `/[locale]/legal/neutrality` (Core institutional charters)
+  - **Admin Dashboard Routes (14 routes):**
+    - `/admin/login` (Persona quick-fill simulation)
+    - `/admin/overview` (Live metrics, quick action triggers, audit log feed)
+    - `/admin/content`, `/admin/content/new`, `/admin/content/[id]` (Multi-tab bilingual editor, live preview, state transitions)
+    - `/admin/workflow` (Editorial review queue: submit, request changes with notes, publish)
+    - `/admin/programs`, `/admin/publications`, `/admin/media`, `/admin/inquiries`
+    - `/admin/users` (Account status toggle, role assignment modal across 4 RBAC roles)
+    - `/admin/audit-logs` (Filtered compliance audit viewer)
+    - `/admin/settings` (Site settings with emergency takedown mode toggle)
+  - **Reactive Client Demo Store:** [`src/lib/demo/store.ts`](file:///e:/SPPLPF/src/lib/demo/store.ts), [`src/lib/demo/fixtures.ts`](file:///e:/SPPLPF/src/lib/demo/fixtures.ts). Seeded with realistic institutional data (local mediation, detainee exchanges, legal aid, community peace committees), reactive state persistence via `localStorage`, and zero connection to PostgreSQL or Valkey.
+- **Safety & Isolation Guarantees:**
+  - Zero database mutations: `spplpf_prod` and `spplpf_dev` datastores remain untouched.
+  - Zero authentication service regressions: Argon2id, cookie verification, Redis session store, and RBAC guards remain completely intact.
+  - Clear demo demarcation: Prominent `DEMO / وضع المعاينة — بيانات غير معتمدة` banner across all pages with demo reset trigger.
+- **Tests & Verification:**
+  - Unit tests: 8 test files, 86 tests passed (100% passing) via [`vitest.config.mts`](file:///e:/SPPLPF/vitest.config.mts).
+  - TypeScript: Zero errors (`npx tsc --noEmit`).
+  - Next.js Turbopack build: Compiled successfully; 33 routes generated without errors.
 
 ---
 
