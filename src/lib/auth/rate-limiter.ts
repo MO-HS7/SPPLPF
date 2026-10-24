@@ -16,6 +16,8 @@
  */
 
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import { redisSessionClient } from '../redis';
 
 export const RATE_LIMIT_LOGIN_MAX_ATTEMPTS = 5;
@@ -122,33 +124,119 @@ end
 `;
 
 /**
- * Generates an obfuscated SHA-256 rate-limit bucket key.
- * Guarantees that raw emails, IP addresses, and user identifiers are never stored plaintext.
+ * Resolves the dedicated HMAC secret for rate-limit key derivation.
+ *
+ * Precedence:
+ * 1. Container secret file: /run/secrets/rate_limit_secret
+ * 2. Local workspace secret file: secrets/rate_limit_secret.txt
+ * 3. Environment variable: RATE_LIMIT_SECRET
+ * 4. Production guard: Fails closed immediately if missing or < 32 bytes in production.
+ * 5. Development fallback: Non-production deterministic secret.
  */
-export function hashRateLimitIdentifier(scope: string, identifier: string): string {
+export function resolveRateLimitSecret(): string {
+  // 1. Container secret mount
+  if (fs.existsSync('/run/secrets/rate_limit_secret')) {
+    const s = fs.readFileSync('/run/secrets/rate_limit_secret', 'utf8').trim();
+    if (s) return validateRateLimitSecret(s);
+  }
+
+  // 2. Local workspace secret file
+  const localSecretPath = path.resolve(process.cwd(), 'secrets/rate_limit_secret.txt');
+  if (fs.existsSync(localSecretPath)) {
+    const s = fs.readFileSync(localSecretPath, 'utf8').trim();
+    if (s) return validateRateLimitSecret(s);
+  }
+
+  // 3. Environment variable
+  if (process.env.RATE_LIMIT_SECRET) {
+    return validateRateLimitSecret(process.env.RATE_LIMIT_SECRET.trim());
+  }
+
+  // 4. Fail closed in production
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'RATE_LIMIT_SECRET is required in production environment (must be at least 32 characters).'
+    );
+  }
+
+  // 5. Development/testing fallback (>= 32 bytes)
+  return 'spplpf_dev_rate_limit_hmac_secret_min_32_bytes_2026';
+}
+
+/**
+ * Validates that a rate limit secret satisfies minimal cryptographic length requirements.
+ */
+export function validateRateLimitSecret(secret: string): string {
+  if (!secret || typeof secret !== 'string') {
+    throw new Error('Rate limit key secret cannot be empty.');
+  }
+  if (process.env.NODE_ENV === 'production' && Buffer.byteLength(secret, 'utf8') < 32) {
+    throw new Error('Rate limit key secret must be at least 32 bytes (256 bits) in production.');
+  }
+  return secret;
+}
+
+export type RateLimitDomain = 'account' | 'ip' | 'pair';
+
+/**
+ * Derives a domain-separated, keyed HMAC-SHA-256 rate-limit bucket key.
+ *
+ * Security guarantees:
+ * - Cryptographic domain separation prevents cross-domain collision between account, IP, and pair scopes.
+ * - Keyed HMAC prevents dictionary/rainbow-table attacks against rate limit keys in Redis.
+ * - Raw emails, IP addresses, passwords, or session tokens are never stored plaintext.
+ */
+export function deriveRateLimitKey(
+  domain: RateLimitDomain,
+  identifier: string,
+  secretOverride?: string
+): string {
+  const secret = secretOverride ?? resolveRateLimitSecret();
   const normalized = identifier.trim().toLowerCase();
-  const hash = crypto.createHash('sha256').update(`${scope}:${normalized}`).digest('hex').slice(0, 32);
-  return `rl:${scope}:${hash}`;
+  const domainPrefix = `SPPLPF_RL_V1_${domain.toUpperCase()}:`;
+
+  const hmac = crypto
+    .createHmac('sha256', secret)
+    .update(domainPrefix + normalized)
+    .digest('hex')
+    .slice(0, 32);
+
+  return `rl:${domain}:${hmac}`;
+}
+
+/**
+ * Legacy compatibility wrapper that derives a rate-limit key.
+ */
+export function hashRateLimitIdentifier(
+  scope: string,
+  identifier: string,
+  secretOverride?: string
+): string {
+  const domain: RateLimitDomain =
+    scope === 'ip' ? 'ip' : scope === 'pair' ? 'pair' : 'account';
+  return deriveRateLimitKey(domain, identifier, secretOverride);
 }
 
 export type RateLimitScopeType = 'login_account' | 'login_ip' | 'login_pair';
 
 /**
- * Builds standard scoped rate-limit keys.
+ * Builds standard scoped rate-limit keys with domain separation and HMAC keying.
  */
 export function buildRateLimitScopeKey(
   scope: RateLimitScopeType,
-  parts: { email?: string; ip?: string }
+  parts: { email?: string; ip?: string },
+  secretOverride?: string
 ): string {
   switch (scope) {
     case 'login_account':
-      return hashRateLimitIdentifier('acct', parts.email ?? 'unknown');
+      return deriveRateLimitKey('account', parts.email ?? 'unknown', secretOverride);
     case 'login_ip':
-      return hashRateLimitIdentifier('ip', parts.ip ?? '127.0.0.1');
+      return deriveRateLimitKey('ip', parts.ip ?? '127.0.0.1', secretOverride);
     case 'login_pair':
-      return hashRateLimitIdentifier(
+      return deriveRateLimitKey(
         'pair',
-        `${parts.ip ?? '127.0.0.1'}:${parts.email ?? 'unknown'}`
+        `${parts.ip ?? '127.0.0.1'}|${parts.email ?? 'unknown'}`,
+        secretOverride
       );
   }
 }

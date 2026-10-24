@@ -26,12 +26,18 @@ vi.mock('@/lib/redis', () => ({
   },
 }));
 
-describe('TASK-012 Unit Tests: Rate Limiter Hashing & Key Construction', () => {
-  it('generates deterministic SHA-256 obfuscated keys without plaintext identifier leakage', () => {
+describe('TASK-012/013 Security Hardening: Keyed HMAC Rate Limiter Key Derivation', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+  });
+
+  it('generates deterministic keyed HMAC-SHA-256 keys without plaintext identifier leakage', () => {
     const rawEmail = 'admin.editorial@spplpf.org.ps';
     const key = hashRateLimitIdentifier('acct', rawEmail);
 
-    expect(key).toMatch(/^rl:acct:[a-f0-9]{32}$/);
+    expect(key).toMatch(/^rl:account:[a-f0-9]{32}$/);
     expect(key).not.toContain(rawEmail);
     expect(key).not.toContain('editorial');
 
@@ -47,21 +53,42 @@ describe('TASK-012 Unit Tests: Rate Limiter Hashing & Key Construction', () => {
     expect(key1).toBe(key2);
   });
 
-  it('constructs distinct independent keys for account, IP, and pair scopes', () => {
-    const email = 'user@example.com';
-    const ip = '192.168.1.100';
+  it('guarantees domain separation between account, IP, and pair scopes even with identical input', () => {
+    const identicalInput = '192.168.1.100';
 
-    const acctKey = buildRateLimitScopeKey('login_account', { email });
-    const ipKey = buildRateLimitScopeKey('login_ip', { ip });
-    const pairKey = buildRateLimitScopeKey('login_pair', { email, ip });
+    const acctKey = buildRateLimitScopeKey('login_account', { email: identicalInput });
+    const ipKey = buildRateLimitScopeKey('login_ip', { ip: identicalInput });
+    const pairKey = buildRateLimitScopeKey('login_pair', { email: identicalInput, ip: identicalInput });
 
-    expect(acctKey).toMatch(/^rl:acct:/);
-    expect(ipKey).toMatch(/^rl:ip:/);
-    expect(pairKey).toMatch(/^rl:pair:/);
+    expect(acctKey).toMatch(/^rl:account:[a-f0-9]{32}$/);
+    expect(ipKey).toMatch(/^rl:ip:[a-f0-9]{32}$/);
+    expect(pairKey).toMatch(/^rl:pair:[a-f0-9]{32}$/);
 
+    // Cryptographic domain separation ensures none match
     expect(acctKey).not.toBe(ipKey);
     expect(acctKey).not.toBe(pairKey);
     expect(ipKey).not.toBe(pairKey);
+  });
+
+  it('fails closed in production if RATE_LIMIT_SECRET is missing', async () => {
+    (process.env as Record<string, string | undefined>).NODE_ENV = 'production';
+    delete process.env.RATE_LIMIT_SECRET;
+
+    const { resolveRateLimitSecret } = await import('@/lib/auth/rate-limiter');
+
+    expect(() => resolveRateLimitSecret()).toThrow(
+      /RATE_LIMIT_SECRET is required in production environment/
+    );
+  });
+
+  it('fails closed in production if secret is shorter than 32 bytes', async () => {
+    (process.env as Record<string, string | undefined>).NODE_ENV = 'production';
+
+    const { validateRateLimitSecret } = await import('@/lib/auth/rate-limiter');
+
+    expect(() => validateRateLimitSecret('short_secret_under_32_bytes')).toThrow(
+      /at least 32 bytes/
+    );
   });
 });
 
