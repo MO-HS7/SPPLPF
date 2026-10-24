@@ -9,8 +9,25 @@ export {
 export {
   authenticateWithPassword,
   type AuthenticatedUser,
+  type AuthenticateOptions,
   type AuthVerificationResult,
 } from './service';
+
+export {
+  RATE_LIMIT_LOGIN_MAX_ATTEMPTS,
+  RATE_LIMIT_LOGIN_WINDOW_MS,
+  RATE_LIMIT_IP_MAX_ATTEMPTS,
+  RATE_LIMIT_LOCKOUT_DURATION_MS,
+  RateLimiterError,
+  type RateLimitOptions,
+  type RateLimitResult,
+  type RateLimitScopeType,
+  hashRateLimitIdentifier,
+  buildRateLimitScopeKey,
+  consumeRateLimit,
+  checkRateLimit,
+  resetRateLimit,
+} from './rate-limiter';
 
 export {
   SESSION_COOKIE_NAME,

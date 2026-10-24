@@ -20,8 +20,8 @@
 | **Phase 07** | Relational Database & Seed (TASK-006) | Initial Prisma migration (`20261022215706_init`), PostgreSQL extensions, idempotent seed | **DONE** | Applied to `spplpf_dev`, 34 relations created, 2x seed idempotent (4 roles, 12 permissions, 23 mappings) |
 | **Phase 08 (Part 1)** | Argon2id Auth Foundation (TASK-010) | OWASP Argon2id parameters (m=64MB, t=3, p=4), hashing, verification, rehash detection | **DONE** | [`src/lib/auth/password.ts`](file:///e:/SPPLPF/src/lib/auth/password.ts), [`src/lib/auth/service.ts`](file:///e:/SPPLPF/src/lib/auth/service.ts), 16 unit tests, 10 integration tests |
 | **Phase 08 (Part 2)** | Session Management (TASK-011) | HttpOnly signed cookie lifecycle, 8h absolute expiry, Redis session invalidation, one-way token hashing | **DONE** | [`src/lib/auth/session.ts`](file:///e:/SPPLPF/src/lib/auth/session.ts), [`src/lib/redis.ts`](file:///e:/SPPLPF/src/lib/redis.ts), 27 unit tests, 9 integration tests |
-| **Phase 08 (Part 3)** | Rate Limiting (TASK-012) | Redis sliding-window limiter on login endpoints (5 attempts/15m) | *PENDING* | Scheduled next |
-| **Phase 08 (Part 4)** | Granular RBAC Engine (TASK-013/014) | `hasPermission` middleware and route protection | *PENDING* | Scheduled follow-on |
+| **Phase 08 (Part 3)** | Rate Limiting (TASK-012) | Redis sliding-window limiter on login endpoints (5 attempts/15m), 30m account lockout | **DONE** | [`src/lib/auth/rate-limiter.ts`](file:///e:/SPPLPF/src/lib/auth/rate-limiter.ts), [`src/lib/auth/service.ts`](file:///e:/SPPLPF/src/lib/auth/service.ts), 18 unit tests, 7 integration tests |
+| **Phase 08 (Part 4)** | Granular RBAC Engine (TASK-013/014) | `hasPermission` middleware and route protection | *PENDING* | Scheduled next |
 
 ---
 
@@ -84,6 +84,27 @@
   - 13 unit tests in [`tests/unit/auth/session.test.ts`](file:///e:/SPPLPF/tests/unit/auth/session.test.ts) (token entropy, hashing, signing, tamper rejection, cookie options, production secret safety).
   - 14 unit tests in [`tests/unit/auth/session-engine.test.ts`](file:///e:/SPPLPF/tests/unit/auth/session-engine.test.ts) (full lifecycle, idle timeout, absolute expiry, rotation, logout, inactive/locked user rejection with virtual clock).
   - 9 integration tests in [`tests/integration/session.test.ts`](file:///e:/SPPLPF/tests/integration/session.test.ts) (live Valkey and PostgreSQL persistence, automatic cleanup, conditional port reachability probe).
+
+### 2.5. Redis Sliding-Window Rate Limiting & Brute-Force Lockout (Phase 08 / TASK-012)
+- **Status:** Complete & validated against live Valkey & PostgreSQL.
+- **Modules:** [`src/lib/auth/rate-limiter.ts`](file:///e:/SPPLPF/src/lib/auth/rate-limiter.ts), [`src/lib/auth/service.ts`](file:///e:/SPPLPF/src/lib/auth/service.ts), [`src/lib/auth/index.ts`](file:///e:/SPPLPF/src/lib/auth/index.ts).
+- **Core Architecture & Cryptographic Controls:**
+  - **Atomic Evaluation:** Evaluated atomically in Valkey DB 0 via reviewed Lua scripts (`SLIDING_WINDOW_CONSUME_LUA`, `SLIDING_WINDOW_CHECK_LUA`). Uses sorted sets (`ZSET`) with `ZREMRANGEBYSCORE`, `ZCARD`, `ZADD`, and `EXPIRE`. Completely eliminates read-then-write race conditions under high concurrency.
+  - **Zero Sensitive Data Leakage in Keys/Logs:** Scopes are obfuscated using one-way SHA-256 hashes (`rl:acct:${sha256(email)}`, `rl:ip:${sha256(ip)}`, `rl:pair:${sha256(ip + ':' + email)}`). Raw emails, IP addresses, passwords, and tokens are NEVER stored in Redis keys, metrics, or logs.
+  - **Bounded Retention & TTL:** Keys are automatically configured with dynamic TTL (`Math.ceil(windowMs / 1000) + 60s`). Abandoned or inactive limiter keys expire cleanly in Valkey.
+  - **Fail-Closed Protection:** When Valkey is unreachable or errors, throws `RateLimiterError`, prompting `authenticateWithPassword` to return `{ success: false, reason: 'SERVICE_UNAVAILABLE' }`. Never silently bypasses rate limiting during datastore outages.
+  - **Configurable Limits & Durations:**
+    - Login Account Limit: 5 failed attempts per 15-minute sliding window (`RATE_LIMIT_LOGIN_MAX_ATTEMPTS = 5`, `RATE_LIMIT_LOGIN_WINDOW_MS = 900000`).
+    - Login IP Limit: 20 attempts per 15-minute sliding window (`RATE_LIMIT_IP_MAX_ATTEMPTS = 20`).
+    - Account Lockout Escalation: 30 minutes in PostgreSQL (`RATE_LIMIT_LOCKOUT_DURATION_MS = 1800000`).
+  - **Pre-Argon2id CPU Protection:** Rate limiting runs before heavy Argon2id verification (64MB/3 iterations), protecting the server's CPU from exhaustion denial-of-service.
+  - **Brute-Force Account Lockout Escalation:** On 5th failed password attempt, user's `lockedUntil` timestamp is set to `now + 30 minutes` and `failedAttempts` is updated atomically.
+  - **Anti-Enumeration Generic Failures:** Non-existent accounts, wrong passwords, and inactive accounts return identical generic `INVALID_CREDENTIALS` reasons, while still consuming attempts in the rate limiter bucket.
+  - **Auto-Reset on Successful Login:** Valid password verification resets `failedAttempts: 0`, `lockedUntil: null`, updates `lastLoginAt`, and clears the Valkey rate limit bucket (`resetRateLimit`).
+- **Tests:**
+  - 9 unit tests in [`tests/unit/auth/rate-limiter.test.ts`](file:///e:/SPPLPF/tests/unit/auth/rate-limiter.test.ts) (hashing, normalization, sliding window consumption, retry timing, check, reset, fail-closed).
+  - 9 unit tests in [`tests/unit/auth/auth-lockout.test.ts`](file:///e:/SPPLPF/tests/unit/auth/auth-lockout.test.ts) (lockout escalation, lockout expiry, rate limit rejection, IP limiting, service unavailable).
+  - 7 integration tests in [`tests/integration/rate-limiter.test.ts`](file:///e:/SPPLPF/tests/integration/rate-limiter.test.ts) (live Valkey sliding window, 10 concurrent requests without bypass, bounded TTL, independent account/IP buckets, PostgreSQL lockout escalation, session creation).
 
 ---
 
