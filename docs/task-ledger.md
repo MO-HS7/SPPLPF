@@ -19,8 +19,8 @@
 | **Phase 06 (Sec)** | Container Vulnerability Triage | Scoped Trivy exceptions (`usr/local/bin/gosu`), GATE-06 active | **DONE** | [`docs/security/vulnerability-triage-register.md`](file:///e:/SPPLPF/docs/security/vulnerability-triage-register.md), [`tests/fixtures/security/postgres-pinned.sarif.json`](file:///e:/SPPLPF/tests/fixtures/security/postgres-pinned.sarif.json) |
 | **Phase 07** | Relational Database & Seed (TASK-006) | Initial Prisma migration (`20261022215706_init`), PostgreSQL extensions, idempotent seed | **DONE** | Applied to `spplpf_dev`, 34 relations created, 2x seed idempotent (4 roles, 12 permissions, 23 mappings) |
 | **Phase 08 (Part 1)** | Argon2id Auth Foundation (TASK-010) | OWASP Argon2id parameters (m=64MB, t=3, p=4), hashing, verification, rehash detection | **DONE** | [`src/lib/auth/password.ts`](file:///e:/SPPLPF/src/lib/auth/password.ts), [`src/lib/auth/service.ts`](file:///e:/SPPLPF/src/lib/auth/service.ts), 16 unit tests, 10 integration tests |
-| **Phase 08 (Part 2)** | Session Management (TASK-011) | HttpOnly signed cookie lifecycle, 8h absolute expiry, Redis session invalidation | *PENDING* | Scheduled next |
-| **Phase 08 (Part 3)** | Rate Limiting (TASK-012) | Redis sliding-window limiter on login endpoints (5 attempts/15m) | *PENDING* | Scheduled follow-on |
+| **Phase 08 (Part 2)** | Session Management (TASK-011) | HttpOnly signed cookie lifecycle, 8h absolute expiry, Redis session invalidation, one-way token hashing | **DONE** | [`src/lib/auth/session.ts`](file:///e:/SPPLPF/src/lib/auth/session.ts), [`src/lib/redis.ts`](file:///e:/SPPLPF/src/lib/redis.ts), 27 unit tests, 9 integration tests |
+| **Phase 08 (Part 3)** | Rate Limiting (TASK-012) | Redis sliding-window limiter on login endpoints (5 attempts/15m) | *PENDING* | Scheduled next |
 | **Phase 08 (Part 4)** | Granular RBAC Engine (TASK-013/014) | `hasPermission` middleware and route protection | *PENDING* | Scheduled follow-on |
 
 ---
@@ -62,6 +62,28 @@
 - **Tests:**
   - 13 Argon2id unit tests in [`tests/unit/auth/password.test.ts`](file:///e:/SPPLPF/tests/unit/auth/password.test.ts).
   - 6 database integration tests in [`tests/integration/auth.test.ts`](file:///e:/SPPLPF/tests/integration/auth.test.ts).
+
+### 2.4. Secure Session Lifecycle & Cookie Management (Phase 08 / TASK-011)
+- **Status:** Complete & validated.
+- **Modules:** [`src/lib/auth/session.ts`](file:///e:/SPPLPF/src/lib/auth/session.ts), [`src/lib/redis.ts`](file:///e:/SPPLPF/src/lib/redis.ts), [`src/lib/auth/index.ts`](file:///e:/SPPLPF/src/lib/auth/index.ts).
+- **Core Architecture & Cryptographic Controls:**
+  - **Token Generation:** 256 bits of cryptographically secure entropy (`crypto.randomBytes(32).toString('base64url')`).
+  - **Signed Cookies:** Cookie value is `${rawToken}.${hmacSha256Signature}` using a dedicated 256-bit signing secret. Verification is constant-time via `crypto.timingSafeEqual`.
+  - **One-Way Verifier in Valkey:** Stored key is `sess:${sha256(rawToken)}` in Valkey DB 0. The raw token is NEVER stored in Valkey or logs, ensuring that even a read-only Valkey disclosure cannot yield valid session cookies.
+  - **Fail-Closed Secret Resolution:** Dedicated `session_secret` resolved from `/run/secrets/session_secret`, `secrets/session_secret.txt`, or `SESSION_SECRET`. In production, missing or short secrets fail closed immediately.
+  - **Dual-Expiry Lifecycle:**
+    - 30-minute idle inactivity timeout (`SESSION_IDLE_TIMEOUT_MS = 1800000`).
+    - 8-hour absolute maximum lifetime (`SESSION_ABSOLUTE_LIFETIME_MS = 28800000`).
+    - Valkey key TTL is dynamically clamped to `Math.min(idleRemaining, absoluteRemaining)`, guaranteeing a session can never be artificially extended past 8 hours.
+  - **Anti-Fixation & Token Rotation:** `rotateSession(cookieValue)` issues a fresh 256-bit signed token, writes the new hash to Valkey while preserving the original `createdAt` timestamp, and destroys the old hash key.
+  - **Logout Invalidation:** `destroySession(cookieValue)` removes the key from Valkey and issues a zero-maxAge clear cookie. Replay of old copied cookies fails closed.
+  - **Database Re-Verification:** Every session validation rechecks that the user exists, is active (`isActive === true`), and is not locked (`lockedUntil <= now`). Deactivated/locked accounts are immediately denied.
+  - **Cookie Security Flags:** `HttpOnly: true`, `SameSite: 'strict'`, `Path: '/'`, `Secure: true` in production (`false` in development for localhost HTTP testing).
+  - **Defense in Depth Note:** `SameSite=Strict` is defense in depth and does not eliminate the requirement for explicit anti-CSRF measures on state-changing endpoints. Sensitive authenticated endpoints are non-cacheable (`Cache-Control: no-store, private`).
+- **Tests:**
+  - 13 unit tests in [`tests/unit/auth/session.test.ts`](file:///e:/SPPLPF/tests/unit/auth/session.test.ts) (token entropy, hashing, signing, tamper rejection, cookie options, production secret safety).
+  - 14 unit tests in [`tests/unit/auth/session-engine.test.ts`](file:///e:/SPPLPF/tests/unit/auth/session-engine.test.ts) (full lifecycle, idle timeout, absolute expiry, rotation, logout, inactive/locked user rejection with virtual clock).
+  - 9 integration tests in [`tests/integration/session.test.ts`](file:///e:/SPPLPF/tests/integration/session.test.ts) (live Valkey and PostgreSQL persistence, automatic cleanup, conditional port reachability probe).
 
 ---
 

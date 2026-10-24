@@ -2,8 +2,11 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/auth/password';
 import { authenticateWithPassword } from '@/lib/auth/service';
+import { isPortReachable } from './helpers';
 
-describe('TASK-010: Database Credential Verification Integration Tests', () => {
+const isPgReachable = await isPortReachable(5432);
+
+describe.runIf(isPgReachable)('TASK-010: Database Credential Verification Integration Tests', () => {
   const testEmail = 'task010.testuser@spplpf.internal';
   const testPassword = 'SecureInstitutionalPassword2026!';
   let createdUserId: string;

@@ -5,6 +5,11 @@ import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../src/generated/prisma-client';
 import Redis from 'ioredis';
+import { isPortReachable } from './helpers';
+
+const isPgReachable = await isPortReachable(5432);
+const isValkeyReachable = await isPortReachable(6379);
+const canRunSmoke = isPgReachable && isValkeyReachable;
 
 function getDbPassword(): string {
   if (fs.existsSync('/run/secrets/db_password')) {
@@ -34,7 +39,7 @@ function getRedisPassword(): string {
   return '';
 }
 
-describe('Phase 06 Datastore Runtime Integration Smoke Tests (GATE-04 & GATE-05)', () => {
+describe.runIf(canRunSmoke)('Phase 06 Datastore Runtime Integration Smoke Tests (GATE-04 & GATE-05)', () => {
   let pgPool: Pool;
   let redisClient: Redis;
 
