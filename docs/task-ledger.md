@@ -21,7 +21,8 @@
 | **Phase 08 (Part 1)** | Argon2id Auth Foundation (TASK-010) | OWASP Argon2id parameters (m=64MB, t=3, p=4), hashing, verification, rehash detection | **DONE** | [`src/lib/auth/password.ts`](file:///e:/SPPLPF/src/lib/auth/password.ts), [`src/lib/auth/service.ts`](file:///e:/SPPLPF/src/lib/auth/service.ts), 16 unit tests, 10 integration tests |
 | **Phase 08 (Part 2)** | Session Management (TASK-011) | HttpOnly signed cookie lifecycle, 8h absolute expiry, Redis session invalidation, one-way token hashing | **DONE** | [`src/lib/auth/session.ts`](file:///e:/SPPLPF/src/lib/auth/session.ts), [`src/lib/redis.ts`](file:///e:/SPPLPF/src/lib/redis.ts), 27 unit tests, 9 integration tests |
 | **Phase 08 (Part 3)** | Rate Limiting (TASK-012) | Redis sliding-window limiter on login endpoints (5 attempts/15m), 30m account lockout | **DONE** | [`src/lib/auth/rate-limiter.ts`](file:///e:/SPPLPF/src/lib/auth/rate-limiter.ts), [`src/lib/auth/service.ts`](file:///e:/SPPLPF/src/lib/auth/service.ts), 18 unit tests, 7 integration tests |
-| **Phase 08 (Part 4)** | Granular RBAC Engine (TASK-013/014) | `hasPermission` middleware and route protection | *PENDING* | Scheduled next |
+| **Phase 08 (Part 4)** | Granular RBAC Engine (TASK-013/014) | Dynamic permission resolution, server-side guards, deny-by-default | **DONE** | [`src/lib/auth/rbac.ts`](file:///e:/SPPLPF/src/lib/auth/rbac.ts), 14 unit tests, 9 integration tests |
+| **Phase 09** | Content Management & Workflows | Editorial pipeline (DRAFT -> IN_REVIEW -> PUBLISHED) | *PENDING* | Scheduled next |
 
 ---
 
@@ -105,6 +106,27 @@
   - 9 unit tests in [`tests/unit/auth/rate-limiter.test.ts`](file:///e:/SPPLPF/tests/unit/auth/rate-limiter.test.ts) (hashing, normalization, sliding window consumption, retry timing, check, reset, fail-closed).
   - 9 unit tests in [`tests/unit/auth/auth-lockout.test.ts`](file:///e:/SPPLPF/tests/unit/auth/auth-lockout.test.ts) (lockout escalation, lockout expiry, rate limit rejection, IP limiting, service unavailable).
   - 7 integration tests in [`tests/integration/rate-limiter.test.ts`](file:///e:/SPPLPF/tests/integration/rate-limiter.test.ts) (live Valkey sliding window, 10 concurrent requests without bypass, bounded TTL, independent account/IP buckets, PostgreSQL lockout escalation, session creation).
+
+### 2.6. Granular RBAC Engine & Server-Side Permission Guards (Phase 08 / TASK-013/014)
+- **Status:** Complete & validated against live PostgreSQL & Valkey.
+- **Modules:** [`src/lib/auth/rbac.ts`](file:///e:/SPPLPF/src/lib/auth/rbac.ts), [`src/lib/auth/index.ts`](file:///e:/SPPLPF/src/lib/auth/index.ts).
+- **Core Architecture & Authorization Guarantees:**
+  - **Dynamic Relational Resolution:** Resolves roles and capabilities via PostgreSQL relational joins (`users` -> `user_roles` -> `roles` -> `role_permissions` -> `permissions`).
+  - **Strict Deny-by-Default:** Users with 0 roles possess 0 permissions. Access is denied unless an explicit permission token is resolved from assigned roles.
+  - **Zero Hardcoded Bypasses:** Even `SUPER_ADMIN` relies on its explicit database role-permission associations established during idempotent seeding (all 12 permissions). No unconditional wildcard bypass exists in code.
+  - **Granular Capability Enforcement:** Authorization checks enforce fine-grained capabilities (`content.publish`, `users.manage`, `audit.view`) rather than brittle role-name string matching.
+  - **Real-Time Revocation:** Role assignments and permissions are queried dynamically from the database, ensuring changes take effect immediately without token re-issuance or stale claims.
+  - **Fail-Closed on Dependency Outage:** If the PostgreSQL database or authorization layer encounters an error, requests fail closed (`SERVICE_UNAVAILABLE` or `false`), never permitting unauthorized access.
+  - **Integrated Defense Pipeline:** `resolveSessionAuthorization` and `requirePermission` combine cookie signature validation, Valkey session verifier lookup, account active status, account lockout status, and role-permission resolution in a unified pipeline.
+  - **Zero Sensitive Data Exposure:** Password hashes, session tokens, and internal database details are excluded from all returned authorization contexts and logs.
+  - **Seeded Role Coverage:**
+    - `SUPER_ADMIN`: 12 system permissions (`users.manage`, `roles.manage`, `content.create`, `content.edit`, `content.review`, `content.publish`, `content.archive`, `media.upload`, `media.delete`, `settings.manage`, `audit.view`, `inquiries.manage`).
+    - `CONTENT_MANAGER`: 7 editorial permissions (`content.create`, `content.edit`, `content.review`, `content.publish`, `content.archive`, `media.upload`, `inquiries.manage`).
+    - `CONTENT_AUTHOR`: 3 authoring permissions (`content.create`, `content.edit`, `media.upload`).
+    - `AUDITOR`: 1 compliance permission (`audit.view`).
+- **Tests:**
+  - 14 unit tests in [`tests/unit/auth/rbac.test.ts`](file:///e:/SPPLPF/tests/unit/auth/rbac.test.ts) (deny-by-default, deduplication, fail-closed, conjunction, disjunction, session guards, cookie extraction).
+  - 9 integration tests in [`tests/integration/rbac.test.ts`](file:///e:/SPPLPF/tests/integration/rbac.test.ts) (all 4 seeded roles, unassigned users, real-time dynamic role changes, live session cookies, inactive/locked users, revoked sessions).
 
 ---
 

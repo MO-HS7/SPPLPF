@@ -54,3 +54,21 @@ export {
   destroySession,
   revokeAllUserSessions,
 } from './session';
+
+export {
+  SYSTEM_PERMISSIONS,
+  type SystemPermissionToken,
+  type UserRoleAssignment,
+  type UserAuthorizationContext,
+  type AuthorizationResult,
+  AuthorizationServiceError,
+  getUserRolesAndPermissions,
+  hasPermission,
+  hasAllPermissions,
+  hasAnyPermission,
+  resolveSessionAuthorization,
+  requirePermission,
+  requireAllPermissions,
+  requireAnyPermission,
+  extractSessionCookieFromHeader,
+} from './rbac';
