@@ -1,55 +1,78 @@
 /**
  * SPPLPF Design Tokens
- * Institutional visual identity: Deep Navy, Peacemaker Azure, Warm Gold, Slate Neutrals.
+ * Institutional visual identity: Deep Navy, Peacemaker Azure, Warm Gold, Warm Parchment & Slate Neutrals.
  * Logical properties enabled for full RTL/LTR bi-directional symmetry.
  */
 
 :root {
   /* Brand Tokens */
-  --color-brand-primary: #0f4c81;
-  --color-brand-primary-hover: #0b3860;
-  --color-brand-primary-light: #e6f0fa;
-  --color-brand-secondary: #009fe3;
-  --color-brand-secondary-hover: #0082ba;
-  --color-brand-secondary-light: #e0f4fc;
-  --color-brand-accent: #d97706;
-  --color-brand-accent-hover: #b45309;
+  --color-brand-primary: #0f325a;
+  --color-brand-primary-hover: #092240;
+  --color-brand-primary-light: #f0f5fa;
+  --color-brand-primary-dark: #07192e;
+
+  --color-brand-secondary: #0284c7;
+  --color-brand-secondary-hover: #0369a1;
+  --color-brand-secondary-light: #e0f2fe;
+
+  --color-brand-accent: #c27803;
+  --color-brand-accent-hover: #925802;
   --color-brand-accent-light: #fef3c7;
-  --color-brand-danger: #e03a3e;
-  --color-brand-danger-hover: #c4292d;
+
+  --color-brand-danger: #dc2626;
+  --color-brand-danger-hover: #b91c1c;
   --color-brand-danger-light: #fee2e2;
-  --color-brand-success: #10b981;
-  --color-brand-success-hover: #059669;
+
+  --color-brand-success: #059669;
+  --color-brand-success-hover: #047857;
   --color-brand-success-light: #d1fae5;
-  --color-brand-warning: #f59e0b;
+
+  --color-brand-warning: #d97706;
+  --color-brand-warning-hover: #b45309;
   --color-brand-warning-light: #fef3c7;
 
-  /* Neutrals (Light Mode Default) */
-  --color-bg-canvas: #f8fafc;
+  --color-brand-info: #0284c7;
+  --color-brand-info-light: #e0f2fe;
+
+  /* Neutrals & Surfaces (Warm Institutional Palette inspired by EPISA) */
+  --color-bg-canvas: #fcfbf9;
   --color-bg-surface: #ffffff;
-  --color-bg-elevated: #f1f5f9;
-  --color-bg-muted: #e2e8f0;
-  --color-text-primary: #0f172a;
+  --color-bg-subtle: #f5f3ee;
+  --color-bg-elevated: #efece5;
+  --color-bg-muted: #e5e2db;
+
+  --color-text-primary: #0d1726;
   --color-text-secondary: #334155;
   --color-text-muted: #64748b;
-  --color-border-subtle: #e2e8f0;
-  --color-border-strong: #cbd5e1;
+  --color-text-inverse: #ffffff;
+
+  --color-border-subtle: #eae7df;
+  --color-border-strong: #d5d0c3;
+  --color-border-focus: #0284c7;
 
   /* Institutional Identity Palette */
-  --color-navy-900: #0a2540;
-  --color-navy-800: #0f4c81;
-  --color-navy-700: #1a568c;
-  --color-navy-100: #e6f0fa;
-  --color-gold-700: #b45309;
-  --color-gold-600: #d97706;
+  --color-navy-950: #051324;
+  --color-navy-900: #0a1e38;
+  --color-navy-850: #0f2747;
+  --color-navy-800: #0f325a;
+  --color-navy-700: #194677;
+  --color-navy-600: #255d99;
+  --color-navy-100: #f0f5fa;
+  --color-navy-50: #f6f9fc;
+
+  --color-gold-700: #925802;
+  --color-gold-600: #c27803;
+  --color-gold-500: #d97706;
   --color-gold-100: #fef3c7;
+  --color-gold-50: #fffbeb;
 
   /* Typography Stacks */
-  --font-arabic: 'Cairo', 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, system-ui, sans-serif;
+  --font-arabic: 'Cairo', 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, system-ui, sans-serif;
   --font-english: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, 'Courier New', monospace;
 
   /* Type Scale */
+  --text-2xs: clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);
   --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.8125rem);
   --text-sm: clamp(0.875rem, 0.825rem + 0.2vw, 0.9375rem);
   --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.0625rem);
@@ -58,6 +81,7 @@
   --text-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);
   --text-3xl: clamp(1.875rem, 1.65rem + 1vw, 2.375rem);
   --text-4xl: clamp(2.25rem, 1.95rem + 1.4vw, 3rem);
+  --text-5xl: clamp(2.75rem, 2.25rem + 2vw, 3.875rem);
 
   /* Spacing Scale */
   --space-0-5: 0.125rem;
@@ -73,6 +97,7 @@
   --space-16: 4rem;
   --space-20: 5rem;
   --space-24: 6rem;
+  --space-32: 8rem;
 
   /* Radii */
   --radius-xs: 0.25rem;
@@ -80,13 +105,18 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
   --radius-full: 9999px;
 
   /* Elevation Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.06);
-  --shadow-lg: 0 10px 15px -3px rgb(15 23 42 / 0.1), 0 4px 6px -4px rgb(15 23 42 / 0.06);
-  --shadow-xl: 0 20px 25px -5px rgb(15 23 42 / 0.12), 0 8px 10px -6px rgb(15 23 42 / 0.08);
+  --shadow-xs: 0 1px 2px 0 rgba(13, 23, 38, 0.04);
+  --shadow-sm: 0 2px 4px 0 rgba(13, 23, 38, 0.05), 0 1px 2px -1px rgba(13, 23, 38, 0.03);
+  --shadow-md: 0 6px 12px -2px rgba(13, 23, 38, 0.08), 0 3px 6px -3px rgba(13, 23, 38, 0.04);
+  --shadow-lg: 0 16px 24px -4px rgba(13, 23, 38, 0.10), 0 6px 10px -4px rgba(13, 23, 38, 0.04);
+  --shadow-xl: 0 24px 36px -6px rgba(13, 23, 38, 0.12), 0 12px 16px -6px rgba(13, 23, 38, 0.06);
+  --shadow-glow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+  --shadow-gold: 0 4px 14px 0 rgba(194, 120, 3, 0.28);
+  --shadow-primary: 0 4px 14px 0 rgba(15, 50, 90, 0.28);
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -96,20 +126,21 @@
   /* Layout Widths */
   --container-max: 1280px;
   --container-narrow: 960px;
-  --header-height: 4.5rem;
+  --header-height: 4.75rem;
   --admin-sidebar-width: 17.5rem;
 }
 
 [data-theme='dark'] {
-  --color-bg-canvas: #090d16;
-  --color-bg-surface: #0f172a;
-  --color-bg-elevated: #1e293b;
-  --color-bg-muted: #334155;
+  --color-bg-canvas: #070d17;
+  --color-bg-surface: #0c1829;
+  --color-bg-subtle: #122137;
+  --color-bg-elevated: #172a45;
+  --color-bg-muted: #1e3656;
   --color-text-primary: #f8fafc;
   --color-text-secondary: #cbd5e1;
   --color-text-muted: #94a3b8;
-  --color-border-subtle: #1e293b;
-  --color-border-strong: #334155;
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  --color-border-subtle: #192e4a;
+  --color-border-strong: #233e63;
+  --shadow-md: 0 6px 12px -2px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 24px -4px rgba(0, 0, 0, 0.55);
 }

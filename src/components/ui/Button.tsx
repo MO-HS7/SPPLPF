@@ -1,30 +1,107 @@
 import React from 'react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost' | 'danger';
+  variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'outline-white' | 'ghost' | 'ghost-white' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   icon?: React.ReactNode;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', isLoading = false, icon, children, className = '', disabled, ...props }, ref) => {
-    const baseStyles = 'display: inline-flex; align-items: center; justify-content: center; font-weight: 600; border-radius: var(--radius-md); transition: all var(--transition-fast); cursor: pointer; border: 1px solid transparent; text-decoration: none;';
+  ({ variant = 'primary', size = 'md', isLoading = false, icon, children, className = '', disabled, style, ...props }, ref) => {
+    const getPadding = () => {
+      switch (size) {
+        case 'sm': return '0.375rem 0.75rem';
+        case 'lg': return '0.75rem 1.5rem';
+        default: return '0.55rem 1.125rem';
+      }
+    };
 
-    const sizeStyles = {
-      sm: 'padding: var(--space-1) var(--space-3); font-size: var(--text-xs); gap: var(--space-1); min-height: 2rem;',
-      md: 'padding: var(--space-2) var(--space-4); font-size: var(--text-sm); gap: var(--space-2); min-height: 2.5rem;',
-      lg: 'padding: var(--space-3) var(--space-6); font-size: var(--text-base); gap: var(--space-3); min-height: 3rem;',
-    }[size];
+    const getFontSize = () => {
+      switch (size) {
+        case 'sm': return 'var(--text-xs)';
+        case 'lg': return 'var(--text-base)';
+        default: return 'var(--text-sm)';
+      }
+    };
 
-    const variantStyles = {
-      primary: 'background-color: var(--color-brand-primary); color: #ffffff;',
-      secondary: 'background-color: var(--color-brand-secondary); color: #ffffff;',
-      accent: 'background-color: var(--color-brand-accent); color: #ffffff;',
-      outline: 'background-color: transparent; border-color: var(--color-border-strong); color: var(--color-text-primary);',
-      ghost: 'background-color: transparent; color: var(--color-text-secondary);',
-      danger: 'background-color: var(--color-brand-danger); color: #ffffff;',
-    }[variant];
+    const getMinHeight = () => {
+      switch (size) {
+        case 'sm': return '2rem';
+        case 'lg': return '3rem';
+        default: return '2.5rem';
+      }
+    };
+
+    const getColors = () => {
+      switch (variant) {
+        case 'primary':
+          return {
+            bg: 'var(--color-brand-primary)',
+            color: '#ffffff',
+            border: '1px solid transparent',
+            shadow: 'var(--shadow-sm)',
+          };
+        case 'secondary':
+          return {
+            bg: 'var(--color-brand-secondary)',
+            color: '#ffffff',
+            border: '1px solid transparent',
+            shadow: 'var(--shadow-sm)',
+          };
+        case 'accent':
+          return {
+            bg: 'var(--color-brand-accent)',
+            color: '#ffffff',
+            border: '1px solid transparent',
+            shadow: 'var(--shadow-gold)',
+          };
+        case 'outline':
+          return {
+            bg: 'transparent',
+            color: 'var(--color-brand-primary)',
+            border: '1.5px solid var(--color-border-strong)',
+            shadow: 'none',
+          };
+        case 'outline-white':
+          return {
+            bg: 'rgba(255, 255, 255, 0.06)',
+            color: '#ffffff',
+            border: '1.5px solid rgba(255, 255, 255, 0.4)',
+            shadow: 'none',
+          };
+        case 'ghost':
+          return {
+            bg: 'transparent',
+            color: 'var(--color-text-secondary)',
+            border: '1px solid transparent',
+            shadow: 'none',
+          };
+        case 'ghost-white':
+          return {
+            bg: 'transparent',
+            color: 'rgba(255, 255, 255, 0.9)',
+            border: '1px solid transparent',
+            shadow: 'none',
+          };
+        case 'danger':
+          return {
+            bg: 'var(--color-brand-danger)',
+            color: '#ffffff',
+            border: '1px solid transparent',
+            shadow: 'var(--shadow-sm)',
+          };
+        default:
+          return {
+            bg: 'var(--color-brand-primary)',
+            color: '#ffffff',
+            border: '1px solid transparent',
+            shadow: 'var(--shadow-sm)',
+          };
+      }
+    };
+
+    const colors = getColors();
 
     return (
       <button
@@ -39,28 +116,35 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
           opacity: disabled || isLoading ? 0.65 : 1,
           transition: 'all var(--transition-fast)',
-          border: variant === 'outline' ? '1px solid var(--color-border-strong)' : '1px solid transparent',
-          backgroundColor:
-            variant === 'primary' ? 'var(--color-brand-primary)' :
-            variant === 'secondary' ? 'var(--color-brand-secondary)' :
-            variant === 'accent' ? 'var(--color-brand-accent)' :
-            variant === 'danger' ? 'var(--color-brand-danger)' :
-            'transparent',
-          color:
-            variant === 'outline' ? 'var(--color-text-primary)' :
-            variant === 'ghost' ? 'var(--color-text-secondary)' :
-            '#ffffff',
-          padding: size === 'sm' ? '0.375rem 0.75rem' : size === 'lg' ? '0.75rem 1.5rem' : '0.5rem 1rem',
-          fontSize: size === 'sm' ? 'var(--text-xs)' : size === 'lg' ? 'var(--text-base)' : 'var(--text-sm)',
-          gap: 'var(--space-2)',
+          border: colors.border,
+          backgroundColor: colors.bg,
+          color: colors.color,
+          boxShadow: colors.shadow,
+          padding: getPadding(),
+          fontSize: getFontSize(),
+          minHeight: getMinHeight(),
+          gap: '0.45rem',
+          lineHeight: 1.25,
+          letterSpacing: '0.01em',
+          ...style,
         }}
-        className={className}
+        className={`btn btn-${variant} ${className}`}
         {...props}
       >
         {isLoading ? (
-          <span style={{ display: 'inline-block', width: '1rem', height: '1rem', border: '2px solid currentColor', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+          <span
+            style={{
+              display: 'inline-block',
+              width: '1rem',
+              height: '1rem',
+              border: '2px solid currentColor',
+              borderTopColor: 'transparent',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+            }}
+          />
         ) : icon ? (
-          <span style={{ display: 'flex', alignItems: 'center' }}>{icon}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>{icon}</span>
         ) : null}
         <span>{children}</span>
       </button>

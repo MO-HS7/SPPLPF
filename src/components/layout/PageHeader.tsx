@@ -12,22 +12,23 @@ export function PageHeader({ title, subtitle, badge, action, breadcrumbs }: Page
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
+        background: 'linear-gradient(180deg, var(--color-bg-subtle) 0%, var(--color-bg-surface) 100%)',
         borderBlockEnd: '1px solid var(--color-border-subtle)',
-        paddingBlock: 'var(--space-8)',
-        marginBlockEnd: 'var(--space-8)',
+        paddingBlock: 'clamp(2rem, 3.5vw, 3rem)',
+        marginBlockEnd: 'clamp(1.5rem, 3vw, 2.5rem)',
       }}
     >
       <div className="container">
         {breadcrumbs && <div style={{ marginBlockEnd: 'var(--space-3)' }}>{breadcrumbs}</div>}
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-4)' }}>
-          <div style={{ maxWidth: '800px' }}>
+          <div style={{ maxWidth: '820px' }}>
             {badge && <div style={{ marginBlockEnd: 'var(--space-2)' }}>{badge}</div>}
             <h1
               style={{
-                fontSize: 'var(--text-3xl)',
+                fontSize: 'clamp(1.75rem, 1.4rem + 1.2vw, 2.5rem)',
                 color: 'var(--color-brand-primary)',
                 fontWeight: 800,
+                lineHeight: 1.25,
                 marginBlockEnd: subtitle ? 'var(--space-2)' : 0,
               }}
             >
@@ -36,9 +37,9 @@ export function PageHeader({ title, subtitle, badge, action, breadcrumbs }: Page
             {subtitle && (
               <p
                 style={{
-                  fontSize: 'var(--text-base)',
+                  fontSize: 'clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem)',
                   color: 'var(--color-text-secondary)',
-                  lineHeight: 1.6,
+                  lineHeight: 1.65,
                   margin: 0,
                 }}
               >
