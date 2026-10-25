@@ -177,7 +177,7 @@ export default async function MilestonesPage({
                   {m.icon}
                 </div>
 
-                <Card>
+                <Card hoverEffect style={{ borderInlineStart: '4px solid var(--color-brand-primary)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: 'var(--space-2)' }}>
                     <span style={{ fontSize: 'var(--text-xl)', fontWeight: 800, color: 'var(--color-brand-primary)' }}>
                       {m.year}

@@ -207,7 +207,7 @@ export function ContactFormClient({ locale }: ContactFormClientProps) {
         </FormField>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBlockStart: 'var(--space-4)' }}>
-          <Button type="submit" variant="primary" size="lg" isLoading={isSubmitting}>
+          <Button type="submit" variant="primary" size="lg" isLoading={isSubmitting} icon={<IconSend size={16} />}>
             <span>{isSubmitting ? (isAr ? 'جارٍ التسجيل...' : 'Submitting...') : (isAr ? 'إرسال الاستفسار' : 'Submit Inquiry')}</span>
           </Button>
         </div>
