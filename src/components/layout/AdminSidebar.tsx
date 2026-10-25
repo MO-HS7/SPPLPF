@@ -3,127 +3,205 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useDemoStore } from '../../lib/demo/use-demo-store';
 import {
   IconCalendar,
-  IconCheck,
+  IconCheckCircle,
   IconEdit,
   IconFileText,
   IconGlobe,
-  IconInfo,
-  IconLock,
+  IconImage,
   IconMail,
-  IconPlus,
   IconScale,
+  IconSettings,
   IconShield,
   IconUsers,
+  IconBookOpen,
+  IconBarChart,
 } from '../icons';
 
 export function AdminSidebar() {
   const pathname = usePathname() || '/admin/overview';
+  const store = useDemoStore();
 
-  const navItems = [
-    { label: 'نظرة عامة / Overview', href: '/admin/overview', icon: <IconScale size={18} /> },
-    { label: 'إدارة المحتوى / Content', href: '/admin/content', icon: <IconEdit size={18} /> },
-    { label: 'طابور المراجعة / Workflow', href: '/admin/workflow', icon: <IconCheck size={18} /> },
-    { label: 'البرامج والمشاريع / Programs', href: '/admin/programs', icon: <IconCalendar size={18} /> },
-    { label: 'الإصدارات والتقارير / Publications', href: '/admin/publications', icon: <IconFileText size={18} /> },
-    { label: 'مكتبة الوسائط / Media', href: '/admin/media', icon: <IconPlus size={18} /> },
-    { label: 'الاستفسارات / Inquiries', href: '/admin/inquiries', icon: <IconMail size={18} /> },
-    { label: 'المستخدمون والأدوار / Users & RBAC', href: '/admin/users', icon: <IconUsers size={18} /> },
-    { label: 'سجل التدقيق / Audit Logs', href: '/admin/audit-logs', icon: <IconShield size={18} /> },
-    { label: 'الإعدادات / Settings', href: '/admin/settings', icon: <IconLock size={18} /> },
+  const inReviewCount = store.getContentItems().filter((c) => c.status === 'IN_REVIEW').length;
+  const pendingInquiriesCount = store.getInquiries().filter((i) => i.status === 'NEW').length;
+
+  const sections = [
+    {
+      title: 'التحرير والمحتوى / Content & Editorial',
+      items: [
+        { label: 'نظرة عامة / Overview', href: '/admin/overview', icon: <IconBarChart size={18} /> },
+        { label: 'إدارة المحتوى / Content', href: '/admin/content', icon: <IconEdit size={18} /> },
+        {
+          label: 'طابور المراجعة / Review Queue',
+          href: '/admin/workflow',
+          icon: <IconCheckCircle size={18} />,
+          badge: inReviewCount > 0 ? inReviewCount : undefined,
+          badgeColor: 'var(--color-brand-accent)',
+        },
+        { label: 'مكتبة الوسائط / Media', href: '/admin/media', icon: <IconImage size={18} /> },
+      ],
+    },
+    {
+      title: 'السجلات والاتصال / Catalogues & Outreach',
+      items: [
+        { label: 'البرامج والمشاريع / Programs', href: '/admin/programs', icon: <IconCalendar size={18} /> },
+        { label: 'الإصدارات والتقارير / Publications', href: '/admin/publications', icon: <IconBookOpen size={18} /> },
+        {
+          label: 'الاستفسارات / Inquiries',
+          href: '/admin/inquiries',
+          icon: <IconMail size={18} />,
+          badge: pendingInquiriesCount > 0 ? pendingInquiriesCount : undefined,
+          badgeColor: 'var(--color-brand-secondary)',
+        },
+      ],
+    },
+    {
+      title: 'الحوكمة والنظام / Governance & System',
+      items: [
+        { label: 'المستخدمون والأدوار / Users & RBAC', href: '/admin/users', icon: <IconUsers size={18} /> },
+        { label: 'سجل التدقيق / Audit Logs', href: '/admin/audit-logs', icon: <IconShield size={18} /> },
+        { label: 'الإعدادات / Settings', href: '/admin/settings', icon: <IconSettings size={18} /> },
+      ],
+    },
   ];
 
   return (
     <aside
       style={{
         width: 'var(--admin-sidebar-width)',
-        backgroundColor: 'var(--color-navy-900)',
+        backgroundColor: '#0a1626',
         color: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
-        borderInlineEnd: '1px solid rgba(255, 255, 255, 0.1)',
+        borderInlineEnd: '1px solid rgba(255, 255, 255, 0.08)',
         flexShrink: 0,
         minHeight: '100vh',
       }}
+      aria-label="Admin Navigation Sidebar"
     >
       {/* Brand Header */}
       <div
         style={{
-          padding: 'var(--space-6) var(--space-4)',
-          borderBlockEnd: '1px solid rgba(255, 255, 255, 0.1)',
+          padding: '1.25rem 1.25rem',
+          borderBlockEnd: '1px solid rgba(255, 255, 255, 0.08)',
           display: 'flex',
           alignItems: 'center',
-          gap: 'var(--space-3)',
+          gap: '0.75rem',
         }}
       >
         <div
           style={{
-            width: '2.5rem',
-            height: '2.5rem',
+            width: '2.4rem',
+            height: '2.4rem',
             borderRadius: 'var(--radius-md)',
-            backgroundColor: 'var(--color-brand-secondary)',
+            background: 'linear-gradient(135deg, var(--color-brand-secondary) 0%, var(--color-brand-primary) 100%)',
             color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            boxShadow: 'var(--shadow-sm)',
+            flexShrink: 0,
           }}
         >
-          <IconShield size={22} />
+          <IconScale size={18} />
         </div>
-        <div>
-          <h4 style={{ color: '#ffffff', fontSize: 'var(--text-sm)', fontWeight: 800, margin: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <h2 style={{ color: '#ffffff', fontSize: '0.9375rem', fontWeight: 800, margin: 0, lineHeight: 1.2 }}>
             SPPLPF Admin
-          </h4>
-          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-brand-accent)', fontWeight: 600 }}>
-            لوحة الإدارة (معاينة)
+          </h2>
+          <span style={{ fontSize: '0.7rem', color: 'var(--color-gold-500)', fontWeight: 600 }}>
+            بوابة الإدارة التحريرية (معاينة)
           </span>
         </div>
       </div>
 
-      {/* Navigation List */}
+      {/* Grouped Navigation Sections */}
       <nav
         style={{
-          padding: 'var(--space-4) var(--space-2)',
+          padding: '1rem 0.65rem',
           display: 'flex',
           flexDirection: 'column',
-          gap: 'var(--space-1)',
+          gap: '1.25rem',
           flex: '1 1 auto',
+          overflowY: 'auto',
         }}
       >
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== '/admin/overview' && pathname.startsWith(item.href));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
+        {sections.map((section, idx) => (
+          <div key={idx}>
+            <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-3)',
-                padding: '0.625rem 0.875rem',
-                borderRadius: 'var(--radius-md)',
-                fontSize: 'var(--text-xs)',
-                fontWeight: isActive ? 700 : 500,
-                color: isActive ? '#ffffff' : '#cbd5e1',
-                backgroundColor: isActive ? 'var(--color-brand-primary)' : 'transparent',
-                transition: 'all var(--transition-fast)',
+                fontSize: '0.6875rem',
+                fontWeight: 700,
+                color: '#64748b',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                paddingInline: '0.65rem',
+                marginBlockEnd: '0.4rem',
               }}
             >
-              <span style={{ color: isActive ? '#ffffff' : 'var(--color-brand-secondary)' }}>
-                {item.icon}
-              </span>
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+              {section.title}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+              {section.items.map((item) => {
+                const isActive =
+                  pathname === item.href || (item.href !== '/admin/overview' && pathname.startsWith(item.href));
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.55rem 0.75rem',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: '0.8125rem',
+                      fontWeight: isActive ? 700 : 500,
+                      color: isActive ? '#ffffff' : '#94a3b8',
+                      backgroundColor: isActive ? 'rgba(2, 132, 199, 0.16)' : 'transparent',
+                      border: isActive ? '1px solid rgba(2, 132, 199, 0.35)' : '1px solid transparent',
+                      transition: 'all var(--transition-fast)',
+                      textDecoration: 'none',
+                    }}
+                    className="sidebar-link"
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <span style={{ color: isActive ? '#38bdf8' : '#64748b', display: 'flex', alignItems: 'center' }}>
+                        {item.icon}
+                      </span>
+                      <span>{item.label}</span>
+                    </div>
+
+                    {item.badge !== undefined && (
+                      <span
+                        style={{
+                          backgroundColor: item.badgeColor || 'var(--color-brand-secondary)',
+                          color: '#ffffff',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          padding: '0.1rem 0.45rem',
+                          borderRadius: 'var(--radius-full)',
+                        }}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      {/* Footer link to public site */}
+      {/* Footer Return Link to Public Site */}
       <div
         style={{
-          padding: 'var(--space-4)',
-          borderBlockStart: '1px solid rgba(255, 255, 255, 0.1)',
+          padding: '0.85rem 0.85rem',
+          borderBlockStart: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
         <Link
@@ -131,18 +209,22 @@ export function AdminSidebar() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 'var(--space-2)',
-            padding: '0.5rem',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            padding: '0.55rem 0.75rem',
             borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
             color: '#f8fafc',
-            fontSize: 'var(--text-xs)',
+            fontSize: '0.8125rem',
             fontWeight: 600,
             textDecoration: 'none',
+            transition: 'all var(--transition-fast)',
           }}
+          className="sidebar-public-btn"
         >
-          <IconGlobe size={16} />
-          <span>العودة إلى الموقع العام / Public Site</span>
+          <IconGlobe size={15} style={{ color: '#38bdf8' }} />
+          <span>العودة للموقع العام / Public Site</span>
         </Link>
       </div>
     </aside>

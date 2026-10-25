@@ -173,7 +173,23 @@
 - **Tests & Verification:**
   - Unit tests: 8 test files, 86 tests passed (100% passing) via [`vitest.config.mts`](file:///e:/SPPLPF/vitest.config.mts).
   - TypeScript: Zero errors (`npx tsc --noEmit`).
-  - Next.js Turbopack build: Compiled successfully; 33 routes generated without errors.
+### 2.8. Frontend Visual Redesign & UX Modernization (Sprint: feat/frontend-visual-refresh)
+- **Status:** Complete & validated via Next.js Turbopack build & Vitest test suite.
+- **Scope:** Research-driven UI/UX overhaul across public portal and administrative workspace based on external non-profit peacebuilding benchmarks (EPISA, Latte Creative, Cosmic JS, Kiranism shadcn dashboard).
+- **Deliverables:**
+  - **Research & Decision Matrix:** [`docs/frontend-design-references.md`](file:///e:/SPPLPF/docs/frontend-design-references.md). Source analysis, adapted UX patterns, and license/stack compatibility checks.
+  - **Genuine Icon System:** [`src/components/icons/index.tsx`](file:///e:/SPPLPF/src/components/icons/index.tsx). Installed and pinned [`lucide-react@1.61.0`](https://lucide.dev/). Fully replaced all handcrafted SVGs and Unicode glyphs with genuine Lucide vector components, standard 1.75px stroke width, and `aria-hidden="true"` accessibility defaults.
+  - **Refined Institutional Tokens & Typography:** [`src/styles/tokens.css`](file:///e:/SPPLPF/src/styles/tokens.css), [`src/styles/globals.css`](file:///e:/SPPLPF/src/styles/globals.css). Warm institutional palette (Navy `#0f325a`, Azure `#0284c7`, Warm Gold `#c27803`, Warm Parchment `#fcfbf9`), Google Fonts Cairo/Inter, multi-tier elevation shadows, and card hover micro-animations.
+  - **Navigation Overhaul:** [`src/components/layout/PublicHeader.tsx`](file:///e:/SPPLPF/src/components/layout/PublicHeader.tsx). Reorganized crowded flat links into 6 deliberate focus areas with structured dropdowns (About, Programs, Media Center), distinct active page indicators, refined locale switcher, and direction-aware mobile drawer.
+  - **Compact Demo Banner:** [`src/components/layout/DemoBanner.tsx`](file:///e:/SPPLPF/src/components/layout/DemoBanner.tsx). Visually subordinate, sleek status pill with accessible confirmation modal for instant demo data reset.
+  - **Asymmetric Editorial Hero & Factsheet:** [`src/app/[locale]/page.tsx`](file:///e:/SPPLPF/src/app/[locale]/page.tsx). Replaced flat dark-blue box with an asymmetric layout featuring an institutional badge, high-contrast Arabic headline, dual action CTAs (`explore` & `contact`), trust indicator strip, and an interactive impact factsheet card.
+  - **Content-Aware Cards & Section Hierarchy:** Distinct visual compositions for news articles with date badges, field programs with geographic tags, impact stories with quote styling, and publications with document PDF badges.
+  - **Modernized Admin Workspace:** [`src/components/layout/AdminSidebar.tsx`](file:///e:/SPPLPF/src/components/layout/AdminSidebar.tsx), [`src/components/layout/AdminHeader.tsx`](file:///e:/SPPLPF/src/components/layout/AdminHeader.tsx), [`src/app/admin/overview/page.tsx`](file:///e:/SPPLPF/src/app/admin/overview/page.tsx). Kiranism/shadcn-inspired high-density layout with 3 grouped sidebar sections, live badge counters for in-review items, high-density metric widgets, and refined login screen.
+  - **Strict Boundaries Preserved:** Zero database mutations, zero authentication service regressions, zero fake real-world endorsements.
+- **Tests & Verification:**
+  - TypeScript: Zero errors (`npx tsc --noEmit`).
+  - Unit tests: 8 test files, 87 tests passed (100% passing) via [`vitest.config.mts`](file:///e:/SPPLPF/vitest.config.mts).
+  - Next.js Turbopack build: Compiled successfully in 1017ms; all 33 routes generated cleanly without errors.
 
 ---
 

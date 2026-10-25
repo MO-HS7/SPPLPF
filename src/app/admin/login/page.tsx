@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Alert, Badge, Button, Card, FormField, Input } from '../../../components/ui';
-import { IconGlobe, IconLock, IconScale, IconShield, IconUsers } from '../../../components/icons';
+import { IconGlobe, IconLock, IconScale, IconShield, IconUsers, IconCheckCircle } from '../../../components/icons';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
     setTimeout(() => {
       setIsLoading(false);
       router.push('/admin/overview');
-    }, 500);
+    }, 400);
   };
 
   return (
@@ -42,8 +42,9 @@ export default function AdminLoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 'var(--space-8)',
+        padding: 'clamp(1.5rem, 4vw, 3rem)',
         backgroundColor: 'var(--color-bg-canvas)',
+        minHeight: '80vh',
       }}
     >
       <div style={{ width: '100%', maxWidth: '480px' }}>
@@ -52,8 +53,8 @@ export default function AdminLoginPage() {
             style={{
               width: '3.5rem',
               height: '3.5rem',
-              borderRadius: 'var(--radius-lg)',
-              backgroundColor: 'var(--color-brand-primary)',
+              borderRadius: 'var(--radius-xl)',
+              background: 'linear-gradient(135deg, var(--color-navy-950) 0%, var(--color-navy-800) 100%)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
@@ -61,24 +62,25 @@ export default function AdminLoginPage() {
               marginInline: 'auto',
               marginBlockEnd: 'var(--space-3)',
               boxShadow: 'var(--shadow-md)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
             }}
           >
-            <IconScale size={28} />
+            <IconScale size={26} />
           </div>
-          <h1 style={{ fontSize: 'var(--text-xl)', color: 'var(--color-brand-primary)', marginBlockEnd: 'var(--space-1)' }}>
+          <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-brand-primary)', marginBlockEnd: '0.25rem' }}>
             لوحة الإدارة والتحرير المؤسسي
           </h1>
-          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
             SPPLPF Administrative Command Workspace
           </span>
         </div>
 
-        <Card style={{ padding: 'var(--space-8)' }}>
+        <Card style={{ padding: 'clamp(1.5rem, 3vw, 2.25rem)', boxShadow: 'var(--shadow-lg)' }}>
           <Alert variant="info" title="محاكاة بيئة المعاينة (Demo Simulation)">
             هذه الشاشة مخصصة لمعاينة واجهة الإدارة واختبار مسارات العمل. لا تُجري الواجهة مصادقة خلفية حقيقية، وسيتم ربط محرك التوثيق الفعلي لاحقاً في مهام التكامل.
           </Alert>
 
-          <form onSubmit={handleSubmit} style={{ marginBlockStart: 'var(--space-4)' }}>
+          <form onSubmit={handleSubmit} style={{ marginBlockStart: 'var(--space-6)' }}>
             <FormField label="البريد الإلكتروني المؤسسي" required>
               <Input
                 type="email"
@@ -100,38 +102,37 @@ export default function AdminLoginPage() {
             </FormField>
 
             <div style={{ marginBlockStart: 'var(--space-6)' }}>
-              <Button type="submit" variant="primary" style={{ width: '100%' }} isLoading={isLoading}>
-                <IconLock size={16} />
+              <Button type="submit" variant="primary" size="lg" style={{ width: '100%' }} isLoading={isLoading} icon={<IconLock size={16} />}>
                 <span>دخول لوحة الإدارة (معاينة تجريبية)</span>
               </Button>
             </div>
           </form>
 
           {/* Quick-fill accounts */}
-          <div style={{ marginBlockStart: 'var(--space-8)', borderBlockStart: '1px solid var(--color-border-subtle)', paddingBlockStart: 'var(--space-4)' }}>
-            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-muted)', display: 'block', marginBlockEnd: 'var(--space-2)' }}>
-              حسابات تجريبية سريعة التعبئة:
+          <div style={{ marginBlockStart: 'var(--space-6)', borderBlockStart: '1px solid var(--color-border-subtle)', paddingBlockStart: 'var(--space-4)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', display: 'block', marginBlockEnd: '0.5rem' }}>
+              الحسابات التجريبية المتاحة للاختبار السريع:
             </span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-2)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
               {demoAccounts.map((acc) => (
                 <button
                   key={acc.email}
                   type="button"
                   onClick={() => handleQuickFill(acc)}
                   style={{
-                    padding: '0.4rem 0.6rem',
-                    fontSize: 'var(--text-xs)',
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--color-border-subtle)',
-                    backgroundColor: email === acc.email ? 'var(--color-brand-primary-light)' : 'var(--color-bg-elevated)',
+                    padding: '0.5rem 0.65rem',
+                    fontSize: '0.75rem',
+                    borderRadius: 'var(--radius-md)',
+                    border: email === acc.email ? '1.5px solid var(--color-brand-primary)' : '1px solid var(--color-border-subtle)',
+                    backgroundColor: email === acc.email ? 'var(--color-brand-primary-light)' : 'var(--color-bg-subtle)',
                     color: email === acc.email ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
                     cursor: 'pointer',
                     textAlign: 'start',
-                    fontWeight: email === acc.email ? 700 : 500,
+                    transition: 'all var(--transition-fast)',
                   }}
                 >
-                  <div style={{ fontWeight: 600 }}>{acc.name}</div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>{acc.role}</div>
+                  <div style={{ fontWeight: 700 }}>{acc.name}</div>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: '0.1rem' }}>{acc.role}</div>
                 </button>
               ))}
             </div>
@@ -139,7 +140,17 @@ export default function AdminLoginPage() {
         </Card>
 
         <div style={{ textAlign: 'center', marginBlockStart: 'var(--space-6)' }}>
-          <Link href="/ar" style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+          <Link
+            href="/ar"
+            style={{
+              fontSize: '0.8125rem',
+              color: 'var(--color-text-muted)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontWeight: 500,
+            }}
+          >
             <IconGlobe size={14} />
             <span>العودة إلى البوابة العامة للمؤسسة</span>
           </Link>

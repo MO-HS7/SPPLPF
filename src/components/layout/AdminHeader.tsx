@@ -2,13 +2,17 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { IconGlobe, IconLock, IconUsers } from '../icons';
+import { useDemoStore } from '../../lib/demo/use-demo-store';
+import { IconGlobe, IconLock, IconUsers, IconShield } from '../icons';
 
 export function AdminHeader() {
+  const store = useDemoStore();
+  const currentUser = store.getUsers()[0];
+
   return (
     <header
       style={{
-        height: '4rem',
+        height: '4.25rem',
         backgroundColor: 'var(--color-bg-surface)',
         borderBlockEnd: '1px solid var(--color-border-subtle)',
         display: 'flex',
@@ -18,91 +22,113 @@ export function AdminHeader() {
         position: 'sticky',
         top: 0,
         zIndex: 800,
-        boxShadow: 'var(--shadow-sm)',
+        boxShadow: 'var(--shadow-xs)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+      {/* Left: Prototype Mode Tag */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
         <span
           style={{
-            fontSize: 'var(--text-xs)',
+            fontSize: '0.75rem',
             fontWeight: 700,
-            padding: '0.2rem 0.5rem',
-            borderRadius: 'var(--radius-sm)',
+            padding: '0.2rem 0.6rem',
+            borderRadius: 'var(--radius-full)',
             backgroundColor: 'var(--color-brand-primary-light)',
             color: 'var(--color-brand-primary)',
+            border: '1px solid rgba(15, 50, 90, 0.15)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
           }}
         >
-          وضع النموذج التجريبي / Prototype Mode
+          <IconShield size={12} style={{ color: 'var(--color-brand-primary)' }} />
+          <span>بيئة النموذج التجريبي التحريري / Editorial Demo Environment</span>
         </span>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+      {/* Right: Public link + User Avatar & Persona */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <Link
           href="/ar"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.25rem',
-            fontSize: 'var(--text-xs)',
+            gap: '0.35rem',
+            fontSize: '0.8125rem',
+            fontWeight: 600,
             color: 'var(--color-text-secondary)',
             textDecoration: 'none',
           }}
+          className="admin-public-link"
         >
-          <IconGlobe size={16} />
-          <span>الموقع العام (العربية)</span>
+          <IconGlobe size={15} style={{ color: 'var(--color-brand-secondary)' }} />
+          <span>الموقع العام</span>
         </Link>
 
+        {/* Current Demo Persona Pill */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 'var(--space-2)',
-            paddingInlineStart: 'var(--space-3)',
+            gap: '0.65rem',
+            paddingInlineStart: '0.85rem',
             borderInlineStart: '1px solid var(--color-border-subtle)',
           }}
         >
           <div
             style={{
-              width: '2rem',
-              height: '2rem',
+              width: '2.2rem',
+              height: '2.2rem',
               borderRadius: '50%',
               backgroundColor: 'var(--color-brand-primary)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 'var(--text-xs)',
+              fontSize: '0.8125rem',
               fontWeight: 700,
+              boxShadow: 'var(--shadow-sm)',
             }}
           >
-            SA
+            {currentUser?.name ? currentUser.name.substring(0, 2) : 'SA'}
           </div>
+
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-              مهند حسن (تجريبي)
+            <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
+              {currentUser?.name || 'مهند حسن'}
             </span>
-            <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
-              SUPER_ADMIN
+            <span
+              style={{
+                fontSize: '0.6875rem',
+                fontWeight: 600,
+                color: 'var(--color-brand-secondary)',
+                letterSpacing: '0.03em',
+              }}
+            >
+              {currentUser?.role || 'SUPER_ADMIN'}
             </span>
           </div>
         </div>
 
+        {/* Persona Switch / Exit */}
         <Link
           href="/admin/login"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.25rem',
-            padding: '0.35rem 0.6rem',
-            borderRadius: 'var(--radius-sm)',
-            border: '1px solid var(--color-border-strong)',
-            fontSize: 'var(--text-xs)',
+            gap: '0.35rem',
+            padding: '0.35rem 0.65rem',
+            borderRadius: 'var(--radius-md)',
+            border: '1.5px solid var(--color-border-strong)',
+            fontSize: '0.75rem',
+            fontWeight: 600,
             color: 'var(--color-text-secondary)',
             textDecoration: 'none',
+            backgroundColor: 'var(--color-bg-surface)',
           }}
         >
-          <IconLock size={14} />
-          <span>تبديل الحساب / خروج</span>
+          <IconLock size={13} />
+          <span>تبديل الحساب</span>
         </Link>
       </div>
     </header>
