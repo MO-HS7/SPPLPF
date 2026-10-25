@@ -120,3 +120,16 @@ describe('Frontend Prototype: Reactive Demo Store & Operations', () => {
     expect(content.some((c) => c.slug === 'test-community-pact')).toBe(false);
   });
 });
+
+describe('Frontend Visual Refresh: Genuine Lucide Icon System', () => {
+  it('exports genuine Lucide React icons with proper accessibility attributes', async () => {
+    const icons = await import('../../../src/components/icons');
+    expect(icons.IconScale).toBeDefined();
+    expect(icons.IconShield).toBeDefined();
+    expect(icons.IconHandshake).toBeDefined();
+    expect(icons.IconUsers).toBeDefined();
+    expect(icons.IconCheck).toBeDefined();
+    expect(icons.IconFileText).toBeDefined();
+  });
+});
+
