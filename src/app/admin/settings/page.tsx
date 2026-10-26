@@ -8,9 +8,11 @@ import {
   Card,
   FormField,
   Input,
+  Modal,
   Select,
 } from '../../../components/ui';
-import { IconAlertTriangle, IconCheck, IconLock, IconSave, IconShield } from '../../../components/icons';
+import { IconAlertTriangle, IconCheck, IconLock, IconRefreshCw, IconSave, IconShield } from '../../../components/icons';
+import { demoStore } from '../../../lib/demo/store';
 
 export default function AdminSettingsPage() {
   const [orgNameAr, setOrgNameAr] = useState('مؤسسة تعزيز السلام والحماية القانونية');
@@ -22,6 +24,8 @@ export default function AdminSettingsPage() {
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState('');
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
 
   const handleFieldChange = (setter: (val: any) => void, val: any) => {
     setter(val);
@@ -33,6 +37,13 @@ export default function AdminSettingsPage() {
     setHasUnsavedChanges(false);
     setFeedbackMsg('تم حفظ إعدادات النظام بنجاح في مخزن المعاينة');
     setTimeout(() => setFeedbackMsg(''), 3500);
+  };
+
+  const handleResetDemo = () => {
+    demoStore.resetToDefaults();
+    setShowResetConfirm(false);
+    setFeedbackMsg('تمت إعادة تعيين كافة البيانات التجريبية إلى حالتها الافتراضية بنجاح');
+    setTimeout(() => setFeedbackMsg(''), 4000);
   };
 
   return (
@@ -190,6 +201,49 @@ export default function AdminSettingsPage() {
             </div>
           </Card>
 
+          {/* Section 3: Demo Prototype Administration & Reset Tools */}
+          <Card style={{ borderInlineStart: '4px solid var(--color-brand-accent)' }}>
+            <h3 style={{ fontSize: 'var(--text-base)', color: 'var(--color-brand-primary)', marginBlockEnd: 'var(--space-2)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+              <IconRefreshCw size={18} style={{ color: 'var(--color-brand-accent)' }} />
+              <span>أدوات إدارة بيئة المعاينة التجريبية (Demo Prototype Management)</span>
+            </h3>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginBlockEnd: 'var(--space-4)' }}>
+              تتيح هذه الأداة إعادة تعيين كافة البيانات التجريبية (المقالات، البرامج، الاستفسارات، وسجلات التدقيق) إلى حالتها النموذجية الأولى لمراجعات أصحاب المصلحة.
+            </p>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: 'var(--space-4)',
+                backgroundColor: 'var(--color-bg-elevated)',
+                borderRadius: 'var(--radius-md)',
+                flexWrap: 'wrap',
+                gap: 'var(--space-3)',
+              }}
+            >
+              <div>
+                <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', display: 'block' }}>
+                  إعادة ضبط بيانات المعاينة إلى الحالة الافتراضية
+                </strong>
+                <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                  سيتم استرجاع السجلات الأصلية وحذف كافة التعديلات أو الاستفسارات التي تم إنشاؤها محلياً أثناء جلسة الاختبار.
+                </span>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowResetConfirm(true)}
+                icon={<IconRefreshCw size={14} />}
+              >
+                <span>إعادة تعيين البيانات التجريبية</span>
+              </Button>
+            </div>
+          </Card>
+
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-3)' }}>
             <Button type="submit" variant="primary" size="lg">
               <IconSave size={18} />
@@ -198,6 +252,27 @@ export default function AdminSettingsPage() {
           </div>
         </div>
       </form>
+
+      <Modal
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        title="تأكيد إعادة تعيين البيانات التجريبية (Confirm Reset Demo Data)"
+        maxWidth="460px"
+        footer={
+          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', width: '100%' }}>
+            <Button variant="outline" size="sm" onClick={() => setShowResetConfirm(false)}>
+              إلغاء
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleResetDemo}>
+              نعم، أعد التعيين
+            </Button>
+          </div>
+        }
+      >
+        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginBlockEnd: 0 }}>
+          هل تريد بالتأكيد استعادة كافة البيانات النموذجية الافتراضية؟ سيتم مسح أي استفسارات أو مقالات تم حفظها محلياً أثناء جلسة التجربة الحالية.
+        </p>
+      </Modal>
     </div>
   );
 }

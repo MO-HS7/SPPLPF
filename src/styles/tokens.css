@@ -131,16 +131,75 @@
 }
 
 [data-theme='dark'] {
+  /* Brand Tokens in Dark Mode - vibrant, high contrast against dark surfaces */
+  --color-brand-primary: #38bdf8;
+  --color-brand-primary-hover: #7dd3fc;
+  --color-brand-primary-light: rgba(56, 189, 248, 0.14);
+  --color-brand-primary-dark: #0284c7;
+
+  --color-brand-secondary: #0ea5e9;
+  --color-brand-secondary-hover: #38bdf8;
+  --color-brand-secondary-light: rgba(14, 165, 233, 0.16);
+
+  --color-brand-accent: #f59e0b;
+  --color-brand-accent-hover: #fbbf24;
+  --color-brand-accent-light: rgba(245, 158, 11, 0.18);
+
+  --color-brand-danger: #f87171;
+  --color-brand-danger-hover: #ef4444;
+  --color-brand-danger-light: rgba(239, 68, 68, 0.16);
+
+  --color-brand-success: #34d399;
+  --color-brand-success-hover: #10b981;
+  --color-brand-success-light: rgba(16, 185, 129, 0.16);
+
+  --color-brand-warning: #fbbf24;
+  --color-brand-warning-hover: #f59e0b;
+  --color-brand-warning-light: rgba(245, 158, 11, 0.16);
+
+  --color-brand-info: #38bdf8;
+  --color-brand-info-light: rgba(56, 189, 248, 0.16);
+
+  /* Neutrals & Surfaces */
   --color-bg-canvas: #070d17;
   --color-bg-surface: #0c1829;
   --color-bg-subtle: #122137;
   --color-bg-elevated: #172a45;
   --color-bg-muted: #1e3656;
+
   --color-text-primary: #f8fafc;
   --color-text-secondary: #cbd5e1;
   --color-text-muted: #94a3b8;
-  --color-border-subtle: #192e4a;
-  --color-border-strong: #233e63;
-  --shadow-md: 0 6px 12px -2px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 16px 24px -4px rgba(0, 0, 0, 0.55);
+  --color-text-inverse: #070d17;
+
+  --color-border-subtle: #1e3352;
+  --color-border-strong: #2a466c;
+  --color-border-focus: #38bdf8;
+
+  /* Institutional Identity in Dark Mode */
+  --color-navy-950: #030a14;
+  --color-navy-900: #071324;
+  --color-navy-850: #0a1a30;
+  --color-navy-800: #0e2444;
+  --color-navy-700: #14335c;
+  --color-navy-600: #1c467a;
+  --color-navy-100: rgba(56, 189, 248, 0.12);
+  --color-navy-50: rgba(56, 189, 248, 0.06);
+
+  --color-gold-700: #d97706;
+  --color-gold-600: #f59e0b;
+  --color-gold-500: #fbbf24;
+  --color-gold-100: rgba(251, 191, 36, 0.15);
+  --color-gold-50: rgba(251, 191, 36, 0.08);
+
+  /* Shadows for Dark Mode */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 12px -2px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 24px -4px rgba(0, 0, 0, 0.65);
+  --shadow-xl: 0 24px 36px -6px rgba(0, 0, 0, 0.75);
+  --shadow-glow: 0 0 0 3px rgba(56, 189, 248, 0.35);
+  --shadow-gold: 0 4px 14px 0 rgba(245, 158, 11, 0.25);
+  --shadow-primary: 0 4px 14px 0 rgba(2, 132, 199, 0.35);
 }
+

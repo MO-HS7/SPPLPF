@@ -12,3 +12,4 @@ export * from './Accordion';
 export * from './Pagination';
 export * from './Table';
 export * from './EmptyState';
+export * from './ThemeToggle';

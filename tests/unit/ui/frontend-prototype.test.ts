@@ -130,6 +130,8 @@ describe('Frontend Visual Refresh: Genuine Lucide Icon System', () => {
     expect(icons.IconUsers).toBeDefined();
     expect(icons.IconCheck).toBeDefined();
     expect(icons.IconFileText).toBeDefined();
+    expect(icons.IconSun).toBeDefined();
+    expect(icons.IconMoon).toBeDefined();
   });
 });
 

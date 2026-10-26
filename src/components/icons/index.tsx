@@ -28,6 +28,7 @@ import {
   Mail,
   MapPin,
   Menu,
+  Moon,
   Pencil,
   Phone,
   Plus,
@@ -38,6 +39,7 @@ import {
   Send,
   Settings,
   Shield,
+  Sun,
   Tag,
   Trash2,
   Users,
@@ -123,3 +125,7 @@ export const IconMapPin = createIcon(MapPin, 18);
 export const IconPhone = createIcon(Phone, 18);
 export const IconMail = createIcon(Mail, 18);
 export const IconGlobe = createIcon(Globe, 16);
+
+// Theme Mode
+export const IconSun = createIcon(Sun, 18);
+export const IconMoon = createIcon(Moon, 18);

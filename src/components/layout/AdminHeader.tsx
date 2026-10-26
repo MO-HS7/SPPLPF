@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useDemoStore } from '../../lib/demo/use-demo-store';
 import { IconGlobe, IconLock, IconUsers, IconShield } from '../icons';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 export function AdminHeader() {
   const store = useDemoStore();
@@ -46,8 +47,10 @@ export function AdminHeader() {
         </span>
       </div>
 
-      {/* Right: Public link + User Avatar & Persona */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      {/* Right: Theme Toggle + Public link + User Avatar & Persona */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <ThemeToggle locale="ar" />
+
         <Link
           href="/ar"
           style={{

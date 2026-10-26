@@ -325,6 +325,32 @@ ul, ol {
   text-decoration: underline;
 }
 
+.theme-toggle-btn:hover {
+  border-color: var(--color-brand-primary) !important;
+  background-color: var(--color-bg-subtle) !important;
+  transform: translateY(-1px);
+}
+
+[data-theme='dark'] .glass-header {
+  background: rgba(12, 24, 41, 0.92);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+[data-theme='dark'] .dropdown-item:hover {
+  background-color: var(--color-bg-elevated) !important;
+  color: var(--color-brand-primary) !important;
+}
+
+[data-theme='dark'] .locale-switcher:hover {
+  border-color: var(--color-brand-primary) !important;
+  background-color: var(--color-bg-subtle) !important;
+}
+
+[data-theme='dark'] .theme-toggle-btn:hover {
+  border-color: var(--color-brand-primary) !important;
+  background-color: var(--color-bg-elevated) !important;
+}
+
 .sidebar-link:hover {
   color: #ffffff !important;
   background-color: rgba(255, 255, 255, 0.06) !important;

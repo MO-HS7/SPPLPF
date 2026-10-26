@@ -190,6 +190,30 @@
   - TypeScript: Zero errors (`npx tsc --noEmit`).
   - Unit tests: 8 test files, 87 tests passed (100% passing) via [`vitest.config.mts`](file:///e:/SPPLPF/vitest.config.mts).
   - Next.js Turbopack build: Compiled successfully in 1017ms; all 33 routes generated cleanly without errors.
+### 2.9. Header Redesign, Theme Toggle & Public Navigation Cleanup (Branch: fix/header-theme-toggle-public-nav)
+- **Status:** Complete & validated via Next.js Turbopack production build & Vitest test suite.
+- **Scope:** Corrective visual and functional refinement addressing public header crowding, dark/light theme switching, and demo banner relocation.
+- **Deliverables:**
+  - **Removal of Global Demo Banner from Public Layout:** Completely removed `<DemoBanner>` from [`src/app/[locale]/layout.tsx`](file:///e:/SPPLPF/src/app/[locale]/layout.tsx) and [`src/components/layout/AdminShell.tsx`](file:///e:/SPPLPF/src/components/layout/AdminShell.tsx). Public routes start directly with the redesigned main header.
+  - **Relocation of Demo Reset Tool to Admin Settings:** Added Section 3 ("أدوات إدارة بيئة المعاينة التجريبية / Demo Prototype Management") inside [`src/app/admin/settings/page.tsx`](file:///e:/SPPLPF/src/app/admin/settings/page.tsx) with accessible reset confirmation modal and execution of `demoStore.resetToDefaults()`.
+  - **Redesigned Public Header:** [`src/components/layout/PublicHeader.tsx`](file:///e:/SPPLPF/src/components/layout/PublicHeader.tsx).
+    - Brand emblem and controlled-width institutional typography preventing horizontal collisions.
+    - 6 focused destinations (Home, About with dropdown, Programs, Media Center with dropdown, Presence, Contact).
+    - Accessible keyboard navigation (`Escape` closes dropdowns and drawer, `aria-haspopup`, `aria-expanded`).
+    - Complete removal of the public `لوحة الإدارة` (Admin Dashboard) shortcut and lock icon.
+    - Direction-aware mobile drawer responsive across 1024px, 768px, and 390px viewports without horizontal scrolling.
+  - **Comprehensive Light/Dark Mode System:**
+    - Exported `IconSun` and `IconMoon` from [`src/components/icons/index.tsx`](file:///e:/SPPLPF/src/components/icons/index.tsx).
+    - Hydration-safe anti-flash script in [`src/app/layout.tsx`](file:///e:/SPPLPF/src/app/layout.tsx) setting `data-theme` synchronously before first paint.
+    - Dedicated [`src/lib/theme/ThemeProvider.tsx`](file:///e:/SPPLPF/src/lib/theme/ThemeProvider.tsx) managing `spplpf-theme` persistence, system `prefers-color-scheme` detection, and cross-tab storage synchronization.
+    - Accessible [`src/components/ui/ThemeToggle.tsx`](file:///e:/SPPLPF/src/components/ui/ThemeToggle.tsx) button with Sun/Moon icons dynamically indicating the next mode action.
+    - Integrated into both `PublicHeader` and `AdminHeader`.
+    - Rich semantic dark mode token palette defined in [`src/styles/tokens.css`](file:///e:/SPPLPF/src/styles/tokens.css) and [`src/styles/globals.css`](file:///e:/SPPLPF/src/styles/globals.css) covering surfaces, text, borders, glassmorphism, buttons, inputs, and cards.
+  - **Strict Boundaries Preserved:** Zero database writes, migrations, seeds, or resets against PostgreSQL or Valkey; zero auth/session/RBAC changes; all 33 routes operational.
+- **Tests & Verification:**
+  - TypeScript: Zero errors (`npx tsc --noEmit`).
+  - Unit tests: 8 test files, 87 tests passed (100% passing) via [`vitest.config.mts`](file:///e:/SPPLPF/vitest.config.mts).
+  - Next.js Turbopack build: Compiled successfully; all 33 routes generated cleanly without errors.
 
 ---
 
