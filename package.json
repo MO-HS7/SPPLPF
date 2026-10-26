@@ -2,7 +2,7 @@
   "name": "spplpf-web",
   "version": "1.0.0",
   "private": true,
-  "description": "Institutional Website and Administrative Dashboard for Peace, Protection and Law Foundation (SPPLPF)",
+  "description": "Institutional Website and Administrative Dashboard for Law Protection & Social Peace Foundation (SPPLPF)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

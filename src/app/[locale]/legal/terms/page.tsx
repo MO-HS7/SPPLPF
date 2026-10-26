@@ -44,8 +44,8 @@ export default async function TermsPage({
           </h2>
           <p style={{ marginBlockEnd: 'var(--space-4)' }}>
             {isAr
-              ? 'كافة الدراسات، التقارير الحقوقية، وأوراق السياسات الصادرة عن مؤسسة تعزيز السلام والحماية القانونية متاحة للاستخدام الإنساني والأكاديمي والمدني غير التجاري، بشرط الإشارة الصريحة إلى المؤسسة كمصدر للمعلومات.'
-              : 'All empirical research, human rights reports, and policy briefs published by SPPLPF are open for non-commercial academic and civic use, subject to explicit attribution.'}
+              ? 'كافة الدراسات، التقارير الحقوقية، وأوراق السياسات الصادرة عن مؤسسة حماية القانون وتعزيز السلم الاجتماعي متاحة للاستخدام الإنساني والأكاديمي والمدني غير التجاري، بشرط الإشارة الصريحة إلى المؤسسة كمصدر للمعلومات.'
+              : 'All empirical research, human rights reports, and policy briefs published by the Law Protection & Social Peace Foundation (Provisional) are open for non-commercial academic and civic use, subject to explicit attribution.'}
           </p>
 
           <h2 style={{ fontSize: 'var(--text-lg)', color: 'var(--color-brand-primary)', marginBlockEnd: 'var(--space-3)' }}>

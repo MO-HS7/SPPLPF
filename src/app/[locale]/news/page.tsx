@@ -23,8 +23,8 @@ export default async function NewsPage({
         title={dict.nav.news}
         subtitle={
           isAr
-            ? 'الأخبار والبيانات الصحفية الصادرة عن مؤسسة تعزيز السلام والحماية القانونية.'
-            : 'Official news and press statements issued by the Peace, Protection and Law Foundation.'
+            ? 'الأخبار والبيانات الصحفية الصادرة عن مؤسسة حماية القانون وتعزيز السلم الاجتماعي.'
+            : 'Official news and press statements issued by the Law Protection & Social Peace Foundation (Provisional).'
         }
         breadcrumbs={
           <Breadcrumbs

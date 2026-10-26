@@ -22,8 +22,8 @@ describe('Frontend Prototype: i18n & Localization Engine', () => {
     expect(enDict.nav.home).toBe('Home');
     expect(arDict.direction).toBe('rtl');
     expect(enDict.direction).toBe('ltr');
-    expect(arDict.common.orgName).toContain('تعزيز السلام');
-    expect(enDict.common.orgName).toContain('Peace, Protection and Law');
+    expect(arDict.common.orgName).toContain('حماية القانون وتعزيز السلم الاجتماعي');
+    expect(enDict.common.orgName).toContain('Law Protection & Social Peace');
   });
 
   it('switches route pathname locale retaining target sub-path', () => {

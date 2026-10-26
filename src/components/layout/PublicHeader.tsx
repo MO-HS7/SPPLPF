@@ -110,37 +110,45 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             textDecoration: 'none',
             flexShrink: 0,
           }}
-          aria-label={isAr ? 'الصفحة الرئيسية لمؤسسة السلام وحماية القانون' : 'SPPLPF Home Page'}
+          aria-label={isAr ? 'الصفحة الرئيسية لمؤسسة حماية القانون وتعزيز السلم الاجتماعي' : 'SPPLPF Home Page'}
         >
+          {/* Provisional Text-Based Brand Mark */}
           <div
             style={{
-              width: '2.6rem',
-              height: '2.6rem',
-              borderRadius: 'var(--radius-lg)',
+              width: '2.5rem',
+              height: '2.5rem',
+              borderRadius: 'var(--radius-md)',
               background: 'linear-gradient(135deg, var(--color-navy-950) 0%, var(--color-navy-800) 100%)',
-              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'var(--shadow-md)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: 'var(--shadow-sm)',
               flexShrink: 0,
             }}
+            aria-label={isAr ? 'علامة تعريفية مؤقتة للمؤسسة' : 'Provisional institutional mark'}
+            title={isAr ? 'علامة تعريفية مؤقتة (SPPLPF)' : 'Provisional institutional mark (SPPLPF)'}
           >
-            <IconScale size={20} style={{ color: '#ffffff' }} />
+            <span style={{ fontSize: '0.72rem', fontWeight: 900, color: 'var(--color-gold-500)', lineHeight: 1, letterSpacing: '0.04em' }}>
+              SP
+            </span>
+            <span style={{ fontSize: '0.52rem', fontWeight: 800, color: '#ffffff', lineHeight: 1, letterSpacing: '0.06em', marginTop: '1px' }}>
+              LPF
+            </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '300px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '320px' }}>
             <span
               style={{
                 fontWeight: 800,
-                fontSize: 'clamp(0.875rem, 0.8rem + 0.25vw, 1rem)',
+                fontSize: 'clamp(0.8125rem, 0.75rem + 0.25vw, 0.95rem)',
                 color: 'var(--color-brand-primary)',
                 lineHeight: 1.25,
                 letterSpacing: '-0.01em',
               }}
             >
-              {isAr ? 'مؤسسة السلام وحماية القانون' : 'Peace & Protection of Law Foundation'}
+              {isAr ? 'مؤسسة حماية القانون وتعزيز السلم الاجتماعي' : 'Law Protection & Social Peace Foundation'}
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.1rem' }}>
               <span
@@ -155,7 +163,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               </span>
               <span style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)' }}>•</span>
               <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>
-                {isAr ? 'منظمة مستقلة' : 'Independent'}
+                {isAr ? 'حماية • منظمة مستقلة' : 'Provisional translation (OQ-001)'}
               </span>
             </div>
           </div>

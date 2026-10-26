@@ -57,6 +57,7 @@ export default function AdminLoginPage() {
               background: 'linear-gradient(135deg, var(--color-navy-950) 0%, var(--color-navy-800) 100%)',
               color: '#ffffff',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
               marginInline: 'auto',
@@ -64,14 +65,16 @@ export default function AdminLoginPage() {
               boxShadow: 'var(--shadow-md)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
             }}
+            aria-label="علامة تعريفية مؤقتة للمؤسسة"
           >
-            <IconScale size={26} />
+            <span style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--color-gold-500)', lineHeight: 1 }}>SP</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', lineHeight: 1, marginTop: '2px' }}>LPF</span>
           </div>
           <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-brand-primary)', marginBlockEnd: '0.25rem' }}>
             لوحة الإدارة والتحرير المؤسسي
           </h1>
           <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
-            SPPLPF Administrative Command Workspace
+            مؤسسة حماية القانون وتعزيز السلم الاجتماعي (SPPLPF)
           </span>
         </div>
 

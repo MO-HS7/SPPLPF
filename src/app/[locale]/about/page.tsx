@@ -105,12 +105,12 @@ export default async function AboutPage({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-8)', marginBlockEnd: 'var(--space-12)' }}>
           <div>
             <h2 style={{ fontSize: 'var(--text-2xl)', color: 'var(--color-brand-primary)', marginBlockEnd: 'var(--space-4)' }}>
-              {isAr ? 'من نحن (مؤسسة حماية)' : 'Who We Are (Himaaya Foundation)'}
+              {isAr ? 'من نحن (مؤسسة حماية القانون وتعزيز السلم الاجتماعي)' : 'Who We Are (Law Protection & Social Peace Foundation)'}
             </h2>
             <p style={{ fontSize: 'var(--text-base)', lineHeight: 1.8, color: 'var(--color-text-secondary)' }}>
               {isAr
-                ? 'مؤسسة تعزيز السلام والحماية القانونية (حماية) منظمة مجتمع مدني يمنية غير ربحية وغير حزبية، مرخصة وتعمل بموجب القوانين النافذة. انطلقت المؤسسة استجابة للحاجة الإنسانية والاجتماعية الملحة لحماية الحقوق الأساسية للمدنيين وتعزيز ثقافة السلام وسيادة القانون في ظل التحديات المعقدة التي يمر بها اليمن.'
-                : 'The Peace, Protection and Law Foundation (Himaaya) is an independent, non-profit, and non-partisan Yemeni civil society organization. Established in response to the acute humanitarian and civic imperative, the foundation safeguards civilian rights, promotes sustainable peace, and bolsters the rule of law amidst Yemen\'s complex landscape.'}
+                ? 'مؤسسة حماية القانون وتعزيز السلم الاجتماعي (حماية) منظمة مجتمع مدني يمنية غير ربحية وغير حزبية، مرخصة وتعمل بموجب القوانين النافذة. انطلقت المؤسسة استجابة للحاجة الإنسانية والاجتماعية الملحة لحماية الحقوق الأساسية للمدنيين وتعزيز ثقافة السلام وسيادة القانون في ظل التحديات المعقدة التي يمر بها اليمن.'
+                : 'The Law Protection & Social Peace Foundation (Himaaya - Provisional English translation) is an independent, non-profit, and non-partisan Yemeni civil society organization. Established in response to the acute humanitarian and civic imperative, the foundation safeguards civilian rights, promotes sustainable peace, and bolsters the rule of law amidst Yemen\'s complex landscape.'}
             </p>
             <p style={{ fontSize: 'var(--text-base)', lineHeight: 1.8, color: 'var(--color-text-secondary)' }}>
               {isAr

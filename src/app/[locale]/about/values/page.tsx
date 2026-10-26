@@ -34,7 +34,7 @@ export default async function ValuesPage({
     {
       titleAr: 'الحياد الإيجابي والاستقلالية (Neutrality)',
       titleEn: 'Neutrality & Independence',
-      descAr: 'مؤسسة حماية منظمة غير حكومية وغير ربحية، تعمل وفق القوانين المرعية، ومستقلة تماماً عن أي ولاءات حزبية أو سياسية أو فئوية.',
+      descAr: 'مؤسسة حماية القانون وتعزيز السلم الاجتماعي منظمة غير حكومية وغير ربحية، تعمل وفق القوانين المرعية، ومستقلة تماماً عن أي ولاءات حزبية أو سياسية أو فئوية.',
       descEn: 'An independent, non-profit organization operating strictly under the law, unaffiliated with any political party, armed group, or sectarian faction.',
       icon: <IconShield size={24} />,
       badge: isAr ? 'ميثاق مهني' : 'Operational Charter',
@@ -55,7 +55,7 @@ export default async function ValuesPage({
         title={dict.nav.values}
         subtitle={
           isAr
-            ? 'المبادئ الأخلاقية والموجهات المؤسسية التي تحكم قرارات وتدخلات مؤسسة حماية في الميدان.'
+            ? 'المبادئ الأخلاقية والموجهات المؤسسية التي تحكم قرارات وتدخلات مؤسسة حماية القانون وتعزيز السلم الاجتماعي في الميدان.'
             : 'The ethical principles and institutional compass guiding our field operations and strategic interventions.'
         }
         breadcrumbs={

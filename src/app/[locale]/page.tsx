@@ -192,9 +192,11 @@ export default async function HomePage({
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#38bdf8', lineHeight: 1 }}>100%</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#38bdf8', lineHeight: 1 }}>
+                    {isAr ? 'ميثاق إنساني' : 'Charter'}
+                  </div>
                   <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
-                    {isAr ? 'حياد واستقلالية' : 'Strict Neutrality'}
+                    {isAr ? 'حياد ومبادئ دولية' : 'Principles & Neutrality'}
                   </div>
                 </div>
               </div>
@@ -243,7 +245,7 @@ export default async function HomePage({
                         {isAr ? 'بطاقة الأثر المؤسسي' : 'Institutional Factsheet'}
                       </div>
                       <div style={{ fontSize: '0.7rem', color: '#cbd5e1' }}>
-                        {isAr ? 'حماية • تعز • مأرب • صنعاء' : 'Himaaya • Taiz • Marib • Sanaa'}
+                        {isAr ? 'مؤسسة حماية القانون • تعز • مأرب • صنعاء' : 'SPPLPF • Taiz • Marib • Sanaa'}
                       </div>
                     </div>
                   </div>

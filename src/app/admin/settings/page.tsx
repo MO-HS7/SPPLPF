@@ -15,8 +15,8 @@ import { IconAlertTriangle, IconCheck, IconLock, IconRefreshCw, IconSave, IconSh
 import { demoStore } from '../../../lib/demo/store';
 
 export default function AdminSettingsPage() {
-  const [orgNameAr, setOrgNameAr] = useState('مؤسسة تعزيز السلام والحماية القانونية');
-  const [orgNameEn, setOrgNameEn] = useState('Peace, Protection and Law Foundation');
+  const [orgNameAr, setOrgNameAr] = useState('مؤسسة حماية القانون وتعزيز السلم الاجتماعي');
+  const [orgNameEn, setOrgNameEn] = useState('Law Protection & Social Peace Foundation (Provisional)');
   const [contactEmail, setContactEmail] = useState('contact@spplpf.org');
   const [defaultLocale, setDefaultLocale] = useState('ar');
   const [takedownActive, setTakedownActive] = useState(false);

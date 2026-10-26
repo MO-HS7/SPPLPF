@@ -44,8 +44,8 @@ export default async function PrivacyPolicyPage({
           </h2>
           <p style={{ marginBlockEnd: 'var(--space-4)' }}>
             {isAr
-              ? 'تلتزم مؤسسة تعزيز السلام والحماية القانونية بحماية خصوصية وأمان البيانات الشخصية لجميع المستفيدين، طالبي العون القضائي، والزوار، وفقاً للمعايير القانونية والأخلاقية ومبادئ العمل الإنساني.'
-              : 'The Peace, Protection and Law Foundation is committed to protecting the privacy and security of personal data for all beneficiaries, legal aid seekers, and site visitors in accordance with ethical humanitarian benchmarks.'}
+              ? 'تلتزم مؤسسة حماية القانون وتعزيز السلم الاجتماعي بحماية خصوصية وأمان البيانات الشخصية لجميع المستفيدين، طالبي العون القضائي، والزوار، وفقاً للمعايير القانونية والأخلاقية ومبادئ العمل الإنساني.'
+              : 'The Law Protection & Social Peace Foundation (Provisional translation pending approval under OQ-001) is committed to protecting the privacy and security of personal data for all beneficiaries, legal aid seekers, and site visitors in accordance with ethical humanitarian benchmarks.'}
           </p>
 
           <h2 style={{ fontSize: 'var(--text-lg)', color: 'var(--color-brand-primary)', marginBlockEnd: 'var(--space-3)' }}>

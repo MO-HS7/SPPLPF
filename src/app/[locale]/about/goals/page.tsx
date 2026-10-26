@@ -105,8 +105,8 @@ export default async function GoalsPage({
         title={dict.nav.goals}
         subtitle={
           isAr
-            ? 'الأهداف الخمسة الاستراتيجية لمؤسسة تعزيز السلام والحماية القانونية حتى عام 2030.'
-            : 'The five strategic institutional goals guiding SPPLPF interventions through 2030.'
+            ? 'الأهداف الخمسة الاستراتيجية لمؤسسة حماية القانون وتعزيز السلم الاجتماعي.'
+            : 'The five strategic institutional goals guiding SPPLPF interventions.'
         }
         breadcrumbs={
           <Breadcrumbs

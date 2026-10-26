@@ -1,7 +1,7 @@
 import { DEFAULT_LOCALE, getDictionary, isValidLocale, type Locale } from '../../../lib/i18n';
 import { Breadcrumbs, PageHeader } from '../../../components/layout';
 import { Card, CardContent } from '../../../components/ui';
-import { IconMail, IconMapPin, IconPhone, IconScale } from '../../../components/icons';
+import { IconMail, IconMapPin, IconPhone } from '../../../components/icons';
 import { ContactFormClient } from './ContactFormClient';
 
 export default async function ContactPage({
@@ -20,7 +20,7 @@ export default async function ContactPage({
         title={dict.nav.contact}
         subtitle={
           isAr
-            ? 'تواصل مع فريق مؤسسة تعزيز السلام والحماية القانونية لطلب العون القضائي أو التنسيق المؤسسي.'
+            ? 'تواصل مع فريق مؤسسة حماية القانون وتعزيز السلم الاجتماعي لطلب العون القضائي أو التنسيق المؤسسي.'
             : 'Reach out to the SPPLPF team for legal counsel, project coordination, or community partnerships.'
         }
         breadcrumbs={

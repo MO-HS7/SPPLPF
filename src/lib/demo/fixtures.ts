@@ -18,12 +18,12 @@ export const INITIAL_CONTENT_ITEMS: ContentItemDemo[] = [
     titleEn: 'First Meeting of Community Reconciliation Committee Convened in Marib to Advance Local Mediation',
     summaryAr: 'نظمت المؤسسة بمحافظة مأرب اللقاء التنسيقي الأول للوسطاء المحليين والوجهاء الاجتماعيين وممثلي السلطة المحلية لترسيخ آليات حل النزاعات وتسهيل الممرات الإنسانية.',
     summaryEn: 'The foundation organized the inaugural coordination meeting in Marib bringing together local mediators, tribal elders, and local authority delegates to institutionalize conflict resolution mechanisms.',
-    bodyAr: `في إطار مشروع "تعزيز الوساطة المحلية في اليمن"، عقدت مؤسسة تعزيز السلام والحماية القانونية (حماية) بمحافظة مأرب اللقاء الأول لأعضاء لجنة المصالحة المجتمعية، بمشاركة نخبة من الشخصيات الاجتماعية والوسطاء المحليين وقيادات الأحزاب وممثلي السلطات المحلية على مستوى المديريات والمحافظة.
+    bodyAr: `في إطار مشروع "تعزيز الوساطة المحلية في اليمن"، عقدت مؤسسة حماية القانون وتعزيز السلم الاجتماعي بمحافظة مأرب اللقاء الأول لأعضاء لجنة المصالحة المجتمعية، بمشاركة نخبة من الشخصيات الاجتماعية والوسطاء المحليين وقيادات الأحزاب وممثلي السلطات المحلية على مستوى المديريات والمحافظة.
 
 ناقش اللقاء التحديات الميدانية التي تواجه الوسطاء المحليين في ظل تراجع المساحات المدنية، واستعرض النجاحات السابقة التي تحققت في تيسير التهدئة المجتمعية وتبادل المحتجزين واستعادة الجثامين عبر خطوط التماس.
 
 وأكد المشاركون على ضرورة مأسسة عمل لجان الوساطة المجتمعية وتوفير الضمانات القانونية والأمنية الكفيلة بحماية الوسطاء، وتعزيز قنوات الاتصال والتنسيق المستمر مع مختلف الأطراف لتحقيق الاستقرار الإنساني والاجتماعي في المحافظة.`,
-    bodyEn: `Within the framework of the "Enhancing Local Mediation in Yemen" project, the Peace, Protection and Law Foundation (Himaaya) in Marib convened the first meeting of the Community Reconciliation Committee. Participants included prominent local mediators, community leaders, and district authority representatives.
+    bodyEn: `Within the framework of the "Enhancing Local Mediation in Yemen" project, the Law Protection & Social Peace Foundation (Provisional) in Marib convened the first meeting of the Community Reconciliation Committee. Participants included prominent local mediators, community leaders, and district authority representatives.
 
 The meeting addressed critical operational challenges facing mediators amidst shrinking civic space, reviewing prior milestones in de-escalation, prisoner exchanges, and body recovery agreements across conflict lines.
 
@@ -43,12 +43,12 @@ Attendees underscored the vital necessity of institutionalizing community mediat
     titleEn: 'Workshop on "Strengthening Legal Oversight Mechanisms and Principles of Transparency and Integrity" in Taiz',
     summaryAr: 'بمشاركة قضاة وأعضاء نيابة ومحامين وممثلي أجهزة رقابية، نفذت المؤسسة حلقة نقاشية لتعزيز إجراءات التقاضي العادل وضمانات المحتجزين.',
     summaryEn: 'Convening judges, prosecutors, lawyers, and oversight body representatives, the foundation conducted an expert roundtable advancing fair trial safeguards.',
-    bodyAr: `أقامت مؤسسة تعزيز السلام والحماية القانونية في المقر الرئيسي بمدينة تعز ورشة عمل متخصصة بعنوان "تعزيز آليات الرقابة القانونية ومبادئ النزاهة والشفافية"، بمشاركة واسعة من القضاة ووكلاء النيابة والمحامين (من الجنسين) وممثلي الأجهزة الرقابية ومنظمات المجتمع المدني.
+    bodyAr: `أقامت مؤسسة حماية القانون وتعزيز السلم الاجتماعي في المقر الرئيسي بمدينة تعز ورشة عمل متخصصة بعنوان "تعزيز آليات الرقابة القانونية ومبادئ النزاهة والشفافية"، بمشاركة واسعة من القضاة ووكلاء النيابة والمحامين (من الجنسين) وممثلي الأجهزة الرقابية ومنظمات المجتمع المدني.
 
 ركزت الورشة على تقييم إجراءات الضبط والاحتجاز، وضمان التزام مأموري الضبط القضائي بنصوص القوانين الوطنية والمواثيق الدولية المعنية بحقوق الإنسان، والحد من حالات الاحتجاز التعسفي أو الإطالة في الحبس الاحتياطي.
 
 وخرجت الورشة بمجموعة من التوصيات العملية شملت تفعيل الرقابة الدورية على مراكز الاحتجاز، وتطوير التنسيق بين النيابة العامة ونقابة المحامين، وتقديم العون القضائي للفئات الضعيفة والأشد فقراً.`,
-    bodyEn: `At its headquarters in Taiz, the Peace, Protection and Law Foundation conducted a specialized workshop entitled "Strengthening Legal Oversight Mechanisms and Principles of Transparency and Integrity," attended by judges, public prosecutors, legal practitioners, and civil society oversight delegates.
+    bodyEn: `At its headquarters in Taiz, the Law Protection & Social Peace Foundation (Provisional) conducted a specialized workshop entitled "Strengthening Legal Oversight Mechanisms and Principles of Transparency and Integrity," attended by judges, public prosecutors, legal practitioners, and civil society oversight delegates.
 
 Discussions focused on detention safeguards, ensuring law enforcement compliance with national statutes and international humanitarian norms, and eliminating unlawful detention practices.
 
@@ -91,12 +91,12 @@ Participants received practical guidance on legal limits for inspecting electron
     summaryEn: 'How neutral intervention by community mediators facilitated humanitarian exchange agreements and reunited separated families.',
     bodyAr: `وسط تعقيدات المشهد الإنساني وصعوبة التوصل لحلول شاملة، أثبتت شبكات الوسطاء المحليين في اليمن قدرتها على إحداث اختراقات إنسانية ملموسة تنقذ الأرواح وتخفف معاناة المدنيين.
 
-عبر تدريب وتوجيه فرق الوساطة المجتمعية وتوفير الغطاء القانوني واللوجستي المستقل، وثقت المؤسسة تيسير 19 اتفاقاً لتبادل المحتجزين واستعادة الجثامين شملت 10 محافظات يمنية، بالاعتماد على بناء الثقة بين الأطراف المحلية دون أي تسييس.
+عبر تدريب وتوجيه فرق الوساطة المجتمعية وتوفير الغطاء القانوني واللوجستي المستقل، تدعم المؤسسة جهود تيسير مبادرات تبادل المحتجزين واستعادة الجثامين وبناء الثقة في نطاق العمليات المعتمد (تعز ومأرب وصنعاء) بالاعتماد على بناء الثقة الإنسانية دون أي تسييس.
 
 تمثل هذه القصص دليلاً عملياً على أن السلام المستدام يبدأ من المجتمعات المحلية ويتحقق بأيدي أبنائها المخلصين.`,
     bodyEn: `Amidst multifaceted humanitarian obstacles, community mediator networks in Yemen have demonstrated an extraordinary ability to achieve tangible breakthroughs that alleviate civilian suffering.
 
-Through technical training and independent operational support, the foundation documented the facilitation of 19 detainee and body recovery agreements across 10 governorates based on trust-building and depoliticized engagement.
+Through technical training and independent operational support, the foundation supports the facilitation of humanitarian initiatives and detainee exchanges within operational hubs (Taiz, Marib, Sanaa) based on trust-building and depoliticized engagement.
 
 These narratives demonstrate that durable peace is cultivated from the grassroots through trusted local actors.`,
     category: 'قصص نجاح / Success Stories',
@@ -162,7 +162,7 @@ export const INITIAL_PROGRAMS: ProgramDemo[] = [
       'Facilitate community reconciliation pacts and humanitarian corridors.',
       'Codify customary and local mediation practices aligned with international humanitarian law.',
     ],
-    location: 'تعز، مأرب، لحج / Taiz, Marib, Lahj',
+    location: 'تعز، مأرب / Taiz, Marib',
     status: 'ACTIVE',
     featured: true,
   },
@@ -228,7 +228,7 @@ export const INITIAL_PROGRAMS: ProgramDemo[] = [
       'Train CSO personnel on risk mitigation and civilian data confidentiality.',
       'Facilitate constructive partnerships between civil society and statutory oversight bodies.',
     ],
-    location: 'تعز، عموم المحافظات / Taiz & Nationwide',
+    location: 'تعز، مأرب، صنعاء / Taiz, Marib, Sanaa',
     status: 'ACTIVE',
     featured: false,
   },
@@ -286,8 +286,8 @@ export const INITIAL_OFFICES: OfficeDemo[] = [
     roleEn: 'Headquarters & Core Operational Command',
     addressAr: 'شارع جمال، المجمع الإداري، مدينة تعز',
     addressEn: 'Gamal Street, Administrative Complex, Taiz City',
-    scopeAr: 'إدارة وتنسيق كافة البرامج والعمليات الميدانية في تعز والمحافظات المجاورة كلحج والساحل الغربي.',
-    scopeEn: 'Overall operational command and program management across Taiz, Lahj, and adjacent southern districts.',
+    scopeAr: 'إدارة وتنسيق كافة البرامج والعمليات الميدانية والمؤسسية للمؤسسة انطلاقاً من المقر الرئيسي في تعز.',
+    scopeEn: 'Overall operational command, governance, and institutional management from Taiz headquarters.',
     phone: '+967 4 250 881',
     email: 'taiz@spplpf.org',
     isHeadquarters: true,

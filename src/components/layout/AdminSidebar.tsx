@@ -96,16 +96,19 @@ export function AdminSidebar() {
             width: '2.4rem',
             height: '2.4rem',
             borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, var(--color-brand-secondary) 0%, var(--color-brand-primary) 100%)',
-            color: '#ffffff',
+            background: 'linear-gradient(135deg, var(--color-navy-950) 0%, var(--color-navy-800) 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: 'var(--shadow-sm)',
             flexShrink: 0,
           }}
+          aria-label="علامة تعريفية مؤقتة للمؤسسة"
         >
-          <IconScale size={18} />
+          <span style={{ fontSize: '0.7rem', fontWeight: 900, color: 'var(--color-gold-500)', lineHeight: 1 }}>SP</span>
+          <span style={{ fontSize: '0.5rem', fontWeight: 800, color: '#ffffff', lineHeight: 1, marginTop: '1px' }}>LPF</span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <h2 style={{ color: '#ffffff', fontSize: '0.9375rem', fontWeight: 800, margin: 0, lineHeight: 1.2 }}>

@@ -215,6 +215,24 @@
   - Unit tests: 8 test files, 87 tests passed (100% passing) via [`vitest.config.mts`](file:///e:/SPPLPF/vitest.config.mts).
   - Next.js Turbopack build: Compiled successfully; all 33 routes generated cleanly without errors.
 
+### 2.10. Institutional Identity & Content Correction (Branch: fix/institutional-identity-content)
+- **Status:** Complete & verified locally across all routes, dictionaries, fixtures, and tests.
+- **Scope:** Complete institutional alignment with canonical organizational identity, brand mark representation, provisional English legal status, and excision of unsupported claims.
+- **Deliverables:**
+  - **Canonical Arabic Identity:** Rigorously applied **مؤسسة حماية القانون وتعزيز السلم الاجتماعي** across all 33 routes, headers, footers, admin workspaces, metadata, fixtures, and localization dictionaries (`ar.ts`, `en.ts`). All non-canonical variants (`مؤسسة تعزيز السلام والحماية القانونية`, `مؤسسة السلام وحماية القانون`) have been completely eradicated from codebase.
+  - **Provisional English Legal Status:** Properly marked English translations as provisional pending formal institutional ratification under Open Question OQ-001 (`Law Protection & Social Peace Foundation (Provisional translation pending approval under OQ-001)`).
+  - **Provisional Brand Mark Representation:** Replaced inappropriate use of generic Lucide `Scale` icon as a claimed institutional logo. In absence of an authentic vector asset in `public/`, created a distinct text-based monogram (`SP / LPF`) on an institutional navy gradient, explicitly labeled with accessible metadata as `علامة تعريفية مؤقتة` across `PublicHeader`, `PublicFooter`, `AdminSidebar`, and `AdminLogin`. Lucide React icons continue to be used strictly as standard UI action/nav icons.
+  - **Unsupported Claims Excision & Geographic Grounding:**
+    - Eliminated unverified claims (e.g. "100% independent neutrality") and replaced with references to humanitarian charter adherence and international principles.
+    - Removed unverified specific metrics (e.g., "19 agreements across 10 governorates"), marking all sample records explicitly as provisional demo data.
+    - Restricted operational presence strictly to verified hubs (**Taiz, Marib, Sana'a**), excising extraneous locations (Lahj, West Coast) from official scope.
+    - Confirmed zero foreign template references (Kano, Jos, Kaduna).
+  - **Header & Navigation Integrity Maintained:** Zero public demo banners, no exposed public admin links, fully functioning Light/Dark theme toggle with anti-flash script and persistent storage, and demo reset accessible via `/admin/settings`.
+- **Tests & Verification:**
+  - TypeScript: Zero errors (`npx tsc --noEmit`).
+  - Unit tests: 8 test files, 87 tests passed (100% passing) via [`vitest.config.mts`](file:///e:/SPPLPF/vitest.config.mts).
+  - Next.js Turbopack build: Compiled successfully (`npm run build`); all 33 routes generated cleanly without errors.
+
 ---
 
 ## 3. Operational Gates & Release State

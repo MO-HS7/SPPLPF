@@ -26,11 +26,11 @@ export default async function MilestonesPage({
     },
     {
       year: '2025',
-      badge: isAr ? 'أثر إنساني' : 'Humanitarian Impact',
-      titleAr: 'تيسير 57 عملية تبادل محتجزين و19 اتفاقية مجتمعية في 10 محافظات',
-      titleEn: 'Facilitating 57 Detainee Exchanges and 19 Local Agreements Across 10 Governorates',
-      descAr: 'بفضل جهود شبكات الوسطاء المحليين المدعومين من المؤسسة، تم بنجاح تسهيل توقيع 19 اتفاقاً لاستعادة الجثامين وتبادل المحتجزين وبناء الثقة بين لجان الأطراف.',
-      descEn: 'Through local mediator networks supported by the foundation, 19 body recovery and detainee exchange pacts were brokered across 10 governorates based on depoliticized trust.',
+      badge: isAr ? 'أثر إنساني (بيانات تجريبية)' : 'Humanitarian Impact (Provisional)',
+      titleAr: 'تيسير جهود الوساطة المحلية ومبادرات تبادل المحتجزين (نموذج تجريبي)',
+      titleEn: 'Facilitating Local Mediation and Detainee Initiatives in Taiz & Marib (Provisional Demo)',
+      descAr: 'دعم جهود شبكات الوسطاء المحليين لتسهيل مبادرات استعادة الجثامين وبناء الثقة المجتمعية في نطاق العمليات المعتمد (تعز ومأرب وصنعاء).',
+      descEn: 'Supporting local mediator networks to facilitate humanitarian initiatives and confidence-building within approved hubs (Taiz, Marib, and Sanaa).',
       icon: <IconCheck size={20} />,
     },
     {
@@ -59,8 +59,8 @@ export default async function MilestonesPage({
         title={dict.nav.milestones}
         subtitle={
           isAr
-            ? 'المحطات الرئيسية والأثر الميداني لمسيرة مؤسسة حماية منذ تأسيسها.'
-            : 'Key institutional milestones and tangible humanitarian impacts achieved across Yemen.'
+            ? 'المحطات الرئيسية والأثر الميداني لمسيرة مؤسسة حماية القانون وتعزيز السلم الاجتماعي.'
+            : 'Key institutional milestones and verified operational track record of the foundation.'
         }
         breadcrumbs={
           <Breadcrumbs

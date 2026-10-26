@@ -23,7 +23,7 @@ export default async function PresencePage({
         title={dict.nav.presence}
         subtitle={
           isAr
-            ? 'التوزيع الجغرافي لمكاتب وفرق مؤسسة تعزيز السلام والحماية القانونية عبر المحافظات اليمنية.'
+            ? 'التوزيع الجغرافي لمكاتب وفرق مؤسسة حماية القانون وتعزيز السلم الاجتماعي عبر المحافظات اليمنية.'
             : 'Geographical footprint and operational hubs across Yemeni governorates ensuring impartial community access.'
         }
         breadcrumbs={
@@ -67,17 +67,17 @@ export default async function PresencePage({
           </div>
           <p style={{ fontSize: 'var(--text-base)', lineHeight: 1.8, color: 'var(--color-text-secondary)', marginBlockEnd: 'var(--space-4)' }}>
             {isAr
-              ? 'تمتلك مؤسسة تعزيز السلام والحماية القانونية قدرة عملياتية مرنة وحضوراً استراتيجياً راسخاً مدعوماً بتصاريح عمل رسمية. استجابةً للمتغيرات الميدانية وبما يضمن سلامة الكادر واستقلالية القرار الإنساني، تم اعتماد مدينة تعز مقراً رئيسياً لقيادة وإدارة البرامج الكبرى، مع تشغيل فرع مأرب للاستجابة لاحتياجات النازحين والمجتمعات المضيفة، والحفاظ على مكتب متخصص في صنعاء للمهام المحايدة والوساطة القانونية.'
+              ? 'تمتلك مؤسسة حماية القانون وتعزيز السلم الاجتماعي قدرة عملياتية مرنة وحضوراً استراتيجياً راسخاً مدعوماً بتصاريح عمل رسمية. استجابةً للمتغيرات الميدانية وبما يضمن سلامة الكادر واستقلالية القرار الإنساني، تم اعتماد مدينة تعز مقراً رئيسياً لقيادة وإدارة البرامج، مع تشغيل فرع مأرب للاستجابة لاحتياجات النازحين والمجتمعات المضيفة، والحفاظ على مكتب متخصص في صنعاء للمهام المحايدة والوساطة القانونية.'
               : 'SPPLPF maintains adaptive operational capacity and structured strategic hubs underpinned by official permits. To ensure staff safety and uphold humanitarian independence, operations are coordinated from our central command hub in Taiz, supported by our active Marib branch serving displaced and host communities, and a specialized coordination office in Sanaa.'}
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-4)', marginBlockStart: 'var(--space-6)' }}>
             <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-bg-elevated)', borderRadius: 'var(--radius-md)' }}>
               <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-brand-primary)', fontWeight: 700, display: 'block', marginBlockEnd: '0.25rem' }}>
-                {isAr ? 'محافظة تعز والمحافظات المجاورة' : 'Taiz & Southern Governorates'}
+                {isAr ? 'محافظة تعز والمقر الرئيسي' : 'Taiz Headquarters Hub'}
               </span>
               <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', margin: 0 }}>
-                {isAr ? 'تغطية شاملة لمديريات تعز والامتداد نحو لحج والساحل.' : 'Coverage of all Taiz districts and coordination in Lahj.'}
+                {isAr ? 'تغطية برامجية لمديريات تعز انطلاقاً من المقر الرئيسي.' : 'Programmatic coverage across Taiz districts from headquarters.'}
               </p>
             </div>
             <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-bg-elevated)', borderRadius: 'var(--radius-md)' }}>

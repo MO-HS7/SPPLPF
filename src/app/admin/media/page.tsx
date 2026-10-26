@@ -26,12 +26,12 @@ interface MediaItemDemo {
 const INITIAL_MEDIA: MediaItemDemo[] = [
   {
     id: 'med-001',
-    name: 'spplpf-official-emblem.svg',
+    name: 'spplpf-provisional-mark.svg',
     type: 'image',
     size: '142 KB',
     uploadedAt: '2026-10-22',
-    altAr: 'شعار مؤسسة تعزيز السلام والحماية القانونية',
-    altEn: 'SPPLPF Institutional Emblem',
+    altAr: 'العلامة التعريفية المؤقتة — مؤسسة حماية القانون وتعزيز السلم الاجتماعي',
+    altEn: 'SPPLPF Provisional Brand Mark (Pending formal approval)',
   },
   {
     id: 'med-002',

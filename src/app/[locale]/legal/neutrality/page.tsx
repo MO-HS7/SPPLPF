@@ -64,8 +64,8 @@ export default async function NeutralityCharterPage({
 
           <p style={{ marginBlockEnd: 'var(--space-4)' }}>
             {isAr
-              ? 'تؤكد مؤسسة تعزيز السلام والحماية القانونية (حماية) أن كافة برامجها، تدخلاتها، وتصريحاتها قائمة على الالتزام الصارم بمبادئ القانون الدولي الإنساني ومبادئ نزهة العمل المدني: الإنسانية، الحياد، عدم التمييز، والاستقلالية العملياتية.'
-              : 'The Peace, Protection and Law Foundation reaffirms that all its interventions and programs operate in strict compliance with core humanitarian standards: humanity, neutrality, non-discrimination, and operational independence.'}
+              ? 'تؤكد مؤسسة حماية القانون وتعزيز السلم الاجتماعي أن كافة برامجها، وتدخلاتها، وتصريحاتها قائمة على الالتزام الصارم بمبادئ القانون الدولي الإنساني ومبادئ العمل المدني: الإنسانية، الحياد، عدم التمييز، والاستقلالية العملياتية.'
+              : 'The Law Protection & Social Peace Foundation (Provisional translation pending approval under OQ-001) reaffirms that all its interventions and programs operate in strict compliance with core humanitarian standards: humanity, neutrality, non-discrimination, and operational independence.'}
           </p>
 
           <h3 style={{ fontSize: 'var(--text-base)', color: 'var(--color-brand-primary)', marginBlockEnd: 'var(--space-2)' }}>

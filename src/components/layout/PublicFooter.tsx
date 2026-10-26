@@ -42,19 +42,22 @@ export function PublicFooter({ locale }: PublicFooterProps) {
                   width: '2.5rem',
                   height: '2.5rem',
                   borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'var(--color-brand-secondary)',
-                  color: '#ffffff',
+                  background: 'linear-gradient(135deg, var(--color-navy-950) 0%, var(--color-navy-800) 100%)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   boxShadow: 'var(--shadow-sm)',
                   flexShrink: 0,
                 }}
+                aria-label={isAr ? 'علامة تعريفية مؤقتة للمؤسسة' : 'Provisional institutional mark'}
               >
-                <IconScale size={20} />
+                <span style={{ fontSize: '0.72rem', fontWeight: 900, color: 'var(--color-gold-500)', lineHeight: 1 }}>SP</span>
+                <span style={{ fontSize: '0.52rem', fontWeight: 800, color: '#ffffff', lineHeight: 1, marginTop: '1px' }}>LPF</span>
               </div>
               <div>
-                <h4 style={{ color: '#ffffff', fontSize: '1rem', fontWeight: 700, margin: 0, lineHeight: 1.3 }}>
+                <h4 style={{ color: '#ffffff', fontSize: '0.95rem', fontWeight: 700, margin: 0, lineHeight: 1.35 }}>
                   {dict.common.orgName}
                 </h4>
                 <span style={{ fontSize: '0.75rem', color: 'var(--color-gold-500)', fontWeight: 600 }}>

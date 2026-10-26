@@ -6,9 +6,9 @@ import { ThemeProvider } from '../lib/theme/ThemeProvider';
 export const metadata: Metadata = {
   title: {
     template: '%s | SPPLPF',
-    default: 'SPPLPF | مؤسسة تعزيز السلام والحماية القانونية',
+    default: 'SPPLPF | مؤسسة حماية القانون وتعزيز السلم الاجتماعي',
   },
-  description: 'Official institutional platform for the Peace, Protection and Law Foundation (SPPLPF) - مؤسسة تعزيز السلام والحماية القانونية',
+  description: 'Official institutional platform for the Law Protection & Social Peace Foundation (SPPLPF - Provisional translation) - مؤسسة حماية القانون وتعزيز السلم الاجتماعي',
 };
 
 export default function RootLayout({
