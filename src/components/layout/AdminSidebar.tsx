@@ -111,11 +111,11 @@ export function AdminSidebar() {
           <span style={{ fontSize: '0.5rem', fontWeight: 800, color: '#ffffff', lineHeight: 1, marginTop: '1px' }}>LPF</span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <h2 style={{ color: '#ffffff', fontSize: '0.9375rem', fontWeight: 800, margin: 0, lineHeight: 1.2 }}>
-            SPPLPF Admin
+          <h2 style={{ color: '#ffffff', fontSize: '0.85rem', fontWeight: 800, margin: 0, lineHeight: 1.25 }}>
+            مؤسسة حماية القانون
           </h2>
-          <span style={{ fontSize: '0.7rem', color: 'var(--color-gold-500)', fontWeight: 600 }}>
-            بوابة الإدارة التحريرية (معاينة)
+          <span style={{ fontSize: '0.65rem', color: 'var(--color-gold-500)', fontWeight: 600 }} title="مؤسسة حماية القانون وتعزيز السلم الاجتماعي">
+            وتعزيز السلم الاجتماعي (SPPLPF)
           </span>
         </div>
       </div>
