@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { Locale } from '../../lib/i18n';
@@ -28,11 +28,27 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
   const pathname = usePathname() || `/${locale}`;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'about' | 'media' | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const targetLocale: Locale = locale === 'en' ? 'ar' : 'en';
   const targetPath = switchLocalePath(pathname, targetLocale);
 
   const headerRef = useRef<HTMLElement>(null);
+
+  // ═══ Scroll-Aware Header ═══
+  useEffect(() => {
+    const SCROLL_THRESHOLD = 32;
+
+    function handleScroll() {
+      setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
+    }
+
+    // Set initial state
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -63,9 +79,9 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  const toggleDropdown = (name: 'about' | 'media') => {
+  const toggleDropdown = useCallback((name: 'about' | 'media') => {
     setActiveDropdown((prev) => (prev === name ? null : name));
-  };
+  }, []);
 
   const isAr = locale === 'ar';
 
@@ -80,10 +96,24 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
   const isPresenceActive = pathname.startsWith(`/${locale}/presence`);
   const isContactActive = pathname.startsWith(`/${locale}/contact`);
 
+  // Shared nav link style generator
+  const navLinkStyle = (isActive: boolean): React.CSSProperties => ({
+    padding: '0.4rem 0.65rem',
+    fontSize: '0.8125rem',
+    fontWeight: isActive ? 700 : 600,
+    color: isActive ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
+    backgroundColor: isActive ? 'var(--color-brand-primary-light)' : 'transparent',
+    borderRadius: 'var(--radius-md)',
+    transition: 'all var(--transition-fast)',
+    whiteSpace: 'nowrap' as const,
+    letterSpacing: '-0.01em',
+    textDecoration: 'none',
+  });
+
   return (
     <header
       ref={headerRef}
-      className="glass-header"
+      className={`glass-header ${isScrolled ? 'header-scrolled' : ''}`}
       style={{
         position: 'sticky',
         top: 0,
@@ -97,16 +127,16 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
           alignItems: 'center',
           justifyContent: 'space-between',
           height: 'var(--header-height)',
-          gap: '1rem',
+          gap: '0.75rem',
         }}
       >
-        {/* Brand Emblem & Organization Identity */}
+        {/* ═══ Brand Emblem & Organization Identity ═══ */}
         <Link
           href={`/${locale}`}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.75rem',
+            gap: '0.65rem',
             textDecoration: 'none',
             flexShrink: 0,
           }}
@@ -126,6 +156,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               justifyContent: 'center',
               boxShadow: 'var(--shadow-sm)',
               flexShrink: 0,
+              transition: 'transform 300ms cubic-bezier(0.22, 1, 0.36, 1)',
             }}
             aria-label={isAr ? 'علامة تعريفية مؤقتة للمؤسسة' : 'Provisional institutional mark'}
             title={isAr ? 'علامة تعريفية مؤقتة (SPPLPF)' : 'Provisional institutional mark (SPPLPF)'}
@@ -138,11 +169,11 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '320px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '280px' }}>
             <span
               style={{
                 fontWeight: 800,
-                fontSize: 'clamp(0.8125rem, 0.75rem + 0.25vw, 0.95rem)',
+                fontSize: 'clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)',
                 color: 'var(--color-brand-primary)',
                 lineHeight: 1.25,
                 letterSpacing: '-0.01em',
@@ -150,10 +181,10 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             >
               {isAr ? 'مؤسسة حماية القانون وتعزيز السلم الاجتماعي' : 'Law Protection & Social Peace Foundation'}
             </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.1rem' }}>
               <span
                 style={{
-                  fontSize: '0.6875rem',
+                  fontSize: '0.625rem',
                   fontWeight: 700,
                   color: 'var(--color-brand-secondary)',
                   letterSpacing: '0.04em',
@@ -161,37 +192,26 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               >
                 SPPLPF
               </span>
-              <span style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)' }}>•</span>
-              <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>
+              <span style={{ fontSize: '0.5rem', color: 'var(--color-text-muted)' }}>•</span>
+              <span style={{ fontSize: '0.625rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>
                 {isAr ? 'حماية • منظمة مستقلة' : 'Provisional translation (OQ-001)'}
               </span>
             </div>
           </div>
         </Link>
 
-        {/* Desktop Grouped Navigation (6 Clean Focus Destinations) */}
+        {/* ═══ Desktop Navigation — Compact, No-Wrap ═══ */}
         <nav
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.25rem',
+            gap: '0.15rem',
           }}
           className="desktop-navigation"
           aria-label="Main Navigation"
         >
-          {/* 1. Home Link */}
-          <Link
-            href={`/${locale}`}
-            style={{
-              padding: '0.45rem 0.75rem',
-              fontSize: '0.875rem',
-              fontWeight: isHomeActive ? 700 : 600,
-              color: isHomeActive ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
-              backgroundColor: isHomeActive ? 'var(--color-brand-primary-light)' : 'transparent',
-              borderRadius: 'var(--radius-md)',
-              transition: 'all var(--transition-fast)',
-            }}
-          >
+          {/* 1. Home */}
+          <Link href={`/${locale}`} style={navLinkStyle(isHomeActive)}>
             {dict.nav.home}
           </Link>
 
@@ -202,23 +222,18 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               aria-expanded={activeDropdown === 'about'}
               aria-haspopup="true"
               style={{
+                ...navLinkStyle(isAboutActive),
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.3rem',
-                padding: '0.45rem 0.75rem',
-                fontSize: '0.875rem',
-                fontWeight: isAboutActive ? 700 : 600,
-                color: isAboutActive ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
+                gap: '0.25rem',
                 backgroundColor: isAboutActive || activeDropdown === 'about' ? 'var(--color-bg-subtle)' : 'transparent',
-                borderRadius: 'var(--radius-md)',
                 border: 'none',
                 cursor: 'pointer',
-                transition: 'all var(--transition-fast)',
               }}
             >
               <span>{dict.nav.about}</span>
               <IconChevronDown
-                size={14}
+                size={13}
                 style={{
                   transform: activeDropdown === 'about' ? 'rotate(180deg)' : 'none',
                   transition: 'transform var(--transition-fast)',
@@ -230,7 +245,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               <div
                 style={{
                   position: 'absolute',
-                  top: 'calc(100% + 0.35rem)',
+                  top: 'calc(100% + 0.4rem)',
                   insetInlineStart: 0,
                   backgroundColor: 'var(--color-bg-surface)',
                   border: '1px solid var(--color-border-subtle)',
@@ -240,9 +255,9 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
                   padding: '0.4rem',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.2rem',
+                  gap: '0.15rem',
                   zIndex: 950,
-                  animation: 'fadeIn 150ms ease-out',
+                  animation: 'fadeIn 180ms cubic-bezier(0.22, 1, 0.36, 1)',
                 }}
               >
                 <Link
@@ -317,46 +332,30 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             )}
           </div>
 
-          {/* 3. Programs Link */}
-          <Link
-            href={`/${locale}/programs`}
-            style={{
-              padding: '0.45rem 0.75rem',
-              fontSize: '0.875rem',
-              fontWeight: isProgramsActive ? 700 : 600,
-              color: isProgramsActive ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
-              backgroundColor: isProgramsActive ? 'var(--color-brand-primary-light)' : 'transparent',
-              borderRadius: 'var(--radius-md)',
-              transition: 'all var(--transition-fast)',
-            }}
-          >
+          {/* 3. Programs */}
+          <Link href={`/${locale}/programs`} style={navLinkStyle(isProgramsActive)}>
             {dict.nav.programs}
           </Link>
 
-          {/* 4. Media & Impact Center Dropdown */}
+          {/* 4. Media Center Dropdown */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => toggleDropdown('media')}
               aria-expanded={activeDropdown === 'media'}
               aria-haspopup="true"
               style={{
+                ...navLinkStyle(isMediaActive),
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.3rem',
-                padding: '0.45rem 0.75rem',
-                fontSize: '0.875rem',
-                fontWeight: isMediaActive ? 700 : 600,
-                color: isMediaActive ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
+                gap: '0.25rem',
                 backgroundColor: isMediaActive || activeDropdown === 'media' ? 'var(--color-bg-subtle)' : 'transparent',
-                borderRadius: 'var(--radius-md)',
                 border: 'none',
                 cursor: 'pointer',
-                transition: 'all var(--transition-fast)',
               }}
             >
-              <span>{isAr ? 'المركز الإعلامي' : 'Media Center'}</span>
+              <span>{isAr ? 'الإعلام' : 'Media'}</span>
               <IconChevronDown
-                size={14}
+                size={13}
                 style={{
                   transform: activeDropdown === 'media' ? 'rotate(180deg)' : 'none',
                   transition: 'transform var(--transition-fast)',
@@ -368,7 +367,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               <div
                 style={{
                   position: 'absolute',
-                  top: 'calc(100% + 0.35rem)',
+                  top: 'calc(100% + 0.4rem)',
                   insetInlineStart: 0,
                   backgroundColor: 'var(--color-bg-surface)',
                   border: '1px solid var(--color-border-subtle)',
@@ -378,9 +377,9 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
                   padding: '0.4rem',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.2rem',
+                  gap: '0.15rem',
                   zIndex: 950,
-                  animation: 'fadeIn 150ms ease-out',
+                  animation: 'fadeIn 180ms cubic-bezier(0.22, 1, 0.36, 1)',
                 }}
               >
                 <Link
@@ -455,41 +454,19 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             )}
           </div>
 
-          {/* 5. Geographic Presence */}
-          <Link
-            href={`/${locale}/presence`}
-            style={{
-              padding: '0.45rem 0.75rem',
-              fontSize: '0.875rem',
-              fontWeight: isPresenceActive ? 700 : 600,
-              color: isPresenceActive ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
-              backgroundColor: isPresenceActive ? 'var(--color-brand-primary-light)' : 'transparent',
-              borderRadius: 'var(--radius-md)',
-              transition: 'all var(--transition-fast)',
-            }}
-          >
+          {/* 5. Presence */}
+          <Link href={`/${locale}/presence`} style={navLinkStyle(isPresenceActive)}>
             {dict.nav.presence}
           </Link>
 
-          {/* 6. Contact Us */}
-          <Link
-            href={`/${locale}/contact`}
-            style={{
-              padding: '0.45rem 0.75rem',
-              fontSize: '0.875rem',
-              fontWeight: isContactActive ? 700 : 600,
-              color: isContactActive ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
-              backgroundColor: isContactActive ? 'var(--color-brand-primary-light)' : 'transparent',
-              borderRadius: 'var(--radius-md)',
-              transition: 'all var(--transition-fast)',
-            }}
-          >
+          {/* 6. Contact */}
+          <Link href={`/${locale}/contact`} style={navLinkStyle(isContactActive)}>
             {dict.nav.contact}
           </Link>
         </nav>
 
-        {/* Right Actions: Theme Toggle, Locale Switcher, Mobile Menu Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+        {/* ═══ Right Actions ═══ */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
           {/* Light / Dark Mode Toggle */}
           <ThemeToggle locale={locale} />
 
@@ -500,12 +477,12 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.35rem',
-              height: '2.35rem',
-              paddingInline: '0.75rem',
+              gap: '0.3rem',
+              height: '2.15rem',
+              paddingInline: '0.6rem',
               borderRadius: 'var(--radius-md)',
               border: '1.5px solid var(--color-border-strong)',
-              fontSize: '0.8125rem',
+              fontSize: '0.75rem',
               fontWeight: 700,
               color: 'var(--color-brand-primary)',
               backgroundColor: 'var(--color-bg-surface)',
@@ -514,8 +491,8 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             }}
             className="locale-switcher"
           >
-            <IconGlobe size={15} style={{ color: 'var(--color-brand-secondary)' }} />
-            <span>{locale === 'ar' ? 'English' : 'العربية'}</span>
+            <IconGlobe size={14} style={{ color: 'var(--color-brand-secondary)' }} />
+            <span>{locale === 'ar' ? 'EN' : 'ع'}</span>
           </Link>
 
           {/* Mobile Menu Hamburger */}
@@ -525,8 +502,8 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               display: 'none',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '2.35rem',
-              height: '2.35rem',
+              width: '2.15rem',
+              height: '2.15rem',
               borderRadius: 'var(--radius-md)',
               border: '1.5px solid var(--color-border-strong)',
               background: 'var(--color-bg-surface)',
@@ -543,7 +520,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
         </div>
       </div>
 
-      {/* Mobile Drawer Navigation */}
+      {/* ═══ Mobile Drawer Navigation ═══ */}
       {mobileMenuOpen && (
         <div
           style={{
@@ -556,6 +533,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             gap: '0.75rem',
             maxHeight: 'calc(100vh - var(--header-height))',
             overflowY: 'auto',
+            animation: 'fadeIn 200ms ease-out',
           }}
           className="mobile-drawer"
         >
@@ -611,7 +589,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
           {/* Media Section in Mobile */}
           <div style={{ padding: '0.5rem 0.85rem' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
-              {isAr ? 'المركز الإعلامي' : 'Media Center'}
+              {isAr ? 'الإعلام' : 'Media'}
             </span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.4rem', paddingInlineStart: '0.5rem' }}>
               <Link href={`/${locale}/news`} onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--color-text-primary)', fontSize: '0.875rem' }}>

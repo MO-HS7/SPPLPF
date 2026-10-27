@@ -144,7 +144,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
           />
         ) : icon ? (
-          <span style={{ display: 'inline-flex', alignItems: 'center' }}>{icon}</span>
+          <span className="btn-arrow" style={{ display: 'inline-flex', alignItems: 'center' }}>{icon}</span>
         ) : null}
         <span>{children}</span>
       </button>

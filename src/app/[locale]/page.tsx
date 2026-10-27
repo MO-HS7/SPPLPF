@@ -19,6 +19,13 @@ import {
   IconArrowRight,
   IconArrowLeft,
 } from '../../components/icons';
+import {
+  SectionReveal,
+  MetricCounter,
+  HeroEntrance,
+  StaggeredReveal,
+  YemenMapSection,
+} from '../../components/home/HomeClientComponents';
 
 export default async function HomePage({
   params,
@@ -92,7 +99,7 @@ export default async function HomePage({
             }}
           >
             {/* Start Column: Headline, Mission & Actions */}
-            <div>
+            <HeroEntrance delay={100}>
               {/* Eyebrow Badge */}
               <div style={{ marginBlockEnd: 'var(--space-4)' }}>
                 <span
@@ -180,13 +187,17 @@ export default async function HomePage({
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', lineHeight: 1 }}>3</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', lineHeight: 1 }}>
+                    <MetricCounter value={3} locale={locale} />
+                  </div>
                   <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
                     {isAr ? 'مكاتب تشغيلية' : 'Operational Hubs'}
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-gold-500)', lineHeight: 1 }}>4</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-gold-500)', lineHeight: 1 }}>
+                    <MetricCounter value={4} locale={locale} />
+                  </div>
                   <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
                     {isAr ? 'محاور استراتيجية' : 'Core Focus Pillars'}
                   </div>
@@ -200,10 +211,10 @@ export default async function HomePage({
                   </div>
                 </div>
               </div>
-            </div>
+            </HeroEntrance>
 
             {/* End Column: Editorial Visual Factsheet Composition */}
-            <div style={{ position: 'relative' }}>
+            <HeroEntrance delay={300} style={{ position: 'relative' }}>
               <div
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -383,7 +394,7 @@ export default async function HomePage({
                     : '“Sustainable peace begins with the rule of law and human dignity.”'}
                 </div>
               </div>
-            </div>
+            </HeroEntrance>
           </div>
         </div>
       </section>
@@ -391,6 +402,7 @@ export default async function HomePage({
       {/* 2. Four Strategic Pillars Section (Content-Aware Visual Hierarchy) */}
       <section className="section section-warm">
         <div className="container">
+          <SectionReveal>
           <div style={{ textAlign: 'center', maxWidth: '720px', marginInline: 'auto', marginBlockEnd: 'var(--space-12)' }}>
             <span
               style={{
@@ -413,6 +425,7 @@ export default async function HomePage({
               {dict.home.focusAreasSubtitle}
             </p>
           </div>
+          </SectionReveal>
 
           <div
             style={{
@@ -422,6 +435,7 @@ export default async function HomePage({
             }}
           >
             {/* Pillar 1: Local Mediation */}
+            <StaggeredReveal index={0}>
             <Card hoverEffect style={{ borderTop: '4px solid var(--color-brand-accent)', display: 'flex', flexDirection: 'column' }}>
               <div
                 style={{
@@ -461,8 +475,10 @@ export default async function HomePage({
                 </Link>
               </CardFooter>
             </Card>
+            </StaggeredReveal>
 
             {/* Pillar 2: Rule of Law & Legal Aid */}
+            <StaggeredReveal index={1}>
             <Card hoverEffect style={{ borderTop: '4px solid var(--color-brand-primary)', display: 'flex', flexDirection: 'column' }}>
               <div
                 style={{
@@ -502,8 +518,10 @@ export default async function HomePage({
                 </Link>
               </CardFooter>
             </Card>
+            </StaggeredReveal>
 
             {/* Pillar 3: Women & Youth Leadership */}
+            <StaggeredReveal index={2}>
             <Card hoverEffect style={{ borderTop: '4px solid var(--color-brand-secondary)', display: 'flex', flexDirection: 'column' }}>
               <div
                 style={{
@@ -543,8 +561,10 @@ export default async function HomePage({
                 </Link>
               </CardFooter>
             </Card>
+            </StaggeredReveal>
 
             {/* Pillar 4: Institutional Governance & Integrity */}
+            <StaggeredReveal index={3}>
             <Card hoverEffect style={{ borderTop: '4px solid var(--color-brand-success)', display: 'flex', flexDirection: 'column' }}>
               <div
                 style={{
@@ -584,6 +604,7 @@ export default async function HomePage({
                 </Link>
               </CardFooter>
             </Card>
+            </StaggeredReveal>
           </div>
         </div>
       </section>
@@ -1076,59 +1097,66 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* 7. Institutional Operational Presence CTA */}
-      <section
-        style={{
-          background: 'linear-gradient(135deg, var(--color-navy-950) 0%, var(--color-navy-900) 100%)',
-          color: '#ffffff',
-          paddingBlock: 'var(--space-16)',
-          borderBlockStart: '1px solid rgba(255, 255, 255, 0.1)',
-        }}
-      >
-        <div
-          className="container"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 'var(--space-8)',
-          }}
-        >
-          <div style={{ maxWidth: '650px' }}>
-            <span
+      {/* 7. Interactive Geographic Presence — Yemen Map */}
+      <section className="section" style={{ backgroundColor: 'var(--color-bg-canvas)' }}>
+        <div className="container">
+          <SectionReveal>
+            <div
               style={{
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                color: 'var(--color-gold-500)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                marginBlockEnd: 'var(--space-10)',
+                gap: '1rem',
               }}
             >
-              {isAr ? 'الانتشار الميداني' : 'Geographic Reach'}
-            </span>
-            <h3
-              style={{
-                fontSize: 'clamp(1.5rem, 1.25rem + 1vw, 2.25rem)',
-                color: '#ffffff',
-                marginBlock: '0.35rem var(--space-3)',
-                fontWeight: 800,
-              }}
-            >
-              {dict.home.presenceTitle}
-            </h3>
-            <p style={{ fontSize: '0.9375rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.7, margin: 0 }}>
-              {dict.home.presenceDesc}
-            </p>
-          </div>
-
-          <div>
-            <Link href={`/${locale}/presence`} style={{ textDecoration: 'none' }}>
-              <Button variant="accent" size="lg" icon={<IconMapPin size={18} />}>
+              <div>
+                <span
+                  style={{
+                    fontSize: '0.8125rem',
+                    fontWeight: 700,
+                    color: 'var(--color-brand-accent)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  {isAr ? 'الانتشار الميداني' : 'Geographic Reach'}
+                </span>
+                <h2
+                  style={{
+                    fontSize: 'clamp(1.5rem, 1.2rem + 1vw, 2.25rem)',
+                    color: 'var(--color-brand-primary)',
+                    margin: 0,
+                    marginTop: '0.25rem',
+                  }}
+                >
+                  {dict.home.presenceTitle}
+                </h2>
+                <p style={{ color: 'var(--color-text-secondary)', margin: 0, marginTop: '0.35rem', fontSize: '0.9375rem', lineHeight: 1.7, maxWidth: '600px' }}>
+                  {dict.home.presenceDesc}
+                </p>
+              </div>
+              <Link
+                href={`/${locale}/presence`}
+                style={{
+                  fontWeight: 700,
+                  fontSize: '0.9375rem',
+                  color: 'var(--color-brand-primary)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
+              >
                 <span>{dict.home.viewPresence}</span>
-              </Button>
-            </Link>
-          </div>
+                <NextArrow size={16} />
+              </Link>
+            </div>
+          </SectionReveal>
+
+          <SectionReveal delay={150}>
+            <YemenMapSection locale={locale} />
+          </SectionReveal>
         </div>
       </section>
     </div>
