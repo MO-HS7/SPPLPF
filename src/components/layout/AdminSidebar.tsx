@@ -18,9 +18,10 @@ import {
   IconUsers,
   IconBookOpen,
   IconBarChart,
+  IconX,
 } from '../icons';
 
-export function AdminSidebar() {
+export function AdminSidebar({ onCloseMobile }: { onCloseMobile?: () => void }) {
   const pathname = usePathname() || '/admin/overview';
   const store = useDemoStore();
 
@@ -110,7 +111,7 @@ export function AdminSidebar() {
           <span style={{ fontSize: '0.7rem', fontWeight: 900, color: 'var(--color-gold-500)', lineHeight: 1 }}>SP</span>
           <span style={{ fontSize: '0.5rem', fontWeight: 800, color: '#ffffff', lineHeight: 1, marginTop: '1px' }}>LPF</span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
           <h2 style={{ color: '#ffffff', fontSize: '0.85rem', fontWeight: 800, margin: 0, lineHeight: 1.25 }}>
             مؤسسة حماية القانون
           </h2>
@@ -118,6 +119,27 @@ export function AdminSidebar() {
             وتعزيز السلم الاجتماعي (SPPLPF)
           </span>
         </div>
+        {onCloseMobile && (
+          <button
+            type="button"
+            onClick={onCloseMobile}
+            aria-label="إغلاق القائمة"
+            style={{
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.16)',
+              color: '#ffffff',
+              borderRadius: 'var(--radius-sm)',
+              width: '2rem',
+              height: '2rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <IconX size={16} />
+          </button>
+        )}
       </div>
 
       {/* Grouped Navigation Sections */}

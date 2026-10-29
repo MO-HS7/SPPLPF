@@ -5,7 +5,7 @@ import Link from 'next/link';
 import type { Locale } from '../../../lib/i18n';
 import type { ProgramDemo } from '../../../lib/demo/types';
 import { Badge, Button, Card, CardContent, CardFooter, CardTitle, EmptyState, Input } from '../../../components/ui';
-import { IconCalendar, IconFilter, IconMapPin, IconSearch } from '../../../components/icons';
+import { IconArrowLeft, IconArrowRight, IconMapPin } from '../../../components/icons';
 
 export interface ProgramsClientProps {
   programs: ProgramDemo[];
@@ -14,6 +14,7 @@ export interface ProgramsClientProps {
 
 export function ProgramsClient({ programs, locale }: ProgramsClientProps) {
   const isAr = locale === 'ar';
+  const ArrowIcon = isAr ? IconArrowLeft : IconArrowRight;
   const [selectedPillar, setSelectedPillar] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -120,7 +121,7 @@ export function ProgramsClient({ programs, locale }: ProgramsClientProps) {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--space-6)' }}>
           {filtered.map((p) => (
-            <Card key={p.id} hoverEffect>
+            <Card key={p.id} hoverEffect style={{ borderBlockStart: '4px solid var(--color-brand-primary)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: 'var(--space-3)' }}>
                 <Badge variant={p.pillar === 'mediation' ? 'primary' : p.pillar === 'legal' ? 'secondary' : 'accent'} size="sm">
                   {p.pillar}
@@ -132,21 +133,21 @@ export function ProgramsClient({ programs, locale }: ProgramsClientProps) {
               </div>
 
               <CardTitle>
-                <Link href={`/${locale}/programs/${p.slug}`} style={{ color: 'inherit' }}>
+                <Link href={`/${locale}/programs/${p.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                   {isAr ? p.titleAr : p.titleEn}
                 </Link>
               </CardTitle>
 
               <CardContent>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
                   {isAr ? p.descriptionAr : p.descriptionEn}
                 </p>
 
-                <div style={{ marginBlockStart: 'var(--space-4)' }}>
+                <div style={{ marginBlockStart: 'var(--space-4)', padding: 'var(--space-3)', backgroundColor: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-md)' }}>
                   <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-primary)', display: 'block', marginBlockEnd: 'var(--space-1)' }}>
                     {isAr ? 'الأهداف الرئيسية:' : 'Key Objectives:'}
                   </span>
-                  <ul style={{ paddingInlineStart: '1rem', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', listStyle: 'disc' }}>
+                  <ul style={{ paddingInlineStart: '1rem', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', listStyle: 'disc', margin: 0, lineHeight: 1.65 }}>
                     {(isAr ? p.objectivesAr : p.objectivesEn).slice(0, 2).map((obj, i) => (
                       <li key={i}>{obj}</li>
                     ))}
@@ -155,8 +156,9 @@ export function ProgramsClient({ programs, locale }: ProgramsClientProps) {
               </CardContent>
 
               <CardFooter>
-                <Link href={`/${locale}/programs/${p.slug}`} style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-primary)' }}>
-                  {isAr ? 'تفاصيل البرنامج' : 'Program Details'} &larr;
+                <Link href={`/${locale}/programs/${p.slug}`} className="link-arrow" style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-primary)', textDecoration: 'none' }}>
+                  <span>{isAr ? 'تفاصيل البرنامج' : 'Program Details'}</span>
+                  <ArrowIcon size={14} />
                 </Link>
               </CardFooter>
             </Card>

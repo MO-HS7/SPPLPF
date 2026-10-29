@@ -2,82 +2,75 @@
 
 **Author:** Antigravity AI Assistant & Engineering Lead  
 **Accountable Lead:** Mohannad Hassan (@MO-HS7)  
-**Date:** 25 October 2026  
-**Branch:** `feat/frontend-visual-refresh`  
-**Purpose:** Record external design references, source analysis, adapted patterns, license verification, and concrete architectural/visual decisions for the visual overhaul of the SPPLPF institutional portal and administrative dashboard.
+**Date:** 29 October 2026  
+**Branch:** `feat/institutional-redesign-v2`  
+**Purpose:** Record external design references, source analysis, adapted patterns, license verification, geographic dataset provenance, and concrete architectural/visual decisions for the end-to-end visual overhaul, interaction engineering, and design-system implementation of the SPPLPF institutional portal and administrative dashboard.
 
 ---
 
 ## 1. Research Sources & Decision Matrix
 
+### A. Institutional & Nonprofit Website Design
+
 | Source & URL | Core Focus & Artifact Studied | Patterns Adapted for SPPLPF | Patterns Rejected / Not Copied | License & Stack Compatibility | Concrete Design Decisions Adopted |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **EPISA Peacebuilding Nonprofit Case Study**<br>[`https://dracode.dev/episa`](https://dracode.dev/episa)<br>[`https://episa.org/`](https://episa.org/) | Bilingual (Arabic/English) peacebuilding platform built on Next.js 16 + React 19. Case study on visual dignity for sensitive contexts. | - Warm off-white / parchment surfaces (`#FAF8F5`, `#F4EFEA`) providing institutional warmth.<br>- Layered hero composition with split text and floating visual factsheet badges.<br>- Program cards with distinct thematic badges and visual iconography.<br>- Dignified framing: presenting communities as active protagonists rather than passive aid recipients. | - Do not copy specific proprietary Syrian geographic assets.<br>- Do not adopt heavy dark-mode-only themes that feel like commercial tech products. | **MIT / Fair Use Case Study**<br>Directly compatible with Next.js 16 and React 19. | - Replaced flat dark-navy block hero with an asymmetric editorial hero featuring an institutional badge, mission headline, high-contrast primary CTA, distinct outline secondary CTA, and a layered preview factsheet.<br>- Adopted warm institutional surface palette with refined elevation. |
-| **Latte Creative Humanitarian Case Study**<br>[`https://www.lattecreative.com/en/projects/we-build-bridges-not-walls/`](https://www.lattecreative.com/en/projects/we-build-bridges-not-walls/) | Campaign & visual storytelling for bridge-building and legal human rights organizations. | - High-impact editorial typography pairing.<br>- Content-aware cards with distinct visual hierarchies (quotes for stories, metadata for publications, dates for statements).<br>- Intentional whitespace and clear section transitions. | - Avoid campaign-heavy, marketing-style oversized slogans that detract from institutional neutrality.<br>- Avoid excessive decorative motion or video auto-play that distracts from reading. | **Creative Agency Showcase (Proprietary)**<br>Studied for UX principles and layouts only. No proprietary assets or code copied. | - Transformed generic card grids into content-specific layouts: news cards with category/date hierarchy, impact stories with quote styling and community focus, publications with document metadata. |
-| **Nonprofit Headless Next.js Template**<br>[`https://github.com/cosmicjs/nextjs-non-profit-website`](https://github.com/cosmicjs/nextjs-non-profit-website) | Next.js nonprofit template with donor & story modules. | - Structured program catalogue with status indicators.<br>- Clean multi-column footer with office hubs, legal links, and institutional mandate. | - Do not copy Stripe/donor checkout flows (SPPLPF is an institutional foundation not conducting public e-commerce donations).<br>- Do not adopt outdated Next.js Pages router patterns. | **MIT License**<br>Permissive open source. Compatible with Next.js App Router design paradigms. | - Refactored footer into 4 structured columns (Institutional Identity, Programs & Hubs, Resources & Governance, Legal & Neutrality) with bidirectional RTL/LTR support. |
-| **Kiranism Next.js Dashboard Starter**<br>[`https://github.com/Kiranism/next-shadcn-dashboard-starter`](https://github.com/Kiranism/next-shadcn-dashboard-starter) | High-density admin dashboard built with shadcn/ui patterns and App Router. | - Compact, professional information hierarchy for admin tables, filters, and forms.<br>- Crisp sidebar navigation with collapsible groups and clear active indicators.<br>- Metric cards with subtle trend indicators and contextual status badges.<br>- Structured modal dialogs for multi-step workflows. | - Do not import third-party auth vendors (Clerk/NextAuth); preserve existing Argon2id/session/RBAC foundation.<br>- Do not introduce unnecessary third-party table dependencies when clean native components suffice. | **MIT License**<br>Permissive open source. Highly compatible with modern React 19 and Next.js 16. | - Redesigned administrative dashboard with an enterprise-grade layout: refined dark slate sidebar (`#0d1526`), clean top navigation bar, high-density metric widgets, filtered audit log viewer, and accessible modal dialogs for RBAC role assignment and editorial workflow reviews. |
-| **shadcn/ui & Origin UI**<br>[`https://github.com/shadcn-ui/ui`](https://github.com/shadcn-ui/ui)<br>[`https://github.com/shadcn/originui`](https://github.com/shadcn/originui) | Accessible, modern UI component primitives with micro-interactions. | - Unified design tokens for radii, borders, and shadows.<br>- Form fields with floating labels, clear helper text, and accessible error messaging.<br>- High-contrast focus rings (`outline: 2px solid var(--color-primary-light)`).<br>- Clean dropdown menus with directional chevrons. | - Avoid copying Tailwind v3 classes directly into CSS without mapping to project CSS custom properties. | **MIT License**<br>Permissive open source. | - Upgraded UI primitives (`Button`, `Card`, `Badge`, `Input`, `Select`, `Modal`, `Tabs`, `Pagination`) to match shadcn/Origin UI visual fidelity and micro-interactions using pure CSS custom properties. |
-| **Lucide React Icon System**<br>[`https://lucide.dev/guide/react/`](https://lucide.dev/guide/react/) | Industry-standard React icon library with 1,400+ cohesive vector icons. | - Consistent 24px/20px/16px bounding box and uniform 1.75px stroke width.<br>- Native SVG rendering with `stroke="currentColor"`, `aria-hidden="true"`, and tree-shaking support.<br>- Complete coverage for institutional, administrative, and navigational needs. | - Strictly eliminate all handcrafted custom SVG paths, emojis, and Unicode glyphs used as interface icons. | **ISC License**<br>Strictly compatible, zero vulnerabilities, supports React 19 peer dependencies (`^19.0.0`). Pinned at `1.61.0`. | - Fully migrated [`src/components/icons/index.tsx`](file:///e:/SPPLPF/src/components/icons/index.tsx) to import, configure, and re-export genuine Lucide React icons. |
+| **EPISA Peacebuilding Nonprofit (Primary Reference)**<br>[`https://episa.org/ar/`](https://episa.org/ar/)<br>[`https://dracode.dev/episa`](https://dracode.dev/episa) | Bilingual (Arabic/English) peacebuilding platform built on Next.js App Router + React. Case study on visual dignity, editorial rhythm, and true RTL layout for sensitive humanitarian contexts. | - Warm off-white / parchment surfaces (`#fcfbf9`, `#f5f3ee`) providing institutional warmth and dignity.<br>- Transparent-over-hero header transitioning smoothly into a compact sticky translucent bar on scroll.<br>- Editorial serif display typography paired with crisp sans-serif UI/body typography (`Amiri` + `Cairo` for Arabic; `Playfair Display` + `Inter` for English).<br>- Dignified visual storytelling presenting local communities as active protagonists.<br>- Distinct section compositions rather than repetitive generic card grids. | - Do not copy proprietary Syrian geographic assets or exact brand colors.<br>- Do not copy unverified statistics or partner logos. | **Case Study / Reference Inspiration**<br>Directly compatible with Next.js 16.4.2 and React 19.2.7. Studied for architectural rhythm, typography, and RTL hierarchy. | - Implemented transparent-over-hero header with scroll-aware sticky transition.<br>- Adopted editorial serif/sans pairing (`--font-display-ar`, `--font-display-en`) for authoritative institutional headlines.<br>- Designed asymmetric hero with curated Yemeni highland architectural and dialogue imagery (`hero-highland-dawn.jpg`, `dialogue-table.jpg`, `arch-detail.jpg`). |
+| **FinalTouch Nonprofit Template**<br>[`https://github.com/FinalTouch-Web/ft-template-nonprofit`](https://github.com/FinalTouch-Web/ft-template-nonprofit) | Organization-focused content hierarchy, programs catalogue, news, impact stories, event layouts, forms, and animated metrics. | - Structured program catalogue with pillar identity badges, search, and clear project factsheets.<br>- Editorial impact story layouts with pull-quotes and attribution.<br>- Restrained animated metric counters with explicit provenance labels. | - Do not import commercial donation checkout flows or fabricated numerical claims. | **Open-Source Reference**<br>Patterns adapted into native React 19 + CSS token components. | - Redesigned `/[locale]/programs` and `/[locale]/programs/[slug]` with thematic color accents, visual header banners, and structured factsheets.<br>- Built accessible `AnimatedCounter` with explicit provisional/verified labels. |
+| **Next.js Bilingual Landing Page Starter**<br>[`https://github.com/LvvUP/shadcn-landing-page`](https://github.com/LvvUP/shadcn-landing-page) | Reusable page sections, light/dark theme conventions, component organization, responsive layout, and localization approach. | - Semantic light/dark surface tokens that preserve contrast across cards, dropdowns, headers, and map controls.<br>- Clean section header rhythm (eyebrow pill + display title + supporting copy). | - Do not replace the existing i18n dictionary architecture or rewrite all styles in Tailwind utility classes. | **MIT License**<br>Permissive open source. Patterns adapted to SPPLPF CSS custom property tokens. | - Expanded `tokens.css` with complete light/dark semantic tokens for elevated surfaces, interactive states, map layers, and focus outlines. |
+| **Modern Next.js Multi-Page Website Starter**<br>[`https://github.com/anibalalpizar/modern-nextjs-shadcn-landing`](https://github.com/anibalalpizar/modern-nextjs-shadcn-landing) | Page-specific layouts, navigation, calls to action, and shared component organization across a multi-page website. | - Differentiated internal page templates: editorial reader layout for articles, document-cover layout for publications, vertical timeline for milestones, and high-clarity legal charter reader. | - Do not adopt generic SaaS pricing/feature sections. | **MIT License**<br>Permissive open source. | - Created distinct, purpose-built layouts for all 16 public routes (`about`, `values`, `goals`, `milestones`, `programs`, `news`, `activities`, `stories`, `publications`, `presence`, `contact`, and `legal/*`). |
+
+### B. Motion & Interactive UI
+
+| Source & URL | Core Focus & Artifact Studied | Patterns Adapted for SPPLPF | Patterns Rejected / Not Copied | License & Stack Compatibility | Concrete Design Decisions Adopted |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Magic UI**<br>[`https://magicui.design/docs/components`](https://magicui.design/docs/components)<br>[`https://github.com/magicuidesign/magicui`](https://github.com/magicuidesign/magicui) | Button micro-interactions, text reveals, number tickers, and subtle surface effects. | - Viewport-triggered number ticker (`AnimatedCounter`) with `easeOutExpo` easing and locale number formatting.<br>- Directional arrow micro-shift on CTA button hover (`.btn-arrow`). | - Reject flashy neon borders, meteors, or character-by-character text splitting that breaks Arabic cursive ligatures (`تشكيل` and word joining). | **MIT License**<br>Permissive open source. | - Standardized `AnimatedCounter` with `aria-live="off"` final value accessibility and `prefers-reduced-motion` immediate fallback.<br>- Preserved whole-word/whole-line Arabic shaping in all hero and section reveals. |
+| **React Bits**<br>[`https://reactbits.dev/`](https://reactbits.dev/)<br>[`https://github.com/DavidHDev/react-bits`](https://github.com/DavidHDev/react-bits) | Card interactions, subtle backgrounds, and responsive motion patterns. | - Subtle radial spotlight/elevation transitions on interactive cards (`.card-interactive`). | - Reviewed MIT + Commons Clause restrictions; zero proprietary or Pro code copied. Avoided heavy WebGL/canvas backgrounds that degrade mobile performance. | **MIT + Commons Clause (Studied Only — No Code Copied)**<br>Implemented clean native CSS/React equivalents. | - Built custom CSS token-driven card elevation and spotlight border transitions without external runtime overhead. |
+| **Motion for React & Scroll Observation**<br>[`https://motion.dev/docs/react`](https://motion.dev/docs/react)<br>[`https://motion-primitives.com/`](https://motion-primitives.com/) | Scroll-aware animations, `whileInView` one-time reveals, hover/tap interactions, and smooth transitions. | - One-time viewport intersection reveals (`RevealOnScroll`, `HeroEntrance`, `StaggeredReveal`) with cubic-bezier `(0.22, 1, 0.36, 1)` easing.<br>- Restrained button press scale (`scale(0.98)`). | - Avoided repeated scroll re-triggering that causes visual fatigue. | **MIT License**<br>`motion@14.6.0` installed; paired with lightweight `IntersectionObserver` primitives for zero-CLS server-component compatibility. | - Applied one-time viewport reveals across homepage and internal route sections with strict `prefers-reduced-motion: reduce` support. |
+
+### C. Dashboard, Component Systems & Geographic Mapping
+
+| Source & URL | Core Focus & Artifact Studied | Patterns Adapted for SPPLPF | Patterns Rejected / Not Copied | License & Stack Compatibility | Concrete Design Decisions Adopted |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Kiranism Next.js Dashboard Starter & shadcn/ui**<br>[`https://github.com/Kiranism/next-shadcn-dashboard-starter`](https://github.com/Kiranism/next-shadcn-dashboard-starter)<br>[`https://ui.shadcn.com/`](https://ui.shadcn.com/) | Admin information density, grouped sidebar navigation, tables, forms, filters, status indicators, and modal workflows. | - Grouped operational sidebar (`Content & Editorial`, `Catalogues & Outreach`, `Governance & System`).<br>- Compact top bar with dynamic breadcrumbs, active demo persona indicator, and theme toggle.<br>- Responsive mobile drawer for admin navigation on tablet/mobile viewports.<br>- High-density metric cards, status badges, and horizontally scrollable tables. | - Do not import Clerk, SaaS billing, or third-party auth providers. Preserve existing Argon2id, session, rate-limiter, and RBAC backend modules untouched. | **MIT License**<br>Permissive open source. | - Upgraded `AdminShell`, `AdminSidebar`, `AdminHeader`, and all 14 admin routes with breadcrumb awareness, mobile sidebar drawer, high-density filter toolbars, and clear simulation notices. |
+| **Leaflet & React Leaflet + geoBoundaries / Yemen-info**<br>[`https://leafletjs.com/examples/geojson/`](https://leafletjs.com/examples/geojson/)<br>[`https://react-leaflet.js.org/`](https://react-leaflet.js.org/)<br>[`https://github.com/YemenOpenSource/Yemen-info`](https://github.com/YemenOpenSource/Yemen-info)<br>[`https://github.com/wmgeolab/geoBoundaries`](https://github.com/wmgeolab/geoBoundaries) | Real interactive GeoJSON map of Yemen's 22 governorates (ADM1) with bilingual Arabic/English labels and operational hub selection. | - Real client-only Leaflet GeoJSON map (`leaflet@1.9.4`) rendering verified ADM1 governorate polygons.<br>- Bilingual Arabic/English governorate nomenclature verified against `YemenOpenSource/Yemen-info` and `open-admin-data/yemen-administrative-divisions`.<br>- Strict operational presence highlighting for **Taiz, Marib, and Sana'a** only, with honest approximate governorate-level markers.<br>- Synchronized keyboard-accessible governorate filter/selection list alongside the map. | - Replaced the earlier hand-drawn schematic SVG placeholder map (`YemenGovernorateMap.tsx` commit `2ac3284`).<br>- Do not expose sensitive frontline coordinates or invent unapproved branch offices. | **BSD-2-Clause (`leaflet`), MIT (`react-leaflet`), CC-BY 4.0 (`geoBoundaries-YEM-ADM1`), GPL/Open Reference (`Yemen-info` names only)** | - Stored `public/data/yemen-adm1-simplified.geojson` (WGS84 / EPSG:4326, CC-BY 4.0 attribution to Runfola et al. / geoBoundaries).<br>- Built client-only Leaflet map with custom dark/light theme polygon styling, zoom controls, attribution, and synchronized info panel on both `/[locale]` and `/[locale]/presence`. |
 
 ---
 
 ## 2. Library & Styling Strategy Decision
 
-### A. Evaluated Options
-1. **Option A: Full Migration to Tailwind CSS v4 + Tailwind UI**
-   - *Pros:* Utility-first syntax.
-   - *Cons:* High risk of breaking the existing Next.js 16.4.2 + React 19 setup, heavy diff, potential hydration issues with RTL/LTR logical utilities, unnecessary rebuild of working prototype structure.
-2. **Option B (Selected): Refined CSS Token Architecture + shadcn/ui Inspired Primitives**
-   - *Rationale:* The existing application already possesses a clean CSS custom property architecture in `src/styles/tokens.css` and `src/styles/globals.css`. By upgrading these tokens with modern HSL color scales, refined elevation shadows, CSS logical properties (`margin-inline`, `padding-inline`, `inset-inline`), and pairing them with genuine Lucide React icons and shadcn-level component styling, we achieve the highest visual distinction and polish without touching application plumbing or introducing risky framework churn.
+### Evaluated Architecture Options
+1. **Option A: Wholesale Tailwind CSS + shadcn CLI Rewrite**
+   - *Rejected:* Introducing a full Tailwind build pipeline and rewriting 33 routes would create massive churn, risk RTL/LTR specificity conflicts, and is unnecessary given the project's clean semantic CSS variable architecture.
+2. **Option B (Adopted): Expanded Semantic CSS Token System (`tokens.css` + `globals.css`) + Genuine Lucide Icons + Leaflet GeoJSON + Restrained Motion Primitives**
+   - *Justification:* Preserves 100% compatibility with Next.js 16.4.2 (Turbopack), React 19.2.7, and the existing 87 unit tests while delivering an authentic editorial visual system, responsive layout utilities, dark/light parity, and real interactive GeoJSON mapping.
 
 ---
 
-## 3. Visual System & Design Language
+## 3. Distinctive Institutional Art Direction & Token System
 
-### A. Refined Institutional Color Palette
-- **Anchor Navy (Primary):**
-  - `--color-primary`: `#0d274c` (Deep authoritative institutional navy)
-  - `--color-primary-light`: `#163e72` (Interactive hover & active states)
-  - `--color-primary-dark`: `#07152b` (Deepest contrast borders and footer backgrounds)
-  - `--color-primary-subtle`: `rgba(13, 39, 76, 0.06)`
-- **Dynamic Azure / Law Protection (Secondary):**
-  - `--color-secondary`: `#0284c7` (Refined ocean azure)
-  - `--color-secondary-hover`: `#0369a1`
-  - `--color-secondary-subtle`: `rgba(2, 132, 199, 0.08)`
-- **Restrained Warm Gold (Accent):**
-  - `--color-accent`: `#c27803` (Warm ochre gold for community peacebuilding highlights)
-  - `--color-accent-subtle`: `rgba(194, 120, 3, 0.10)`
-- **Surfaces & Backgrounds:**
-  - `--color-bg`: `#f8fafd` (Crisp light institutional canvas)
-  - `--color-surface`: `#ffffff` (Pure white card and modal containers)
-  - `--color-surface-subtle`: `#f1f5f9` (Subtle container backgrounds)
-  - `--color-border`: `#e2e8f0` (Clean structural divider)
-  - `--color-border-hover`: `#cbd5e1`
-- **Text Scale:**
-  - `--color-text`: `#0f172a` (Slate 900 for high-contrast readability)
-  - `--color-text-muted`: `#475569` (Slate 600 for supporting copy)
-  - `--color-text-subtle`: `#64748b` (Slate 500 for metadata and timestamps)
+### A. Semantic Color & Surface Architecture
+- **Brand Primary (Institutional Navy):** `#0f325a` (Light) / `#38bdf8` (Dark interactive) anchored by deep navy hero/footer surfaces (`#051324` to `#0f325a`).
+- **Brand Secondary (Rule of Law Azure):** `#0284c7` / `#0ea5e9` for legal protection highlights, active indicators, and focus outlines.
+- **Brand Accent (Social Peace Ochre Gold):** `#c27803` / `#f59e0b` for mediation highlights, active map governorates, and primary hero CTAs.
+- **Warm Editorial Surfaces:**
+  - Light mode: Canvas `#fcfbf9`, Surface `#ffffff`, Subtle `#f5f3ee`, Elevated `#efece5`, Border `#eae7df`.
+  - Dark mode: Canvas `#070d17`, Surface `#0c1829`, Subtle `#122137`, Elevated `#172a45`, Border `#1e3352`.
+- **Map Semantic Tokens:**
+  - Active Presence Governorate Fill/Stroke (`Taiz`, `Marib`, `Sana'a`): Warm Gold / Azure highlight with interactive hover/selection elevation.
+  - Non-Presence Governorate Fill/Stroke: Muted neutral surface (`#e5e2db` in light mode, `#172a45` in dark mode) with subtle borders.
 
-### B. Typography & Reading Hierarchy
-- **Arabic Display Headings:** Tajawal / Cairo font family with `-0.02em` letter-spacing, generous line-height (`1.25` to `1.4`), and weighted visual emphasis.
-- **English Display Headings:** Outfit / Inter with crisp tracking.
-- **Body & Data:** 16px base with 1.6 line-height for effortless bilingual reading.
+### B. Typography & Bilingual Hierarchy
+- **Arabic Typography:**
+  - *Editorial Display Headlines (`--font-display-ar`):* `'Amiri'`, `'Cairo'`, serif — used for major hero headlines, editorial pull-quotes, and charter titles with generous line-height (`1.3`–`1.45`) and zero letter-spacing to preserve Arabic cursive connections.
+  - *UI & Body Copy (`--font-arabic`):* `'Cairo'`, `'IBM Plex Sans Arabic'`, sans-serif — clear, modern, highly legible across dense tables, navigation, and long-form articles.
+- **English Typography:**
+  - *Editorial Display Headlines (`--font-display-en`):* `'Playfair Display'`, `'Inter'`, serif.
+  - *UI & Body Copy (`--font-english`):* `'Inter'`, system-ui, sans-serif.
 
-### C. Elevation & Depth
-- `--shadow-sm`: `0 1px 2px 0 rgba(15, 23, 42, 0.05)`
-- `--shadow-md`: `0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04)`
-- `--shadow-lg`: `0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.03)`
-- `--shadow-xl`: `0 20px 25px -5px rgba(15, 23, 42, 0.10), 0 8px 10px -6px rgba(15, 23, 42, 0.05)`
-
----
-
-## 4. Icon System Implementation Standard
-
-- **Library:** `lucide-react` pinned at exact version `1.61.0`.
-- **Standard Dimensions:**
-  - Standard button/menu icon: `18px` (`size={18}`)
-  - Mini table/badge icon: `14px` (`size={14}`)
-  - Hero/pillar card icon: `24px` (`size={24}`)
-- **Stroke Width:** Uniform `1.75px` across the application.
-- **Directional Awareness:** Directional arrows (`ChevronRight`, `ChevronLeft`, `ArrowRight`, `ArrowLeft`) are flipped or chosen based on current active locale (`ar` vs `en`).
-- **Accessibility:** Purely decorative icons receive `aria-hidden="true"`; standalone icon buttons feature `aria-label`.
+### C. Curated Imagery & Asset Licensing
+All visual assets are stored locally in `public/` with verified open/first-party provenance:
+1. `public/images/editorial/hero-highland-dawn.jpg` — First-party editorial illustration of Yemeni highland architecture at dawn viewed through stone arches (dignified geographic grounding, no identifiable individuals).
+2. `public/images/editorial/dialogue-table.jpg` — First-party symbolic illustration of a community dialogue roundtable with an olive branch and scales of justice in a warm stone courtyard.
+3. `public/images/editorial/arch-detail.jpg` — First-party architectural detail illustration symbolizing institutional threshold, rule of law, and heritage.
+4. `public/data/yemen-adm1-simplified.geojson` — Verified ADM1 boundaries for Yemen (22 governorates, CRS: EPSG:4326 / WGS84) from **geoBoundaries** (William & Mary geoLab, Commit `9469f09`), licensed under **CC-BY 4.0** (Attribution: *Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): e0231866*).
+5. **Provisional Brand Mark:** Rendered as an honest, explicitly labeled typographic monogram (`SP / LPF` — `علامة تعريفية مؤقتة`) until an official vector emblem is provided.

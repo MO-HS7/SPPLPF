@@ -5,7 +5,7 @@ import Link from 'next/link';
 import type { Locale } from '../../../lib/i18n';
 import type { ContentItemDemo } from '../../../lib/demo/types';
 import { Badge, Button, Card, CardContent, CardFooter, CardTitle, EmptyState, Input, Pagination } from '../../../components/ui';
-import { IconCalendar, IconSearch, IconUsers } from '../../../components/icons';
+import { IconArrowLeft, IconArrowRight, IconCalendar } from '../../../components/icons';
 
 export interface NewsClientProps {
   items: ContentItemDemo[];
@@ -14,6 +14,7 @@ export interface NewsClientProps {
 
 export function NewsClient({ items, locale }: NewsClientProps) {
   const isAr = locale === 'ar';
+  const ArrowIcon = isAr ? IconArrowLeft : IconArrowRight;
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
@@ -94,13 +95,13 @@ export function NewsClient({ items, locale }: NewsClientProps) {
               </div>
 
               <CardTitle>
-                <Link href={`/${locale}/news/${item.slug}`} style={{ color: 'inherit' }}>
+                <Link href={`/${locale}/news/${item.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                   {isAr ? item.titleAr : item.titleEn}
                 </Link>
               </CardTitle>
 
               <CardContent>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
                   {isAr ? item.summaryAr : item.summaryEn}
                 </p>
 
@@ -110,7 +111,7 @@ export function NewsClient({ items, locale }: NewsClientProps) {
                       key={idx}
                       style={{
                         fontSize: '0.7rem',
-                        padding: '0.1rem 0.4rem',
+                        padding: '0.15rem 0.45rem',
                         backgroundColor: 'var(--color-bg-elevated)',
                         borderRadius: 'var(--radius-xs)',
                         color: 'var(--color-text-muted)',
@@ -123,8 +124,9 @@ export function NewsClient({ items, locale }: NewsClientProps) {
               </CardContent>
 
               <CardFooter>
-                <Link href={`/${locale}/news/${item.slug}`} style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-primary)' }}>
-                  {isAr ? 'قراءة البيان كاملاً' : 'Read Full Statement'} &larr;
+                <Link href={`/${locale}/news/${item.slug}`} className="link-arrow" style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-primary)', textDecoration: 'none' }}>
+                  <span>{isAr ? 'قراءة البيان كاملاً' : 'Read Full Statement'}</span>
+                  <ArrowIcon size={14} />
                 </Link>
               </CardFooter>
             </Card>

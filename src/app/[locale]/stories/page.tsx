@@ -3,7 +3,7 @@ import { DEFAULT_LOCALE, getDictionary, isValidLocale, type Locale } from '../..
 import { demoStore } from '../../../lib/demo/store';
 import { Breadcrumbs, PageHeader } from '../../../components/layout';
 import { Badge, Card, CardContent, CardFooter, CardTitle } from '../../../components/ui';
-import { IconCalendar, IconCheck } from '../../../components/icons';
+import { IconArrowLeft, IconArrowRight, IconCalendar } from '../../../components/icons';
 
 export default async function StoriesPage({
   params,
@@ -14,6 +14,7 @@ export default async function StoriesPage({
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
   const dict = getDictionary(locale);
   const isAr = locale === 'ar';
+  const ArrowIcon = isAr ? IconArrowLeft : IconArrowRight;
 
   const stories = demoStore
     .getContentItems()
@@ -49,20 +50,31 @@ export default async function StoriesPage({
               </div>
 
               <CardTitle>
-                <Link href={`/${locale}/news/${story.slug}`} style={{ color: 'inherit' }}>
+                <Link href={`/${locale}/news/${story.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                   {isAr ? story.titleAr : story.titleEn}
                 </Link>
               </CardTitle>
 
               <CardContent>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-                  {isAr ? story.summaryAr : story.summaryEn}
-                </p>
+                <blockquote
+                  style={{
+                    margin: 0,
+                    paddingInlineStart: 'var(--space-3)',
+                    borderInlineStart: '2px solid var(--color-border-strong)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--color-text-secondary)',
+                    lineHeight: 1.75,
+                    fontStyle: 'italic',
+                  }}
+                >
+                  &ldquo;{isAr ? story.summaryAr : story.summaryEn}&rdquo;
+                </blockquote>
               </CardContent>
 
               <CardFooter>
-                <Link href={`/${locale}/news/${story.slug}`} style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-accent)' }}>
-                  {isAr ? 'اقرأ قصة الأثر' : 'Read Full Story'} &larr;
+                <Link href={`/${locale}/news/${story.slug}`} className="link-arrow" style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-accent)', textDecoration: 'none' }}>
+                  <span>{isAr ? 'اقرأ قصة الأثر' : 'Read Full Story'}</span>
+                  <ArrowIcon size={14} />
                 </Link>
               </CardFooter>
             </Card>

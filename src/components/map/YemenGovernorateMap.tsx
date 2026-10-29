@@ -1,269 +1,247 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import type { FeatureCollection, Geometry } from 'geojson';
 import type { Locale } from '../../lib/i18n';
+import type { GovernorateMeta } from './YemenLeafletCanvas';
+import { Badge, Button } from '../ui';
+import {
+  IconMapPin,
+  IconShield,
+  IconCheck,
+  IconArrowLeft,
+  IconArrowRight,
+  IconBuilding,
+} from '../icons';
+
+const YemenLeafletCanvas = dynamic(() => import('./YemenLeafletCanvas'), {
+  ssr: false,
+  loading: () => (
+    <div
+      style={{
+        width: '100%',
+        height: '430px',
+        borderRadius: 'var(--radius-lg)',
+        backgroundColor: 'var(--map-water)',
+        border: '1px solid var(--color-border-subtle)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '0.75rem',
+        color: 'var(--color-text-muted)',
+        fontSize: '0.875rem',
+      }}
+    >
+      <div
+        style={{
+          width: '2rem',
+          height: '2rem',
+          border: '3px solid var(--color-border-strong)',
+          borderTopColor: 'var(--color-brand-primary)',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+        }}
+      />
+      <span>جارٍ تحميل الخريطة الجغرافية التفاعلية... / Loading Interactive Map...</span>
+    </div>
+  ),
+});
 
 /**
- * Yemen Governorate Map — SVG-based interactive vector map.
- * 
- * Data provenance (IMPORTANT):
- * - The SVG shapes below are HAND-DRAWN SCHEMATIC placeholders. They are
- *   NOT derived from OCHA/HDX or any official boundary dataset and do NOT
- *   represent real governorate geometry or borders.
- * - TODO: replace with simplified GeoJSON from a verified source
- *   (e.g. OCHA/HDX Yemen admin boundaries, COD-AB) before any public use.
- * - Presence flags (Taiz, Marib, Sana'a) come from the demo fixtures only.
+ * Verified Yemen ADM1 Governorates Metadata (22 Governorates)
+ * Cross-referenced with:
+ * - geoBoundaries-YEM-ADM1 (CC-BY 4.0, Runfola et al. 2020)
+ * - YemenOpenSource/Yemen-info & open-admin-data/yemen-administrative-divisions
+ * - SPPLPF Canonical Operational Scope: Strictly Taiz, Marib, and Sana'a
  */
-
-interface GovernorateData {
-  id: string;
-  nameAr: string;
-  nameEn: string;
-  /** SVG path for the governorate shape */
-  path: string;
-  /** Center point for label placement [x, y] */
-  center: [number, number];
-  /** Whether SPPLPF has operational presence here */
-  hasPresence: boolean;
-  /** Description of presence if applicable */
-  presenceDescAr?: string;
-  presenceDescEn?: string;
-}
-
-// Simplified Yemen governorate SVG paths (viewport: 0 0 800 500)
-// These are schematic approximations for UI purposes
-const governorates: GovernorateData[] = [
-  {
+export const YEMEN_GOVERNORATES_META: Record<string, GovernorateMeta> = {
+  'YE-TA': {
+    iso: 'YE-TA',
     id: 'taiz',
-    nameAr: 'تعز',
-    nameEn: 'Taiz',
-    path: 'M220,330 L260,310 L290,320 L295,350 L270,370 L240,365 L215,350 Z',
-    center: [255, 340],
+    nameAr: 'محافظة تعز',
+    nameEn: 'Taiz Governorate',
     hasPresence: true,
-    presenceDescAr: 'مكتب رئيسي — وساطة مجتمعية وعيادات قانونية',
-    presenceDescEn: 'Main office — community mediation & legal clinics',
+    hubRoleAr: 'المقر الرئيسي ومركز القيادة والعمليات',
+    hubRoleEn: 'Headquarters & Core Operational Command',
+    scopeAr:
+      'إدارة وتنسيق كافة البرامج والعمليات الميدانية والمؤسسية، وتقديم العون القضائي، وتيسير مبادرات الوساطة المجتمعية وحماية المدنيين انطلاقاً من المقر الرئيسي في مدينة تعز.',
+    scopeEn:
+      'Overall operational command, governance, legal aid clinics, and community mediation initiatives coordinated from headquarters in Taiz.',
+    approxCoords: [13.578, 44.017],
+    programsAr: [
+      'الوساطة المحلية وفض النزاعات المجتمعية',
+      'العيادات القانونية ومراقبة ضمانات الاحتجاز',
+      'تمكين النساء والشباب في قيادة السلام',
+    ],
+    programsEn: [
+      'Local Mediation & Conflict Resolution',
+      'Legal Aid Clinics & Detention Safeguards',
+      'Women & Youth Peace Leadership',
+    ],
   },
-  {
+  'YE-MA': {
+    iso: 'YE-MA',
     id: 'marib',
-    nameAr: 'مأرب',
-    nameEn: 'Marib',
-    path: 'M420,200 L480,180 L520,190 L530,230 L510,270 L460,280 L420,260 L410,230 Z',
-    center: [470, 230],
+    nameAr: 'محافظة مأرب',
+    nameEn: 'Marib Governorate',
     hasPresence: true,
-    presenceDescAr: 'مكتب ميداني — حماية النازحين والتماسك المجتمعي',
-    presenceDescEn: 'Field office — IDP protection & social cohesion',
+    hubRoleAr: 'الفرع الميداني والتنفيذي',
+    hubRoleEn: 'Field & Executive Branch Office',
+    scopeAr:
+      'تنفيذ برامج التماسك الاجتماعي، دعم لجان المصالحة المجتمعية، وتقديم الحماية القانونية للنازحين والمجتمعات المضيفة في عموم مديريات محافظة مأرب.',
+    scopeEn:
+      'Executing social cohesion programs, supporting community reconciliation committees, and extending legal protection for IDPs and host communities across Marib.',
+    approxCoords: [15.462, 45.325],
+    programsAr: [
+      'لجنة المصالحة المجتمعية والوساطة المحلية',
+      'الحماية القانونية للنازحين والمجتمعات المضيفة',
+      'تأهيل الشباب في بناء السلم المجتمعي',
+    ],
+    programsEn: [
+      'Community Reconciliation Committee & Mediation',
+      'Legal Protection for IDPs & Host Communities',
+      'Youth Capacity Building in Social Peace',
+    ],
   },
-  {
+  'YE-SA': {
+    iso: 'YE-SA',
     id: 'sanaa',
-    nameAr: 'صنعاء',
-    nameEn: "Sana'a",
-    path: 'M310,200 L350,185 L380,195 L390,220 L375,245 L340,255 L310,240 L305,220 Z',
-    center: [345, 220],
+    nameAr: 'صنعاء (أمانة العاصمة والمحافظة)',
+    nameEn: "Sana'a (Capital & Governorate)",
     hasPresence: true,
-    presenceDescAr: 'مكتب تنسيقي — مناصرة وبناء قدرات',
-    presenceDescEn: 'Coordination office — advocacy & capacity building',
+    hubRoleAr: 'مكتب التنسيق والمهام القانونية المتخصصة',
+    hubRoleEn: 'Specialized Coordination & Legal Office',
+    scopeAr:
+      'متابعة ملفات الرصد القانوني، التنسيق الإنساني المحايد لتبادل المحتجزين، وبناء قدرات منظمات المجتمع المدني في الحوكمة والنزاهة المؤسسية.',
+    scopeEn:
+      'Coordinating impartial humanitarian detainee initiatives, legal procedural monitoring, and CSO governance capacity building.',
+    approxCoords: [15.369, 44.191],
+    programsAr: [
+      'التنسيق الإنساني المحايد ومبادرات المحتجزين',
+      'برنامج سيادة القانون والدفاع عن الحقوق المدنية',
+      'الحوكمة والنزاهة المؤسسية للمجتمع المدني',
+    ],
+    programsEn: [
+      'Impartial Humanitarian & Detainee Coordination',
+      'Rule of Law & Civil Rights Defense',
+      'CSO Institutional Governance & Transparency',
+    ],
   },
-  {
-    id: 'aden',
-    nameAr: 'عدن',
-    nameEn: 'Aden',
-    path: 'M270,380 L300,370 L320,380 L315,400 L290,410 L265,400 Z',
-    center: [290, 390],
-    hasPresence: false,
+  'YE-SN': {
+    iso: 'YE-SN',
+    id: 'sanaa-gov',
+    nameAr: 'محافظة صنعاء',
+    nameEn: "Sana'a Governorate",
+    hasPresence: true,
+    hubRoleAr: 'نطاق تغطية مكتب صنعاء التنسيقي',
+    hubRoleEn: "Covered by Sana'a Coordination Office",
+    scopeAr: 'ضمن النطاق التنسيقي لمكتب صنعاء المتخصص في المهام الإنسانية والقانونية المحايدة.',
+    scopeEn: "Covered under the operational coordination scope of the Sana'a specialized office.",
   },
-  {
-    id: 'hadramaut',
-    nameAr: 'حضرموت',
-    nameEn: 'Hadramaut',
-    path: 'M530,150 L680,120 L750,140 L760,200 L720,250 L620,270 L540,260 L520,220 Z',
-    center: [640, 190],
-    hasPresence: false,
-  },
-  {
-    id: 'al-hudaydah',
-    nameAr: 'الحديدة',
-    nameEn: 'Al Hudaydah',
-    path: 'M140,250 L190,230 L220,240 L230,280 L210,320 L170,330 L140,310 L130,280 Z',
-    center: [180, 280],
-    hasPresence: false,
-  },
-  {
-    id: 'ibb',
-    nameAr: 'إب',
-    nameEn: 'Ibb',
-    path: 'M260,280 L295,270 L310,290 L300,320 L270,330 L250,315 Z',
-    center: [280, 300],
-    hasPresence: false,
-  },
-  {
-    id: 'dhamar',
-    nameAr: 'ذمار',
-    nameEn: 'Dhamar',
-    path: 'M290,240 L325,230 L340,250 L330,280 L300,290 L280,275 Z',
-    center: [310, 260],
-    hasPresence: false,
-  },
-  {
-    id: 'al-bayda',
-    nameAr: 'البيضاء',
-    nameEn: 'Al Bayda',
-    path: 'M350,260 L390,245 L420,260 L415,295 L380,310 L350,300 Z',
-    center: [385, 280],
-    hasPresence: false,
-  },
-  {
-    id: 'shabwah',
-    nameAr: 'شبوة',
-    nameEn: 'Shabwah',
-    path: 'M430,280 L520,260 L560,280 L550,330 L490,350 L430,330 Z',
-    center: [490, 305],
-    hasPresence: false,
-  },
-  {
-    id: 'al-jawf',
-    nameAr: 'الجوف',
-    nameEn: 'Al Jawf',
-    path: 'M370,130 L430,110 L460,120 L470,160 L440,185 L395,190 L370,170 Z',
-    center: [415, 155],
-    hasPresence: false,
-  },
-  {
-    id: 'saada',
-    nameAr: 'صعدة',
-    nameEn: "Sa'ada",
-    path: 'M250,130 L300,115 L330,130 L340,165 L310,185 L270,185 L245,165 Z',
-    center: [290, 155],
-    hasPresence: false,
-  },
-  {
-    id: 'amran',
-    nameAr: 'عمران',
-    nameEn: 'Amran',
-    path: 'M270,185 L305,180 L320,195 L315,215 L290,225 L265,215 Z',
-    center: [293, 200],
-    hasPresence: false,
-  },
-  {
-    id: 'hajjah',
-    nameAr: 'حجة',
-    nameEn: 'Hajjah',
-    path: 'M170,180 L220,165 L255,180 L260,215 L230,235 L185,235 L160,215 Z',
-    center: [210, 200],
-    hasPresence: false,
-  },
-  {
-    id: 'al-mahwit',
-    nameAr: 'المحويت',
-    nameEn: 'Al Mahwit',
-    path: 'M195,235 L225,228 L240,245 L230,270 L205,275 L190,260 Z',
-    center: [215, 255],
-    hasPresence: false,
-  },
-  {
-    id: 'al-dhale',
-    nameAr: 'الضالع',
-    nameEn: "Ad Dali'",
-    path: 'M285,325 L315,315 L330,335 L320,360 L290,365 L275,350 Z',
-    center: [305, 340],
-    hasPresence: false,
-  },
-  {
-    id: 'lahij',
-    nameAr: 'لحج',
-    nameEn: 'Lahij',
-    path: 'M240,360 L270,350 L290,365 L285,395 L255,405 L235,390 Z',
-    center: [260, 375],
-    hasPresence: false,
-  },
-  {
-    id: 'abyan',
-    nameAr: 'أبين',
-    nameEn: 'Abyan',
-    path: 'M325,350 L380,330 L420,345 L410,380 L360,400 L325,385 Z',
-    center: [370, 365],
-    hasPresence: false,
-  },
-  {
-    id: 'al-mahrah',
-    nameAr: 'المهرة',
-    nameEn: 'Al Mahrah',
-    path: 'M680,130 L760,110 L790,130 L790,190 L760,210 L710,220 L680,200 Z',
-    center: [730, 165],
-    hasPresence: false,
-  },
-  {
-    id: 'raymah',
-    nameAr: 'ريمة',
-    nameEn: 'Raymah',
-    path: 'M210,270 L240,260 L255,278 L248,300 L225,308 L205,295 Z',
-    center: [230, 285],
-    hasPresence: false,
-  },
-  {
-    id: 'socotra',
-    nameAr: 'سقطرى',
-    nameEn: 'Socotra',
-    path: 'M720,350 L770,340 L785,360 L775,380 L735,385 L715,370 Z',
-    center: [750, 365],
-    hasPresence: false,
-  },
-];
+  'YE-AD': { iso: 'YE-AD', id: 'aden', nameAr: 'محافظة عدن', nameEn: 'Aden Governorate', hasPresence: false },
+  'YE-HD': { iso: 'YE-HD', id: 'hadramaut', nameAr: 'محافظة حضرموت', nameEn: 'Hadhramaut Governorate', hasPresence: false },
+  'YE-HU': { iso: 'YE-HU', id: 'hudaydah', nameAr: 'محافظة الحديدة', nameEn: 'Al Hudaydah Governorate', hasPresence: false },
+  'YE-IB': { iso: 'YE-IB', id: 'ibb', nameAr: 'محافظة إب', nameEn: 'Ibb Governorate', hasPresence: false },
+  'YE-DH': { iso: 'YE-DH', id: 'dhamar', nameAr: 'محافظة ذمار', nameEn: 'Dhamar Governorate', hasPresence: false },
+  'YE-BA': { iso: 'YE-BA', id: 'bayda', nameAr: 'محافظة البيضاء', nameEn: 'Al Bayda Governorate', hasPresence: false },
+  'YE-SH': { iso: 'YE-SH', id: 'shabwah', nameAr: 'محافظة شبوة', nameEn: 'Shabwah Governorate', hasPresence: false },
+  'YE-JA': { iso: 'YE-JA', id: 'jawf', nameAr: 'محافظة الجوف', nameEn: 'Al Jawf Governorate', hasPresence: false },
+  'YE-SD': { iso: 'YE-SD', id: 'saada', nameAr: 'محافظة صعدة', nameEn: "Sa'dah Governorate", hasPresence: false },
+  'YE-AM': { iso: 'YE-AM', id: 'amran', nameAr: 'محافظة عمران', nameEn: "'Amran Governorate", hasPresence: false },
+  'YE-HJ': { iso: 'YE-HJ', id: 'hajjah', nameAr: 'محافظة حجة', nameEn: 'Hajjah Governorate', hasPresence: false },
+  'YE-MW': { iso: 'YE-MW', id: 'mahwit', nameAr: 'محافظة المحويت', nameEn: 'Al Mahwit Governorate', hasPresence: false },
+  'YE-DA': { iso: 'YE-DA', id: 'dhale', nameAr: 'محافظة الضالع', nameEn: "Ad Dali' Governorate", hasPresence: false },
+  'YE-LA': { iso: 'YE-LA', id: 'lahij', nameAr: 'محافظة لحج', nameEn: 'Lahij Governorate', hasPresence: false },
+  'YE-AB': { iso: 'YE-AB', id: 'abyan', nameAr: 'محافظة أبين', nameEn: 'Abyan Governorate', hasPresence: false },
+  'YE-MR': { iso: 'YE-MR', id: 'mahrah', nameAr: 'محافظة المهرة', nameEn: 'Al Mahrah Governorate', hasPresence: false },
+  'YE-RA': { iso: 'YE-RA', id: 'raymah', nameAr: 'محافظة ريمة', nameEn: 'Raymah Governorate', hasPresence: false },
+  'YE-SU': { iso: 'YE-SU', id: 'socotra', nameAr: 'أرخبيل سقطرى', nameEn: 'Socotra Governorate', hasPresence: false },
+};
 
-interface YemenMapProps {
+export interface YemenMapProps {
   locale: Locale;
   className?: string;
   style?: React.CSSProperties;
 }
 
 export function YemenGovernorateMap({ locale, className = '', style }: YemenMapProps) {
-  const [hoveredGov, setHoveredGov] = useState<string | null>(null);
-  const [selectedGov, setSelectedGov] = useState<string | null>(null);
   const isAr = locale === 'ar';
+  const [selectedIso, setSelectedIso] = useState<string>('YE-TA');
+  const [geoJsonData, setGeoJsonData] = useState<FeatureCollection<
+    Geometry,
+    { shapeName: string; shapeISO: string; shapeID: string }
+  > | null>(null);
+  const [loadError, setLoadError] = useState<boolean>(false);
 
-  const activeGov = selectedGov || hoveredGov;
-  const activeData = useMemo(
-    () => governorates.find((g) => g.id === activeGov),
-    [activeGov]
-  );
+  const NextArrow = isAr ? IconArrowLeft : IconArrowRight;
 
-  const handleGovClick = useCallback((id: string) => {
-    setSelectedGov((prev) => (prev === id ? null : id));
+  useEffect(() => {
+    let active = true;
+    fetch('/data/yemen-adm1-simplified.geojson')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to load GeoJSON');
+        return res.json();
+      })
+      .then((data) => {
+        if (active) setGeoJsonData(data);
+      })
+      .catch(() => {
+        if (active) setLoadError(true);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const presenceGovs = useMemo(
-    () => governorates.filter((g) => g.hasPresence),
+  const primaryHubs = useMemo(
+    () => [
+      YEMEN_GOVERNORATES_META['YE-TA'],
+      YEMEN_GOVERNORATES_META['YE-MA'],
+      YEMEN_GOVERNORATES_META['YE-SA'],
+    ],
     []
   );
 
+  const otherGovernorates = useMemo(
+    () =>
+      Object.values(YEMEN_GOVERNORATES_META).filter(
+        (g) => !g.hasPresence
+      ),
+    []
+  );
+
+  const activeMeta =
+    YEMEN_GOVERNORATES_META[selectedIso] || YEMEN_GOVERNORATES_META['YE-TA'];
+
   return (
     <div className={className} style={{ ...style }}>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: '1.5rem',
-          alignItems: 'start',
-        }}
-        className="yemen-map-grid"
-      >
-        {/* SVG Map */}
+      {/* Interactive Map + Details Panel Split Layout */}
+      <div className="yemen-map-layout">
+        {/* Left/Start Column: Real Interactive GeoJSON Map */}
         <div
           style={{
-            position: 'relative',
             backgroundColor: 'var(--color-bg-surface)',
             borderRadius: 'var(--radius-xl)',
             border: '1px solid var(--color-border-subtle)',
             padding: 'clamp(1rem, 2vw, 1.5rem)',
             boxShadow: 'var(--shadow-md)',
-            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
           }}
         >
-          {/* Map Title */}
+          {/* Map Header Bar & Legend */}
           <div
             style={{
               display: 'flex',
+              flexWrap: 'wrap',
               alignItems: 'center',
               justifyContent: 'space-between',
+              gap: '0.75rem',
               marginBlockEnd: '1rem',
             }}
           >
@@ -271,345 +249,426 @@ export function YemenGovernorateMap({ locale, className = '', style }: YemenMapP
               <h3
                 style={{
                   fontSize: '1.125rem',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   color: 'var(--color-brand-primary)',
                   margin: 0,
                 }}
               >
-                {isAr ? 'خريطة الانتشار الجغرافي' : 'Geographic Presence Map'}
+                {isAr
+                  ? 'خريطة الجمهورية اليمنية — نطاق التواجد المؤسسي'
+                  : 'Republic of Yemen — Institutional Operational Footprint'}
               </h3>
               <p
                 style={{
                   fontSize: '0.8125rem',
                   color: 'var(--color-text-muted)',
                   margin: 0,
-                  marginTop: '0.25rem',
+                  marginTop: '0.2rem',
                 }}
               >
-                {isAr ? 'المحافظات ذات التواجد المؤسسي' : 'Governorates with institutional presence'}
+                {isAr
+                  ? 'انقر على أي محافظة لاستعراض حالة التواجد ونطاق البرامج المعتمدة'
+                  : 'Select any governorate polygon or hub button to inspect operational status'}
               </p>
             </div>
 
             {/* Legend */}
-            <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', fontSize: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <div
+                <span
                   style={{
                     width: '12px',
                     height: '12px',
                     borderRadius: '3px',
-                    background: 'var(--color-brand-accent)',
-                    boxShadow: '0 0 6px rgba(194, 120, 3, 0.4)',
+                    backgroundColor: 'var(--color-brand-accent)',
+                    border: '1px solid var(--color-gold-700)',
+                    display: 'inline-block',
                   }}
                 />
-                <span style={{ color: 'var(--color-text-secondary)' }}>
-                  {isAr ? 'تواجد نشط' : 'Active presence'}
+                <span style={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>
+                  {isAr ? 'مكاتب ومقرات معتمدة (3)' : 'Verified Operational Hubs (3)'}
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <div
+                <span
                   style={{
                     width: '12px',
                     height: '12px',
                     borderRadius: '3px',
-                    background: 'var(--color-bg-muted)',
-                    border: '1px solid var(--color-border-strong)',
+                    backgroundColor: 'var(--map-gov-fill)',
+                    border: '1px solid var(--map-gov-stroke)',
+                    display: 'inline-block',
                   }}
                 />
                 <span style={{ color: 'var(--color-text-muted)' }}>
-                  {isAr ? 'بدون تواجد' : 'No presence'}
+                  {isAr ? 'محافظات أخرى' : 'Other Governorates'}
                 </span>
               </div>
             </div>
           </div>
 
-          <svg
-            viewBox="100 80 720 360"
-            style={{
-              width: '100%',
-              height: 'auto',
-              maxHeight: '420px',
-            }}
-            role="img"
-            aria-label={isAr ? 'خريطة اليمن التفاعلية' : 'Interactive Yemen Map'}
-          >
-            <defs>
-              {/* Glow filter for active presence */}
-              <filter id="gov-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feFlood floodColor="var(--color-brand-accent)" floodOpacity="0.35" result="color" />
-                <feComposite in="color" in2="blur" operator="in" result="glow" />
-                <feMerge>
-                  <feMergeNode in="glow" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-
-              {/* Pulse animation for presence markers */}
-              <radialGradient id="presence-pulse" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="var(--color-brand-accent)" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="var(--color-brand-accent)" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-
-            {/* Render governorate paths */}
-            {governorates.map((gov) => {
-              const isActive = activeGov === gov.id;
-              const hasPresence = gov.hasPresence;
-
-              return (
-                <g key={gov.id}>
-                  <path
-                    d={gov.path}
-                    fill={
-                      isActive
-                        ? hasPresence
-                          ? 'var(--color-brand-accent-light)'
-                          : 'var(--color-brand-primary-light)'
-                        : hasPresence
-                          ? 'rgba(194, 120, 3, 0.15)'
-                          : 'var(--color-bg-subtle)'
-                    }
-                    stroke={
-                      isActive
-                        ? hasPresence
-                          ? 'var(--color-brand-accent)'
-                          : 'var(--color-brand-primary)'
-                        : hasPresence
-                          ? 'var(--color-brand-accent)'
-                          : 'var(--color-border-strong)'
-                    }
-                    strokeWidth={isActive ? 2.5 : 1.2}
-                    style={{
-                      cursor: 'pointer',
-                      transition: 'all 250ms cubic-bezier(0.22, 1, 0.36, 1)',
-                      filter: isActive && hasPresence ? 'url(#gov-glow)' : 'none',
-                    }}
-                    onMouseEnter={() => setHoveredGov(gov.id)}
-                    onMouseLeave={() => setHoveredGov(null)}
-                    onClick={() => handleGovClick(gov.id)}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={isAr ? gov.nameAr : gov.nameEn}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleGovClick(gov.id);
-                      }
-                    }}
-                  />
-
-                  {/* Presence pulsing dot */}
-                  {hasPresence && (
-                    <>
-                      <circle
-                        cx={gov.center[0]}
-                        cy={gov.center[1]}
-                        r="14"
-                        fill="url(#presence-pulse)"
-                        style={{ pointerEvents: 'none' }}
-                        className="pulse-ring"
-                      />
-                      <circle
-                        cx={gov.center[0]}
-                        cy={gov.center[1]}
-                        r="5"
-                        fill="var(--color-brand-accent)"
-                        stroke="#ffffff"
-                        strokeWidth="1.5"
-                        style={{ pointerEvents: 'none' }}
-                      />
-                    </>
-                  )}
-
-                  {/* Label */}
-                  {(isActive || hasPresence) && (
-                    <text
-                      x={gov.center[0]}
-                      y={gov.center[1] + (hasPresence ? 22 : 5)}
-                      textAnchor="middle"
-                      style={{
-                        fontSize: isActive ? '11px' : '9px',
-                        fontWeight: isActive ? 700 : 600,
-                        fill: isActive ? 'var(--color-brand-primary)' : 'var(--color-text-muted)',
-                        pointerEvents: 'none',
-                        transition: 'all 200ms ease',
-                        fontFamily: isAr ? 'Cairo, sans-serif' : 'Inter, sans-serif',
-                      }}
-                    >
-                      {isAr ? gov.nameAr : gov.nameEn}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-          </svg>
-
-          <p
-            style={{
-              fontSize: '0.7rem',
-              color: 'var(--color-text-muted)',
-              margin: 0,
-              marginTop: '0.5rem',
-              textAlign: 'center',
-            }}
-          >
-            {isAr
-              ? 'رسم تخطيطي توضيحي — لا يمثل الحدود الإدارية الرسمية.'
-              : 'Schematic illustration — does not represent official administrative boundaries.'}
-          </p>
-
-          {/* Tooltip / Info Panel */}
-          {activeData && (
+          {/* Leaflet GeoJSON Map or Fallback */}
+          {loadError ? (
             <div
               style={{
-                position: 'absolute',
-                bottom: '1rem',
-                insetInlineStart: '1rem',
-                insetInlineEnd: '1rem',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border-subtle)',
+                padding: '2.5rem',
+                textAlign: 'center',
+                backgroundColor: 'var(--color-bg-subtle)',
                 borderRadius: 'var(--radius-lg)',
-                padding: '0.85rem 1rem',
-                boxShadow: 'var(--shadow-lg)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                transition: 'all 200ms ease',
-                zIndex: 10,
+                border: '1px solid var(--color-border-subtle)',
               }}
             >
-              <div
-                style={{
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: activeData.hasPresence
-                    ? 'var(--color-brand-accent-light)'
-                    : 'var(--color-bg-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke={activeData.hasPresence ? 'var(--color-brand-accent)' : 'var(--color-text-muted)'}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-brand-primary)' }}>
-                  {isAr ? activeData.nameAr : activeData.nameEn}
-                </div>
-                <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginTop: '0.15rem' }}>
-                  {activeData.hasPresence
-                    ? isAr
-                      ? activeData.presenceDescAr
-                      : activeData.presenceDescEn
-                    : isAr
-                      ? 'لا يوجد تواجد مؤسسي حالياً'
-                      : 'No institutional presence currently'}
-                </div>
-              </div>
-              {activeData.hasPresence && (
-                <span
-                  style={{
-                    padding: '0.2rem 0.6rem',
-                    borderRadius: 'var(--radius-full)',
-                    backgroundColor: 'rgba(5, 150, 105, 0.15)',
-                    color: 'var(--color-brand-success)',
-                    fontSize: '0.7rem',
-                    fontWeight: 600,
-                    flexShrink: 0,
-                  }}
-                >
-                  {isAr ? 'نشط' : 'Active'}
-                </span>
-              )}
+              <p style={{ fontWeight: 700, color: 'var(--color-brand-primary)' }}>
+                {isAr
+                  ? 'تعذر تحميل طبقة الحدود الجغرافية — يرجى استخدام قائمة المحافظات التفاعلية.'
+                  : 'Map boundary layer unavailable — please use the interactive governorate selector.'}
+              </p>
+            </div>
+          ) : geoJsonData ? (
+            <YemenLeafletCanvas
+              geoJsonData={geoJsonData}
+              governoratesMeta={YEMEN_GOVERNORATES_META}
+              selectedIso={selectedIso}
+              onSelectIso={setSelectedIso}
+              locale={locale}
+            />
+          ) : (
+            <div
+              style={{
+                width: '100%',
+                height: '430px',
+                borderRadius: 'var(--radius-lg)',
+                backgroundColor: 'var(--map-water)',
+                border: '1px solid var(--color-border-subtle)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--color-text-muted)',
+                fontSize: '0.875rem',
+              }}
+            >
+              {isAr ? 'جارٍ تهيئة الخريطة الجغرافية...' : 'Initializing geographic boundaries...'}
             </div>
           )}
+
+          {/* Honest Provenance & Safety Footnote */}
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.5rem',
+              marginTop: '0.85rem',
+              paddingTop: '0.65rem',
+              borderTop: '1px solid var(--color-border-subtle)',
+              fontSize: '0.72rem',
+              color: 'var(--color-text-muted)',
+            }}
+          >
+            <span>
+              {isAr
+                ? 'المصدر الجغرافي: حدود المحافظات اليمنية (ADM1 - WGS84) من قاعدة بيانات geoBoundaries المفتوحة (ترخيص CC-BY 4.0).'
+                : 'Geographic Data: Yemen ADM1 boundaries (WGS84) via geoBoundaries Open Database (CC-BY 4.0).'}
+            </span>
+            <span>
+              {isAr
+                ? 'ملاحظة أمنية: النقاط تمثل مراكز المحافظات التقريبية ولا تكشف إحداثيات ميدانية حساسة.'
+                : 'Safety Note: Markers indicate approximate governorate centers without exposing sensitive coordinates.'}
+            </span>
+          </div>
         </div>
 
-        {/* Accessible Fallback List */}
+        {/* Right/End Column: Synchronized Governorate Info Panel & Keyboard Selector */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '0.75rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
           }}
         >
-          {presenceGovs.map((gov) => (
-            <button
-              key={gov.id}
-              onClick={() => handleGovClick(gov.id)}
+          {/* Active Governorate Detail Card */}
+          <div
+            style={{
+              backgroundColor: 'var(--color-bg-surface)',
+              borderRadius: 'var(--radius-xl)',
+              border: activeMeta.hasPresence
+                ? '1.5px solid var(--color-brand-accent)'
+                : '1px solid var(--color-border-subtle)',
+              padding: 'clamp(1.25rem, 2vw, 1.75rem)',
+              boxShadow: 'var(--shadow-md)',
+              flex: '1 1 auto',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+            aria-live="polite"
+          >
+            <div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  gap: '0.75rem',
+                  marginBlockEnd: '1rem',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <div
+                    style={{
+                      width: '2.65rem',
+                      height: '2.65rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: activeMeta.hasPresence
+                        ? 'var(--color-gold-100)'
+                        : 'var(--color-bg-subtle)',
+                      color: activeMeta.hasPresence
+                        ? 'var(--color-brand-accent)'
+                        : 'var(--color-text-muted)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {activeMeta.hasPresence ? <IconBuilding size={20} /> : <IconMapPin size={20} />}
+                  </div>
+                  <div>
+                    <h4
+                      style={{
+                        fontSize: '1.2rem',
+                        fontWeight: 800,
+                        color: 'var(--color-brand-primary)',
+                        margin: 0,
+                      }}
+                    >
+                      {isAr ? activeMeta.nameAr : activeMeta.nameEn}
+                    </h4>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+                      {activeMeta.hasPresence
+                        ? isAr
+                          ? activeMeta.hubRoleAr
+                          : activeMeta.hubRoleEn
+                        : isAr
+                          ? 'محافظة يمنية (ADM1)'
+                          : 'Yemeni Governorate (ADM1)'}
+                    </span>
+                  </div>
+                </div>
+
+                <Badge variant={activeMeta.hasPresence ? 'success' : 'neutral'} size="sm">
+                  {activeMeta.hasPresence
+                    ? isAr
+                      ? 'تواجد معتمد'
+                      : 'Verified Hub'
+                    : isAr
+                      ? 'لا يوجد مكتب حالي'
+                      : 'No Active Office'}
+                </Badge>
+              </div>
+
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--color-text-secondary)',
+                  lineHeight: 1.7,
+                  marginBlockEnd: '1rem',
+                }}
+              >
+                {activeMeta.hasPresence
+                  ? isAr
+                    ? activeMeta.scopeAr
+                    : activeMeta.scopeEn
+                  : isAr
+                    ? 'لا تمتلك المؤسسة مكتباً ميدانياً مقيماً في هذه المحافظة حالياً. يتركز النطاق العملياتي المعتمد للمؤسسة في كل من محافظة تعز (المقر الرئيسي)، محافظة مأرب (فرع ميداني)، وصنعاء (مكتب تنسيقي متخصص).'
+                    : 'SPPLPF does not currently maintain a permanent resident office in this governorate. Approved institutional operations are anchored in Taiz (Headquarters), Marib (Field Branch), and Sanaa (Coordination Office).'}
+              </p>
+
+              {activeMeta.hasPresence && activeMeta.programsAr && (
+                <div
+                  style={{
+                    backgroundColor: 'var(--color-bg-subtle)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: '0.9rem 1rem',
+                    border: '1px solid var(--color-border-subtle)',
+                    marginBlockEnd: '1rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: 'var(--color-brand-primary)',
+                      marginBlockEnd: '0.5rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <IconShield size={14} style={{ color: 'var(--color-brand-secondary)' }} />
+                    <span>
+                      {isAr ? 'مسارات التدخل الرئيسية في المحافظة:' : 'Key Intervention Tracks in Governorate:'}
+                    </span>
+                  </div>
+                  <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    {(isAr ? activeMeta.programsAr : activeMeta.programsEn || []).map((prog, idx) => (
+                      <li
+                        key={idx}
+                        style={{
+                          fontSize: '0.8125rem',
+                          color: 'var(--color-text-secondary)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                        }}
+                      >
+                        <IconCheck size={13} style={{ color: 'var(--color-brand-success)', flexShrink: 0 }} />
+                        <span>{prog}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.65rem',
-                padding: '0.85rem 1rem',
-                backgroundColor:
-                  selectedGov === gov.id
-                    ? 'var(--color-brand-accent-light)'
-                    : 'var(--color-bg-surface)',
-                border: `1.5px solid ${
-                  selectedGov === gov.id ? 'var(--color-brand-accent)' : 'var(--color-border-subtle)'
-                }`,
-                borderRadius: 'var(--radius-lg)',
-                cursor: 'pointer',
-                transition: 'all 200ms ease',
-                textAlign: isAr ? 'right' : 'left',
+                justifyContent: 'space-between',
+                paddingTop: '0.75rem',
+                borderTop: '1px solid var(--color-border-subtle)',
+                gap: '0.5rem',
+                flexWrap: 'wrap',
               }}
-              className="card-hover"
             >
-              <div
+              <Link href={`/${locale}/presence`} style={{ textDecoration: 'none' }}>
+                <Button variant="outline" size="sm" icon={<NextArrow size={14} />}>
+                  {isAr ? 'دليل المكاتب والتصاريح' : 'Offices & Scope Directory'}
+                </Button>
+              </Link>
+              <Link href={`/${locale}/contact`} style={{ textDecoration: 'none' }}>
+                <Button variant="primary" size="sm">
+                  {isAr ? 'تواصل مع المكتب' : 'Contact Hub'}
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Keyboard-Accessible Location Switcher */}
+          <div
+            style={{
+              backgroundColor: 'var(--color-bg-surface)',
+              borderRadius: 'var(--radius-xl)',
+              border: '1px solid var(--color-border-subtle)',
+              padding: '1.15rem',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: 'var(--color-text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.03em',
+                marginBlockEnd: '0.65rem',
+              }}
+            >
+              {isAr
+                ? 'الوصول السريع للمقرات المعتمدة (ملائم للوحة المفاتيح):'
+                : 'Quick Keyboard Hub Selector (Verified Presence):'}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBlockEnd: '0.85rem' }}>
+              {primaryHubs.map((hub) => {
+                const isSelected = selectedIso === hub.iso;
+                return (
+                  <button
+                    key={hub.iso}
+                    type="button"
+                    onClick={() => setSelectedIso(hub.iso)}
+                    aria-pressed={isSelected}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      padding: '0.6rem 0.85rem',
+                      borderRadius: 'var(--radius-md)',
+                      border: isSelected
+                        ? '1.5px solid var(--color-brand-accent)'
+                        : '1px solid var(--color-border-subtle)',
+                      backgroundColor: isSelected
+                        ? 'var(--color-gold-50)'
+                        : 'var(--color-bg-subtle)',
+                      color: 'var(--color-text-primary)',
+                      cursor: 'pointer',
+                      textAlign: 'start',
+                      transition: 'all var(--transition-fast)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span
+                        style={{
+                          width: '8px',
+                          height: '8px',
+                          borderRadius: '50%',
+                          backgroundColor: isSelected ? 'var(--color-brand-accent)' : 'var(--color-brand-secondary)',
+                        }}
+                      />
+                      <span style={{ fontSize: '0.84375rem', fontWeight: 700, color: 'var(--color-brand-primary)' }}>
+                        {isAr ? hub.nameAr : hub.nameEn}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+                      {isAr ? hub.hubRoleAr : hub.hubRoleEn}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Dropdown to inspect any of the other 18 governorates */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <label
+                htmlFor="yemen-gov-select"
+                style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600, whiteSpace: 'nowrap' }}
+              >
+                {isAr ? 'استعراض محافظة أخرى:' : 'Inspect Governorate:'}
+              </label>
+              <select
+                id="yemen-gov-select"
+                value={selectedIso}
+                onChange={(e) => setSelectedIso(e.target.value)}
                 style={{
-                  width: '2rem',
-                  height: '2rem',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'var(--color-brand-accent-light)',
-                  color: 'var(--color-brand-accent)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
+                  flex: 1,
+                  padding: '0.4rem 0.6rem',
                   fontSize: '0.8125rem',
-                  fontWeight: 700,
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--color-border-strong)',
+                  backgroundColor: 'var(--color-bg-surface)',
+                  color: 'var(--color-text-primary)',
                 }}
               >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </div>
-              <div>
-                <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-brand-primary)' }}>
-                  {isAr ? gov.nameAr : gov.nameEn}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                  {isAr ? gov.presenceDescAr : gov.presenceDescEn}
-                </div>
-              </div>
-            </button>
-          ))}
+                <optgroup label={isAr ? 'المقرات المعتمدة (تواجد نشط)' : 'Approved Operational Hubs'}>
+                  {primaryHubs.map((g) => (
+                    <option key={g.iso} value={g.iso}>
+                      {isAr ? g.nameAr : g.nameEn}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label={isAr ? 'بقية محافظات الجمهورية اليمنية' : 'Other Yemen Governorates'}>
+                  {otherGovernorates.map((g) => (
+                    <option key={g.iso} value={g.iso}>
+                      {isAr ? g.nameAr : g.nameEn}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </div>

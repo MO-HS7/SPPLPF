@@ -135,3 +135,40 @@ describe('Frontend Visual Refresh: Genuine Lucide Icon System', () => {
   });
 });
 
+describe('Frontend Redesign v2: Verified Yemen ADM1 GeoJSON & Operational Hubs', () => {
+  it('maintains valid 22-governorate ADM1 GeoJSON boundaries and strict Taiz/Marib/Sanaa presence', async () => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const { YEMEN_GOVERNORATES_META } = await import('../../../src/components/map/YemenGovernorateMap');
+
+    const geojsonPath = path.resolve(process.cwd(), 'public/data/yemen-adm1-simplified.geojson');
+    expect(fs.existsSync(geojsonPath)).toBe(true);
+
+    const raw = fs.readFileSync(geojsonPath, 'utf-8');
+    const parsed = JSON.parse(raw) as {
+      type: string;
+      features: Array<{ properties: { shapeISO: string; shapeName: string } }>;
+    };
+
+    expect(parsed.type).toBe('FeatureCollection');
+    expect(parsed.features.length).toBe(22);
+
+    // Every GeoJSON feature ISO code must exist in YEMEN_GOVERNORATES_META
+    for (const feature of parsed.features) {
+      const iso = feature.properties.shapeISO;
+      expect(YEMEN_GOVERNORATES_META[iso]).toBeDefined();
+      expect(YEMEN_GOVERNORATES_META[iso].nameAr.length).toBeGreaterThan(0);
+      expect(YEMEN_GOVERNORATES_META[iso].nameEn.length).toBeGreaterThan(0);
+    }
+
+    // Operational hubs must strictly be Taiz (YE-TA), Marib (YE-MA), and Sana'a (YE-SA / YE-SN)
+    const activeCodes = Object.values(YEMEN_GOVERNORATES_META)
+      .filter((g) => g.hasPresence)
+      .map((g) => g.iso)
+      .sort();
+
+    expect(activeCodes).toEqual(['YE-MA', 'YE-SA', 'YE-SN', 'YE-TA']);
+  });
+});
+
+

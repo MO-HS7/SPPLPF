@@ -3,7 +3,7 @@ import { DEFAULT_LOCALE, getDictionary, isValidLocale, type Locale } from '../..
 import { demoStore } from '../../../lib/demo/store';
 import { Breadcrumbs, PageHeader } from '../../../components/layout';
 import { Badge, Card, CardContent, CardFooter, CardTitle } from '../../../components/ui';
-import { IconCalendar, IconMapPin } from '../../../components/icons';
+import { IconArrowLeft, IconArrowRight, IconCalendar } from '../../../components/icons';
 
 export default async function ActivitiesPage({
   params,
@@ -14,6 +14,7 @@ export default async function ActivitiesPage({
   const locale: Locale = isValidLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
   const dict = getDictionary(locale);
   const isAr = locale === 'ar';
+  const ArrowIcon = isAr ? IconArrowLeft : IconArrowRight;
 
   const activities = demoStore
     .getContentItems()
@@ -49,20 +50,21 @@ export default async function ActivitiesPage({
               </div>
 
               <CardTitle>
-                <Link href={`/${locale}/news/${act.slug}`} style={{ color: 'inherit' }}>
+                <Link href={`/${locale}/news/${act.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                   {isAr ? act.titleAr : act.titleEn}
                 </Link>
               </CardTitle>
 
               <CardContent>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
                   {isAr ? act.summaryAr : act.summaryEn}
                 </p>
               </CardContent>
 
               <CardFooter>
-                <Link href={`/${locale}/news/${act.slug}`} style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-primary)' }}>
-                  {dict.common.readMore} &larr;
+                <Link href={`/${locale}/news/${act.slug}`} className="link-arrow" style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-brand-primary)', textDecoration: 'none' }}>
+                  <span>{dict.common.readMore}</span>
+                  <ArrowIcon size={14} />
                 </Link>
               </CardFooter>
             </Card>

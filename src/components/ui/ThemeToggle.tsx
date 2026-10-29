@@ -6,11 +6,12 @@ import { IconMoon, IconSun } from '../icons';
 
 export interface ThemeToggleProps {
   locale?: 'ar' | 'en';
+  inverted?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
 
-export function ThemeToggle({ locale = 'ar', className = '', style }: ThemeToggleProps) {
+export function ThemeToggle({ locale = 'ar', inverted = false, className = '', style }: ThemeToggleProps) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -29,15 +30,16 @@ export function ThemeToggle({ locale = 'ar', className = '', style }: ThemeToggl
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '2.35rem',
-        height: '2.35rem',
+        width: '2.25rem',
+        height: '2.25rem',
         borderRadius: 'var(--radius-md)',
-        border: '1.5px solid var(--color-border-strong)',
-        backgroundColor: 'var(--color-bg-surface)',
-        color: isDark ? 'var(--color-gold-500)' : 'var(--color-brand-primary)',
+        border: inverted ? '1.5px solid rgba(255, 255, 255, 0.3)' : '1.5px solid var(--color-border-strong)',
+        backgroundColor: inverted ? 'rgba(255, 255, 255, 0.1)' : 'var(--color-bg-surface)',
+        color: inverted ? '#fbbf24' : isDark ? 'var(--color-gold-500)' : 'var(--color-brand-primary)',
         cursor: 'pointer',
         transition: 'all var(--transition-fast)',
         flexShrink: 0,
+        backdropFilter: inverted ? 'blur(8px)' : 'none',
         ...style,
       }}
     >

@@ -126,7 +126,7 @@ export default async function GoalsPage({
             display: 'flex',
             flexWrap: 'wrap',
             gap: 'var(--space-2)',
-            marginBlockEnd: 'var(--space-8)',
+            marginBlockEnd: 'var(--space-10)',
             borderBlockEnd: '1px solid var(--color-border-subtle)',
             paddingBlockEnd: 'var(--space-3)',
           }}
@@ -134,13 +134,14 @@ export default async function GoalsPage({
           <Link
             href={`/${locale}/about`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.aboutOverview}
@@ -148,13 +149,14 @@ export default async function GoalsPage({
           <Link
             href={`/${locale}/about/values`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.values}
@@ -162,12 +164,13 @@ export default async function GoalsPage({
           <Link
             href={`/${locale}/about/goals`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-brand-primary)',
               color: '#ffffff',
               fontWeight: 700,
               fontSize: 'var(--text-sm)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.goals}
@@ -175,17 +178,65 @@ export default async function GoalsPage({
           <Link
             href={`/${locale}/about/milestones`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.milestones}
           </Link>
+        </div>
+
+        {/* Strategic Numbered Overview Cards */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+            gap: 'var(--space-4)',
+            marginBlockEnd: 'var(--space-10)',
+          }}
+        >
+          {[
+            { num: '01', ar: 'تعزيز السلام والوساطة المحلية', en: 'Social Peace & Mediation' },
+            { num: '02', ar: 'الحماية القانونية ومساندة الضحايا', en: 'Legal Protection & Defense' },
+            { num: '03', ar: 'تمكين النساء والشباب قيادياً', en: 'Women & Youth Leadership' },
+            { num: '04', ar: 'الحوكمة والنزاهة المؤسسية', en: 'Governance & Integrity' },
+            { num: '05', ar: 'تحسين سبل العيش والصمود', en: 'Livelihood Resilience' },
+          ].map((item) => (
+            <div
+              key={item.num}
+              style={{
+                backgroundColor: 'var(--color-bg-surface)',
+                border: '1px solid var(--color-border-subtle)',
+                borderRadius: 'var(--radius-lg)',
+                padding: 'var(--space-4)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--space-2)',
+                boxShadow: 'var(--shadow-xs)',
+              }}
+            >
+              <span
+                className="font-display"
+                style={{
+                  fontSize: 'var(--text-2xl)',
+                  fontWeight: 800,
+                  color: 'var(--color-brand-accent)',
+                  lineHeight: 1,
+                }}
+              >
+                {item.num}
+              </span>
+              <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-brand-primary)', lineHeight: 1.4 }}>
+                {isAr ? item.ar : item.en}
+              </span>
+            </div>
+          ))}
         </div>
 
         <div style={{ maxWidth: '900px', marginInline: 'auto' }}>

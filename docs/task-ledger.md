@@ -1,6 +1,6 @@
 # SPPLPF Implementation Task Ledger & Status Register
 
-**Last Updated:** 23 October 2026  
+**Last Updated:** 29 October 2026  
 **Accountable Lead:** Mohannad Hassan (@MO-HS7)  
 **Standard:** SPPLPF Architecture Plan & Definition of Done
 
@@ -231,6 +231,21 @@
 - **Tests & Verification:**
   - TypeScript: Zero errors (`npx tsc --noEmit`).
   - Unit tests: 8 test files, 87 tests passed (100% passing) via [`vitest.config.mts`](file:///e:/SPPLPF/vitest.config.mts).
+  - Next.js Turbopack build: Compiled successfully (`npm run build`); all 33 routes generated cleanly without errors.
+
+### 2.11. End-to-End Website Experience Redesign, Interaction Engineering & Verified Yemen GeoJSON Map (Branch: feat/institutional-redesign-v2)
+- **Status:** Complete & verified locally across all 33 routes, unit tests, production build, and headless browser visual QA.
+- **Scope:** Comprehensive institutional UI/UX redesign, editorial typography system, scroll-aware header behavior, genuine interactive Yemen ADM1 GeoJSON map, page-by-page public/admin layout upgrades, and accessible interaction engineering.
+- **Deliverables:**
+  - **Evidence-Based Design Research:** Updated [`docs/frontend-design-references.md`](file:///e:/SPPLPF/docs/frontend-design-references.md) documenting patterns adopted/rejected, license verification, compatibility decisions, and GeoJSON provenance across EPISA, FinalTouch, LvvUP, anibalalpizar, Magic UI, React Bits, Motion for React, Kiranism, shadcn/ui, Motion Primitives, React Leaflet, and geoBoundaries/YemenOpenSource.
+  - **Editorial Typography & Semantic Design Tokens:** [`src/styles/tokens.css`](file:///e:/SPPLPF/src/styles/tokens.css), [`src/styles/globals.css`](file:///e:/SPPLPF/src/styles/globals.css). Paired **Amiri** (Arabic display headlines) + **Cairo** (Arabic UI/body) and **Playfair Display** (English display headlines) + **Inter** (English UI/body), alongside semantic Light/Dark surface, border, and map tokens (`--map-water`, `--map-land-*`, `--map-hub-*`).
+  - **Scroll-Aware Public Header & Theme Toggle:** [`src/components/layout/PublicHeader.tsx`](file:///e:/SPPLPF/src/components/layout/PublicHeader.tsx), [`src/components/ui/ThemeToggle.tsx`](file:///e:/SPPLPF/src/components/ui/ThemeToggle.tsx). Seamless translucent integration over the homepage hero at scroll-top (`header-over-hero`), transitioning smoothly to a compact sticky bar (`header-scrolled`) on scroll or internal pages, single-line desktop nav items, keyboard-accessible dropdowns and mobile drawer, and zero public admin links or demo banners.
+  - **Genuine Interactive Yemen ADM1 GeoJSON Map:** [`public/data/yemen-adm1-simplified.geojson`](file:///e:/SPPLPF/public/data/yemen-adm1-simplified.geojson), [`src/components/map/YemenLeafletCanvas.tsx`](file:///e:/SPPLPF/src/components/map/YemenLeafletCanvas.tsx), [`src/components/map/YemenGovernorateMap.tsx`](file:///e:/SPPLPF/src/components/map/YemenGovernorateMap.tsx). Installed pinned `leaflet@1.9.4`, `react-leaflet@5.0.0-rc.2`, and `@types/leaflet@1.9.16`. Renders all 22 verified Yemen ADM1 governorate polygons (CRS: WGS84 / EPSG:4326, CC-BY 4.0 geoBoundaries attribution) via client-only `next/dynamic(..., { ssr: false })`, with strict operational hub highlighting (**Taiz, Marib, Sana'a** only), honest approximate coordinates, bilingual sticky tooltips, and a synchronized keyboard-accessible hub selector and governorate dropdown on both `/[locale]` and `/[locale]/presence`.
+  - **Accessible Animated Counter & Motion Primitives:** [`src/components/motion/AnimatedCounter.tsx`](file:///e:/SPPLPF/src/components/motion/AnimatedCounter.tsx). SSR-safe initial render, single-run `IntersectionObserver`, `prefers-reduced-motion` bypass, `ar-YE`/`en-US` number formatting, and single `aria-label` + `aria-hidden="true"` inner tick span. Used strictly for verified institutional scope figures (3 Operational Hubs, 4 Core Pillars, 5 Strategic Goals).
+  - **Public & Admin Route Upgrades:** Upgraded `PageHeader`, `/[locale]`, `/[locale]/presence`, `/[locale]/about/*`, `/[locale]/programs/*`, `/[locale]/news/*`, `/[locale]/activities`, `/[locale]/stories`, `/[locale]/publications`, and `AdminShell` / `AdminHeader` / `AdminSidebar` (including dynamic admin route breadcrumbs and a responsive mobile sidebar drawer for `<1024px` viewports).
+- **Tests & Verification:**
+  - TypeScript: Zero errors (`npx tsc --noEmit`).
+  - Unit tests: 8 test files, 88 tests passed (100% passing, including GeoJSON 22-governorate ADM1 boundary & strict Taiz/Marib/Sana'a hub verification in [`tests/unit/ui/frontend-prototype.test.ts`](file:///e:/SPPLPF/tests/unit/ui/frontend-prototype.test.ts)).
   - Next.js Turbopack build: Compiled successfully (`npm run build`); all 33 routes generated cleanly without errors.
 
 ---

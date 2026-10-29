@@ -80,7 +80,7 @@ export default async function MilestonesPage({
             display: 'flex',
             flexWrap: 'wrap',
             gap: 'var(--space-2)',
-            marginBlockEnd: 'var(--space-8)',
+            marginBlockEnd: 'var(--space-10)',
             borderBlockEnd: '1px solid var(--color-border-subtle)',
             paddingBlockEnd: 'var(--space-3)',
           }}
@@ -88,13 +88,14 @@ export default async function MilestonesPage({
           <Link
             href={`/${locale}/about`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.aboutOverview}
@@ -102,13 +103,14 @@ export default async function MilestonesPage({
           <Link
             href={`/${locale}/about/values`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.values}
@@ -116,13 +118,14 @@ export default async function MilestonesPage({
           <Link
             href={`/${locale}/about/goals`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.goals}
@@ -130,12 +133,13 @@ export default async function MilestonesPage({
           <Link
             href={`/${locale}/about/milestones`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-brand-primary)',
               color: '#ffffff',
               fontWeight: 700,
               fontSize: 'var(--text-sm)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.milestones}

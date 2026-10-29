@@ -76,7 +76,7 @@ export default async function ValuesPage({
             display: 'flex',
             flexWrap: 'wrap',
             gap: 'var(--space-2)',
-            marginBlockEnd: 'var(--space-8)',
+            marginBlockEnd: 'var(--space-10)',
             borderBlockEnd: '1px solid var(--color-border-subtle)',
             paddingBlockEnd: 'var(--space-3)',
           }}
@@ -84,13 +84,14 @@ export default async function ValuesPage({
           <Link
             href={`/${locale}/about`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.aboutOverview}
@@ -98,12 +99,13 @@ export default async function ValuesPage({
           <Link
             href={`/${locale}/about/values`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-brand-primary)',
               color: '#ffffff',
               fontWeight: 700,
               fontSize: 'var(--text-sm)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.values}
@@ -111,13 +113,14 @@ export default async function ValuesPage({
           <Link
             href={`/${locale}/about/goals`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.goals}
@@ -125,13 +128,14 @@ export default async function ValuesPage({
           <Link
             href={`/${locale}/about/milestones`}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--color-bg-surface)',
               color: 'var(--color-text-secondary)',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
               border: '1px solid var(--color-border-subtle)',
+              textDecoration: 'none',
             }}
           >
             {dict.nav.milestones}
@@ -140,13 +144,13 @@ export default async function ValuesPage({
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-6)' }}>
           {valuesList.map((val, idx) => (
-            <Card key={idx} hoverEffect>
+            <Card key={idx} hoverEffect style={{ borderBlockStart: '4px solid var(--color-brand-primary)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: 'var(--space-4)' }}>
                 <div
                   style={{
-                    width: '3rem',
-                    height: '3rem',
-                    borderRadius: 'var(--radius-md)',
+                    width: '3.25rem',
+                    height: '3.25rem',
+                    borderRadius: 'var(--radius-lg)',
                     backgroundColor: 'var(--color-brand-primary-light)',
                     color: 'var(--color-brand-primary)',
                     display: 'flex',
@@ -160,7 +164,7 @@ export default async function ValuesPage({
               </div>
               <CardTitle>{isAr ? val.titleAr : val.titleEn}</CardTitle>
               <CardContent>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.75, margin: 0 }}>
                   {isAr ? val.descAr : val.descEn}
                 </p>
               </CardContent>
